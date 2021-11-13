@@ -84,10 +84,10 @@ fn main() {
             .unwrap();
 
     let device: ash::Device = {
-        let queue_create_info = vk::DeviceQueueCreateInfo::builder()
+        let queue_create_infos = [vk::DeviceQueueCreateInfo::builder()
             .queue_family_index(queue_family_index)
             .queue_priorities(&[1.0])
-            .build();
+            .build()];
 
         let mut physical_device_vulkan_memory_model_features =
             vk::PhysicalDeviceVulkanMemoryModelFeatures::builder()
@@ -96,7 +96,7 @@ fn main() {
 
         let device_create_info = vk::DeviceCreateInfo::builder()
             .push_next(&mut physical_device_vulkan_memory_model_features)
-            .queue_create_infos(&[queue_create_info])
+            .queue_create_infos(&queue_create_infos)
             .enabled_layer_names(validation_layers_ptr.as_slice())
             .build();
 
@@ -172,7 +172,7 @@ fn main() {
     // render pass
 
     let render_pass = {
-        let color_attachment = vk::AttachmentDescription {
+        let color_attachments = [vk::AttachmentDescription {
             flags: vk::AttachmentDescriptionFlags::empty(),
             format: COLOR_FORMAT,
             samples: vk::SampleCountFlags::TYPE_1,
@@ -182,21 +182,21 @@ fn main() {
             stencil_store_op: vk::AttachmentStoreOp::DONT_CARE,
             initial_layout: vk::ImageLayout::UNDEFINED,
             final_layout: vk::ImageLayout::TRANSFER_SRC_OPTIMAL,
-        };
+        }];
 
         let color_attachment_refs = [vk::AttachmentReference {
             attachment: 0,
             layout: vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
         }];
 
-        let subpass = vk::SubpassDescription::builder()
+        let subpasses = [vk::SubpassDescription::builder()
             .pipeline_bind_point(vk::PipelineBindPoint::GRAPHICS)
             .color_attachments(&color_attachment_refs)
-            .build();
+            .build()];
 
         let renderpass_create_info = vk::RenderPassCreateInfo::builder()
-            .attachments(&[color_attachment])
-            .subpasses(&[subpass])
+            .attachments(&color_attachments)
+            .subpasses(&subpasses)
             .build();
 
         unsafe { device.create_render_pass(&renderpass_create_info, None) }
@@ -334,9 +334,11 @@ fn main() {
     };
 
     let framebuffer = {
+        let image_views = [image_view];
+
         let framebuffer_create_info = vk::FramebufferCreateInfo::builder()
             .render_pass(render_pass)
-            .attachments(&[image_view])
+            .attachments(&image_views)
             .width(WIDTH)
             .height(HEIGHT)
             .layers(1)
@@ -376,6 +378,12 @@ fn main() {
     }
 
     {
+        let clear_values = [vk::ClearValue {
+            color: vk::ClearColorValue {
+                float32: [0.0, 0.0, 0.0, 1.0],
+            },
+        }];
+
         let render_pass_begin_info = vk::RenderPassBeginInfo::builder()
             .render_pass(render_pass)
             .framebuffer(framebuffer)
@@ -383,11 +391,7 @@ fn main() {
                 offset: vk::Offset2D { x: 0, y: 0 },
                 extent,
             })
-            .clear_values(&[vk::ClearValue {
-                color: vk::ClearColorValue {
-                    float32: [0.0, 0.0, 0.0, 1.0],
-                },
-            }])
+            .clear_values(&clear_values)
             .build();
 
         unsafe {
@@ -411,15 +415,6 @@ fn main() {
         }
     }
 
-    let fence = {
-        let fence_create_info = vk::FenceCreateInfo::builder()
-            .flags(vk::FenceCreateFlags::SIGNALED)
-            .build();
-
-        unsafe { device.create_fence(&fence_create_info, None) }
-            .expect("Failed to create Fence Object!")
-    };
-
     {
         let submit_infos = [vk::SubmitInfo::builder()
             .command_buffers(&[command_buffer])
@@ -427,14 +422,10 @@ fn main() {
 
         unsafe {
             device
-                .reset_fences(&[fence])
-                .expect("Failed to reset Fence!");
-
-            device
-                .queue_submit(graphics_queue, &submit_infos, fence)
+                .queue_submit(graphics_queue, &submit_infos, vk::Fence::null())
                 .expect("Failed to execute queue submit.");
 
-            device.wait_for_fences(&[fence], true, u64::MAX).unwrap();
+            device.queue_wait_idle(graphics_queue).unwrap();
         }
     }
 
@@ -606,14 +597,10 @@ fn main() {
             device.end_command_buffer(copy_cmd).unwrap();
 
             device
-                .reset_fences(&[fence])
-                .expect("Failed to reset Fence!");
-
-            device
-                .queue_submit(graphics_queue, &submit_infos, fence)
+                .queue_submit(graphics_queue, &submit_infos, vk::Fence::null())
                 .expect("Failed to execute queue submit.");
 
-            device.wait_for_fences(&[fence], true, u64::MAX).unwrap();
+            device.queue_wait_idle(graphics_queue).unwrap();
         }
     }
 
@@ -664,10 +651,6 @@ fn main() {
     }
 
     // clean up
-
-    unsafe {
-        device.destroy_fence(fence, None);
-    }
 
     unsafe {
         device.destroy_command_pool(command_pool, None);
