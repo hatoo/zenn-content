@@ -3,8 +3,6 @@ title: "rust-gpuを使う"
 ---
 
 [rust-gpu](https://github.com/EmbarkStudios/rust-gpu)はRustのコードを[SPIR-V](https://en.wikipedia.org/wiki/Standard_Portable_Intermediate_Representation)にコンパイルするツールです。
-通常SPIR-Vは[GLSL](https://ja.wikipedia.org/wiki/GLSL)や[HLSL](https://ja.wikipedia.org/wiki/High_Level_Shading_Language)からコンパイルされることが多いですがこの文章ではrust-gpuでやろうというわけです。
-Vulkanを使うことでSPIR-VをGPU上で動かすことができます。
 この文章ではrust-gpuでレイトレーシングを行うことを目的としていますが、この章ではまずrust-gpuで簡単なラスタライズ用のシェーダーを作っていきます。
 
 # セットアップ
@@ -91,13 +89,11 @@ use spirv_std::glam::{vec3, vec4, Vec3, Vec4};
 // vertex shaderであることを指定
 #[spirv(vertex)]
 pub fn main_vs(
-    // 頂点番号、ここでは頂点番号が0, 1, 2の範囲であることを仮定している
-    // 他にどのような #[sprv(...)]が使えるかは https://github.com/EmbarkStudios/rust-gpu/blob/main/crates/rustc_codegen_spirv/src/symbols.rs を見るとよい
+    // gl_VertexIndex相当がここに入る
     #[spirv(vertex_index)] vert_id: i32,
-    // 頂点の場所
+    // gl_Position相当の変数
     #[spirv(position)] out_pos: &mut Vec4,
-    // 何も指定せずに &mut したのでLocation 0の出力だと解釈される
-    // これがmain_fsのcolorに渡される
+    // 何も指定せずに &mut したのでlayout(location = 0) outだと解釈される
     color: &mut Vec3,
 ) {
     *out_pos = [
@@ -114,7 +110,11 @@ pub fn main_vs(
 }
 
 #[spirv(fragment)]
-pub fn main_fs(output: &mut Vec4, color: Vec3) {
+pub fn main_fs(
+    // layout(location = 0) out
+    output: &mut Vec4, 
+    // layout(location = 0) in
+    color: Vec3) {
     *output = color.extend(1.0);
 }
 
@@ -262,7 +262,6 @@ fn main() {
 それっぽい結果が出ているのを確認できました。
 
 また、[SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross)でSPIR-VをGLSLに変換した結果を見ることもできます。
-GLSLはCライクな言語なのでなんとなくわかると思います。
 
 ```glsl
 > spirv-cross "C:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\shader.spv.dir\\module" --entry main_vs
