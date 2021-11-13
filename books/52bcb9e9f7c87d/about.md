@@ -17,4 +17,4 @@ title: "はじめに"
 の知識がある方を対象としています。
 
 想定としては[Ray Tracing in One Weekend — The Book Series](https://raytracing.github.io/)をやったけどGPUで動かしたくなった方がターゲットです。
-Vulkan自体の説明は複雑すぎてこの文章では扱えませんが触ったことのない方は[Vulkan Tutorial](https://vulkan-tutorial.com/Introduction)のDrawing a Triangleまでやっておけばよいです。
+Raytracing extension以外のVulkanの説明は複雑すぎてこの文章では扱えませんが触ったことのない方は[Vulkan Tutorial](https://vulkan-tutorial.com/Introduction)のDrawing a Triangleまでやっておけばよいです。
