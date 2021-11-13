@@ -3,7 +3,7 @@ use std::{
     ffi::{c_void, CStr, CString},
     fs::File,
     io::Write,
-    ptr::{self, null},
+    ptr,
 };
 
 use ash::{prelude::VkResult, vk};
@@ -581,17 +581,10 @@ fn main() {
     }
 
     {
-        let submit_infos = [vk::SubmitInfo {
-            s_type: vk::StructureType::SUBMIT_INFO,
-            p_next: ptr::null(),
-            wait_semaphore_count: 0,
-            p_wait_semaphores: null(),
-            p_wait_dst_stage_mask: null(),
-            command_buffer_count: 1,
-            p_command_buffers: &copy_cmd,
-            signal_semaphore_count: 0,
-            p_signal_semaphores: null(),
-        }];
+        let command_buffers = [copy_cmd];
+        let submit_infos = [vk::SubmitInfo::builder()
+            .command_buffers(&command_buffers)
+            .build()];
 
         unsafe {
             device.end_command_buffer(copy_cmd).unwrap();
