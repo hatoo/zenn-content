@@ -131,7 +131,7 @@ pub fn main_fs(output: &mut Vec4, color: Vec3) {
 
 # シェーダーを確認する
 
-アプリケーション側からビルドされたシェーダーのバイナリのパスを`env!("rasterization_example_shader.spv")`で取得できます。
+アプリケーション側からビルドされたシェーダーのバイナリのパスをコンパイル時に`env!("rasterization_example_shader.spv")`で取得できます。
 
 ```rust:rasterization-example/src/main.rs
 fn main() {
@@ -151,7 +151,7 @@ fn main() {
 [rasterization-example\src\main.rs:6] SHADER.len() = 1580
 ```
 
-ここでSPIR-Vの実行まで行うと長くなってしまうのでここではSPIR-Vのディスアセンブルした結果を確認て終わりにします。
+ここでSPIR-Vの実行は次章に回してここではSPIR-Vのディスアセンブルした結果を確認して終わりにします。
 まず、[SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools)をインストールします。
 SPIRR-Toolsのspirv-disでディスアセンブルします。
 

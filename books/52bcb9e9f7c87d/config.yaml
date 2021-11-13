@@ -1,6 +1,6 @@
 title: "rust-gpuでレイトレーシングする"
 summary: "rust-gpuとashでレイトレーシングします"
-topics: ["Rust", "rust-gpu", "Vulkan"]
+topics: ["Rust", "rustgpu", "Vulkan"]
 published: false
 price: 0 # 有料の場合200〜5000
 # 本に含めるチャプターを順番に並べましょう
