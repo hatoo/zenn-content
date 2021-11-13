@@ -2,7 +2,9 @@
 title: "rust-gpuを使う"
 ---
 
-[rust-gpu](https://github.com/EmbarkStudios/rust-gpu)はRustのコードを[SPIR-V](https://en.wikipedia.org/wiki/Standard_Portable_Intermediate_Representation)にコンパイルするツールです。Vulkanを使いSPIR-VをGPU上で動かすことができます。
+[rust-gpu](https://github.com/EmbarkStudios/rust-gpu)はRustのコードを[SPIR-V](https://en.wikipedia.org/wiki/Standard_Portable_Intermediate_Representation)にコンパイルするツールです。
+通常SPIR-Vは[GLSL](https://ja.wikipedia.org/wiki/GLSL)や[HLSL](https://ja.wikipedia.org/wiki/High_Level_Shading_Language)からコンパイルされることが多いですがこの文章ではrust-gpuでやろうというわけです。
+Vulkanを使うことでSPIR-VをGPU上で動かすことができます。
 この文章ではrust-gpuでレイトレーシングを行うことを目的としていますが、この章ではまずrust-gpuで簡単なラスタライズ用のシェーダーを作っていきます。
 
 # セットアップ
@@ -151,7 +153,7 @@ fn main() {
 [rasterization-example\src\main.rs:6] SHADER.len() = 1580
 ```
 
-ここでSPIR-Vの実行は次章に回してここではSPIR-Vのディスアセンブルした結果を確認して終わりにします。
+このSPIR-Vの実行は次章に回してここではSPIR-Vのディスアセンブルした結果を確認して終わりにします。
 まず、[SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools)をインストールします。
 SPIR-Toolsのspirv-disでディスアセンブルします。
 
@@ -270,3 +272,58 @@ SPIR-Toolsのspirv-disでディスアセンブルします。
 ```
 
 それっぽい結果が出ているのを確認できました。
+
+また、[SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross)でSPIR-VをGLSLに変換した結果を見ることもできます。
+GLSLはCライクな言語なのでなんとなくわかると思います。
+
+```
+> spirv-cross.exe "c:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\rasterization_example_shader.spv.dir\\module" --entry main_vs
+#version 450
+
+layout(location = 0) out vec3 _4;
+
+void main()
+{
+    do
+    {
+        vec4 _39[3];
+        _39[0u] = vec4(1.0, 1.0, 0.0, 1.0);
+        _39[1u] = vec4(0.0, -1.0, 0.0, 1.0);
+        _39[2u] = vec4(-1.0, 1.0, 0.0, 1.0);
+        uint _48 = uint(gl_VertexID);
+        bool _49 = _48 < 3u;
+        if (_49)
+        {
+            gl_Position = _39[_48];
+            vec3 _40[3];
+            _40[0u] = vec3(1.0, 0.0, 0.0);
+            _40[1u] = vec3(0.0, 1.0, 0.0);
+            _40[2u] = vec3(0.0, 0.0, 1.0);
+            if (_49)
+            {
+                _4 = _40[_48];
+                break;
+            }
+            else
+            {
+                break;
+            }
+        }
+        else
+        {
+            break;
+        }
+    } while(false);
+}
+
+> spirv-cross.exe "c:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\rasterization_example_shader.spv.dir\\module" --entry main_fs
+#version 450
+
+layout(location = 0) out vec4 _6;
+layout(location = 0) in vec3 _7;
+
+void main()
+{
+    _6 = vec4(_7, 1.0);
+}
+```
