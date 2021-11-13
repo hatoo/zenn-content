@@ -6,4 +6,4 @@ price: 0 # 有料の場合200〜5000
 # 本に含めるチャプターを順番に並べましょう
 chapters:
   - about
-  - rust-gpu
+  - rust-gpu-intro
