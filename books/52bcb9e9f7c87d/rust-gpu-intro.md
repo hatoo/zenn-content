@@ -13,22 +13,11 @@ Vulkanを使うことでSPIR-VをGPU上で動かすことができます。
 rust-gpuを使ったシェーダー用のプロジェクトとそれを使うアプリケーション用のプロジェクトの二つを作ります。シェーダーはアプリケーションの`build.rs`でコンパイルします。
 
 ```
-mkdir rasterization-example
-cd rasterization-example
 # アプリケーション用のプロジェクト
 cargo new rasterization-example
+cd rasterization-example
 # シェーダー用のプロジェクト
-cargo new rasterization-example-shader --lib
-```
-
-Cargo Workspaceの設定をします。
-
-```toml:Cargo.toml
-[workspace]
-members = [
-	"rasterization-example",
-	"rasterization-example-shader"
-]
+cargo new shader --lib
 ```
 
 rust-gpuは特定のRustのバージョンで動くため、rust-toolchainを[ここ](https://github.com/EmbarkStudios/rust-gpu/blob/main/rust-toolchain)からコピーします。
@@ -47,19 +36,19 @@ components = ["rust-src", "rustc-dev", "llvm-tools-preview"]
 
 rasterization-example-shaderをSPIR-Vでコンパイルするために設定してます。
 
-```toml:rasterization-example/Cargo.toml
+```toml:Cargo.toml
 ...
 [build-dependencies]
 spirv-builder = { git = "https://github.com/EmbarkStudios/rust-gpu" }
 ```
 
-```rust:rasterization-example/build.rs
+```rust:build.rs
 use std::error::Error;
 
 use spirv_builder::{MetadataPrintout, SpirvBuilder};
 
 fn main() -> Result<(), Box<dyn Error>> {
-    SpirvBuilder::new("../rasterization-example-shader", "spirv-unknown-vulkan1.2")
+    SpirvBuilder::new("shader", "spirv-unknown-vulkan1.2")
         .print_metadata(MetadataPrintout::Full)
         .build()?;
 
@@ -72,7 +61,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 ここからシェーダーを書いていきます。
 Cargo.tomlにlibを設定しspirv-stdをdependenciesに加えます。
 
-```toml:rasterization-example-shader/Cargo.toml
+```toml:shader/Cargo.toml
 ...
 [lib]
 crate-type = ["lib", "dylib"]
@@ -84,7 +73,7 @@ spirv-std = { git="https://github.com/EmbarkStudios/rust-gpu.git", features = ["
 vertexシェーダーとfragmentシェーダーを書いていきます。
 vertexシェーダーで大きな三角形を描き、fragment シェーダーで色を付けます。
 
-```rust:rasterization-example-shader/src/lib.rs
+```rust:shader/src/lib.rs
 #![cfg_attr(
     target_arch = "spirv",
     no_std,
@@ -133,12 +122,12 @@ pub fn main_fs(output: &mut Vec4, color: Vec3) {
 
 # シェーダーを確認する
 
-アプリケーション側からビルドされたシェーダーのバイナリのパスをコンパイル時に`env!("rasterization_example_shader.spv")`で取得できます。
+アプリケーション側からビルドされたシェーダーのバイナリのパスをコンパイル時に`env!("shader.spv")`で取得できます。
 
-```rust:rasterization-example/src/main.rs
+```rust:src/main.rs
 fn main() {
-    const SHADER_PATH: &str = env!("rasterization_example_shader.spv");
-    const SHADER: &[u8] = include_bytes!(env!("rasterization_example_shader.spv"));
+    const SHADER_PATH: &str = env!("shader.spv");
+    const SHADER: &[u8] = include_bytes!(env!("shader.spv"));
 
     dbg!(SHADER_PATH);
     dbg!(SHADER.len());
@@ -149,16 +138,15 @@ fn main() {
 > cargo run
     Finished dev [unoptimized + debuginfo] target(s) in 0.06s
      Running `target\debug\rasterization-example.exe`
-[rasterization-example\src\main.rs:5] SHADER_PATH = "c:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\rasterization_example_shader.spv.dir\\module"
-[rasterization-example\src\main.rs:6] SHADER.len() = 1580
+[src\main.rs:5] SHADER_PATH = "C:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\shader.spv.dir\\module"
+[src\main.rs:6] SHADER.len() = 1580
 ```
 
-このSPIR-Vの実行は次章に回してここではSPIR-Vのディスアセンブルした結果を確認して終わりにします。
-まず、[SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools)をインストールします。
-SPIR-Toolsのspirv-disでディスアセンブルします。
+このSPIR-Vの実行は次章に回してここではSPIR-Vのバイナリを結果を確認して終わりにします。
+[SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools)のspirv-disでディスアセンブルします。
 
 ```
-> spirv-dis.exe "c:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\rasterization_example_shader.spv.dir\\module"
+> spirv-dis "C:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\shader.spv.dir\\module"
 ; SPIR-V
 ; Version: 1.5
 ; Generator: Embark Studios Rust GPU Compiler Backend; 0
@@ -178,8 +166,8 @@ SPIR-Toolsのspirv-disでディスアセンブルします。
                OpDecorate %_arr_v4float_uint_3 ArrayStride 16
                OpDecorate %_arr_v3float_uint_3 ArrayStride 16
       %float = OpTypeFloat 32
-    %v4float = OpTypeVector %float 4
     %v3float = OpTypeVector %float 3
+    %v4float = OpTypeVector %float 4
 %_ptr_Input_v3float = OpTypePointer Input %v3float
 %_ptr_Output_v3float = OpTypePointer Output %v3float
 %_ptr_Function_v3float = OpTypePointer Function %v3float
@@ -204,12 +192,12 @@ SPIR-Toolsのspirv-disでディスアセンブルします。
 %_arr_v3float_uint_3 = OpTypeArray %v3float %uint_3
 %_ptr_Function__arr_v3float_uint_3 = OpTypePointer Function %_arr_v3float_uint_3
     %float_1 = OpConstant %float 1
-   %float_n1 = OpConstant %float -1
     %float_0 = OpConstant %float 0
+   %float_n1 = OpConstant %float -1
        %bool = OpTypeBool
-         %91 = OpConstantComposite %v4float %float_1 %float_n1 %float_0 %float_1
-         %92 = OpConstantComposite %v4float %float_0 %float_1 %float_0 %float_1
-         %93 = OpConstantComposite %v4float %float_n1 %float_n1 %float_0 %float_1
+         %91 = OpConstantComposite %v4float %float_1 %float_1 %float_0 %float_1
+         %92 = OpConstantComposite %v4float %float_0 %float_n1 %float_0 %float_1
+         %93 = OpConstantComposite %v4float %float_n1 %float_1 %float_0 %float_1
          %94 = OpConstantComposite %v3float %float_1 %float_0 %float_0
          %95 = OpConstantComposite %v3float %float_0 %float_1 %float_0
          %96 = OpConstantComposite %v3float %float_0 %float_0 %float_1
@@ -277,7 +265,7 @@ SPIR-Toolsのspirv-disでディスアセンブルします。
 GLSLはCライクな言語なのでなんとなくわかると思います。
 
 ```glsl
-> spirv-cross.exe "c:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\rasterization_example_shader.spv.dir\\module" --entry main_vs
+> spirv-cross "C:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\shader.spv.dir\\module" --entry main_vs
 #version 450
 
 layout(location = 0) out vec3 _4;
@@ -316,7 +304,7 @@ void main()
     } while(false);
 }
 
-> spirv-cross.exe "c:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\rasterization_example_shader.spv.dir\\module" --entry main_fs
+> spirv-cross "C:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\shader.spv.dir\\module" --entry main_fs
 #version 450
 
 layout(location = 0) out vec4 _6;

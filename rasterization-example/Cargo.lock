@@ -79,30 +79,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "glam"
-version = "0.17.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e01732b97afd8508eee3333a541b9f7610f454bb818669e66e90f5f57c93a776"
-dependencies = [
- "num-traits",
-]
-
-[[package]]
 name = "hashbrown"
 version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ab5ef0d4909ef3724cc8cce6ccc8572c5c817592e9285f5464f8e86f8bd3726e"
 dependencies = [
  "ahash",
-]
-
-[[package]]
-name = "heck"
-version = "0.3.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6d621efb26863f0e9924c6ac577e8275e5e6b77455db64ffa6c65c904e9e132c"
-dependencies = [
- "unicode-segmentation",
 ]
 
 [[package]]
@@ -193,13 +175,6 @@ name = "rasterization-example"
 version = "0.1.0"
 dependencies = [
  "spirv-builder",
-]
-
-[[package]]
-name = "rasterization-example-shader"
-version = "0.1.0"
-dependencies = [
- "spirv-std",
 ]
 
 [[package]]
@@ -338,30 +313,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "spirv-std"
-version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#04146858ce1fc631717db21071b99b8101e12cda"
-dependencies = [
- "bitflags",
- "glam",
- "num-traits",
- "spirv-std-macros",
- "spirv-types",
-]
-
-[[package]]
-name = "spirv-std-macros"
-version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#04146858ce1fc631717db21071b99b8101e12cda"
-dependencies = [
- "heck",
- "proc-macro2",
- "quote",
- "spirv-types",
- "syn",
-]
-
-[[package]]
 name = "spirv-tools"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -380,11 +331,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "spirv-types"
-version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#04146858ce1fc631717db21071b99b8101e12cda"
-
-[[package]]
 name = "syn"
 version = "1.0.81"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -400,12 +346,6 @@ name = "topological-sort"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aa7c7f42dea4b1b99439786f5633aeb9c14c1b53f75e282803c2ec2ad545873c"
-
-[[package]]
-name = "unicode-segmentation"
-version = "1.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8895849a949e7845e06bd6dc1aa51731a103c42707010a5b591c0038fb73385b"
 
 [[package]]
 name = "unicode-xid"
