@@ -153,7 +153,7 @@ fn main() {
 
 ここでSPIR-Vの実行は次章に回してここではSPIR-Vのディスアセンブルした結果を確認して終わりにします。
 まず、[SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools)をインストールします。
-SPIRR-Toolsのspirv-disでディスアセンブルします。
+SPIR-Toolsのspirv-disでディスアセンブルします。
 
 ```
 > spirv-dis.exe "c:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\rasterization_example_shader.spv.dir\\module"
