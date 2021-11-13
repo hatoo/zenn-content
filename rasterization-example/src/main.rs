@@ -9,7 +9,7 @@ use std::{
 use ash::{prelude::VkResult, vk};
 
 fn main() {
-    const ENABLE_VALIDATION_LAYER: bool = cfg!(debug_assertions);
+    const ENABLE_VALIDATION_LAYER: bool = true;
     const WIDTH: u32 = 800;
     const HEIGHT: u32 = 600;
     const COLOR_FORMAT: vk::Format = vk::Format::R8G8B8A8_UNORM;
@@ -184,14 +184,14 @@ fn main() {
             final_layout: vk::ImageLayout::TRANSFER_SRC_OPTIMAL,
         };
 
-        let color_attachment_ref = vk::AttachmentReference {
+        let color_attachment_refs = [vk::AttachmentReference {
             attachment: 0,
             layout: vk::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
-        };
+        }];
 
         let subpass = vk::SubpassDescription::builder()
             .pipeline_bind_point(vk::PipelineBindPoint::GRAPHICS)
-            .color_attachments(&[color_attachment_ref])
+            .color_attachments(&color_attachment_refs)
             .build();
 
         let renderpass_create_info = vk::RenderPassCreateInfo::builder()
@@ -229,19 +229,23 @@ fn main() {
             .topology(vk::PrimitiveTopology::TRIANGLE_LIST)
             .build();
 
+        let scissors = [vk::Rect2D {
+            offset: vk::Offset2D { x: 0, y: 0 },
+            extent,
+        }];
+
+        let viewports = [vk::Viewport {
+            x: 0.0,
+            y: 0.0,
+            width: extent.width as f32,
+            height: extent.height as f32,
+            min_depth: 0.0,
+            max_depth: 1.0,
+        }];
+
         let viewport_state_create_info = vk::PipelineViewportStateCreateInfo::builder()
-            .scissors(&[vk::Rect2D {
-                offset: vk::Offset2D { x: 0, y: 0 },
-                extent,
-            }])
-            .viewports(&[vk::Viewport {
-                x: 0.0,
-                y: 0.0,
-                width: extent.width as f32,
-                height: extent.height as f32,
-                min_depth: 0.0,
-                max_depth: 1.0,
-            }])
+            .scissors(&scissors)
+            .viewports(&viewports)
             .build();
 
         let rasterization_statue_create_info = vk::PipelineRasterizationStateCreateInfo::builder()
