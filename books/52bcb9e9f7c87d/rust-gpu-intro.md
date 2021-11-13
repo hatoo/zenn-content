@@ -276,7 +276,7 @@ SPIR-Toolsのspirv-disでディスアセンブルします。
 また、[SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross)でSPIR-VをGLSLに変換した結果を見ることもできます。
 GLSLはCライクな言語なのでなんとなくわかると思います。
 
-```
+```glsl
 > spirv-cross.exe "c:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\rasterization_example_shader.spv.dir\\module" --entry main_vs
 #version 450
 
