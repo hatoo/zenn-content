@@ -6,6 +6,11 @@ title: "Vulkan Raytracing外観"
 
 VKRはVulkanのレイトレーシング拡張で、[2020年12月](https://www.khronos.org/blog/vulkan-ray-tracing-final-specification-release)にSDKが配布されたようです。
 
+:::message
+Vulkanのレイトレーシング関係のチュートリアルをネットで探すと`VK_NV_ray_tracing`などのNvidia独自の拡張を使ったものが見つかるかもしれません。これは古いAPIなので無視したほうがよいでしょう。
+といっても現在標準のKHR拡張とそこまで大きな違いがあるわけではありません。
+:::
+
 単にGPUでレイトレーシングしたいならVKR拡張がなくともCompute Shaderを使えば実現できます([筆者が作った例](https://github.com/hatoo/rukako))。CPUよりはだいぶ速いです。
 
 ではなぜわざわざ2018年1月からVKRの仕様を策定してきたかというと、(直接言及している文章を見たことがないので利用者目線から想像すると)Acceleration Structure(BVH)の構築とレイの当たり判定のハードウェアも含めた最適化をしたいからといっていいでしょう(と思っています)。
