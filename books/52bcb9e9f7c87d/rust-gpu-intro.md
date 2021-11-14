@@ -1,5 +1,5 @@
 ---
-title: "rust-gpuを使う"
+title: "rust-gpu入門"
 ---
 
 [rust-gpu](https://github.com/EmbarkStudios/rust-gpu)はRustのコードを[SPIR-V](https://en.wikipedia.org/wiki/Standard_Portable_Intermediate_Representation)にコンパイルするツールです。
@@ -142,7 +142,7 @@ fn main() {
 [src\main.rs:6] SHADER.len() = 1580
 ```
 
-このSPIR-Vの実行は次章に回してここではSPIR-Vのバイナリを結果を確認して終わりにします。
+このSPIR-Vの実行は次章に回してここではSPIR-Vのバイナリを確認して終わりにします。
 [SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools)のspirv-disでディスアセンブルします。
 
 ```
