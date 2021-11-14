@@ -18,3 +18,13 @@ title: "はじめに"
 
 想定としては[Ray Tracing in One Weekend — The Book Series](https://raytracing.github.io/)をやったけどGPUで動かしたくなった方がターゲットです。
 VKR以外のVulkanの説明は複雑すぎてこの文章では扱えませんが触ったことのない方は[Vulkan Tutorial](https://vulkan-tutorial.com/Introduction)のDrawing a Triangleまでやっておけばよいです。
+
+# 動作環境
+
+本文章で使われているコードは
+
+- OS: Windows 11
+- GPU: RTX 2080ti
+- Vulkan SDK: 1.2.189.2
+
+で動作を確認しました。
