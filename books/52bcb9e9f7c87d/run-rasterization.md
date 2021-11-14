@@ -2,9 +2,13 @@
 title: "ashでシェーダーを実行する"
 ---
 
-この章では前回rust-gpuで作ったシェーダーを[ash](https://github.com/MaikKlein/ash)でレンダリングします。ashはRustのためのVulkanラッパーです。この例だけなら[wgpu](https://github.com/gfx-rs/wgpu)を使えばよりシンプルになりますが、VKRの機能が使えないので今からashを使います。
+この章では前回rust-gpuで作ったシェーダーを[ash](https://github.com/MaikKlein/ash)でレンダリングします。
+
+# ashとは
+
+ashはRustのためのVulkanラッパーです。この例だけなら[wgpu](https://github.com/gfx-rs/wgpu)を使えばよりシンプルになりますが、VKRの機能が使えないので今からashを使います。
 といってもVulkanの説明は複雑すぎて自分にはできないので(すいません🙇‍♂️)、ashを使う際のポイントを書くだけにとどめておきます。
-また、ネットでよく出てくるVulkanのチュートリアルはウインドウに描画するものが多いですがここでは直接画像ファイルに保存します(オフスクリーンレンダリング)。いくらVKRがリアルタイム用のAPIといっても後々Ray Tracing in One Weekendと同じ処理をするとどうしてもリアルタイムに描画することはできないからです。
+また、ネットでよく出てくるVulkanのチュートリアルはウインドウに描画するものが多いですがここでは直接画像ファイルに保存します(オフスクリーンレンダリング)。これは、いくらVKRがリアルタイム用のAPIといっても後々Ray Tracing in One Weekendと同じ処理をするとどうしてもリアルタイムに描画することはできないからです。
 
 # ashの使い方
 
