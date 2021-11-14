@@ -107,3 +107,11 @@ pub struct SubpassDescription {
 
 つまりRustコンパイラは一時的に作った`&[color_attachment_ref]`などをスコープから抜けた瞬間破棄する権利を持っています。
 これがDebugビルドでは比較的動くけどReleaseビルドでは落ちてしまうことがある理由です。
+
+というわけであとはVulkanのAPIを順番に呼んでいるだけなので[コード](https://github.com/hatoo/zenn-content/tree/master/rasterization-example)を見てください。
+
+```
+cargo run
+```
+
+すると`out.png`にレンダリングされた画像が保存されます。
