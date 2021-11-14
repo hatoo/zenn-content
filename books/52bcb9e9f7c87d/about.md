@@ -2,7 +2,7 @@
 title: "はじめに"
 ---
 
-この文章では[rust-gpu](https://github.com/EmbarkStudios/rust-gpu)と[ash](https://github.com/MaikKlein/ash)を使い、Vulkan Raytracing extension(VKR)を用いたレイトレーシングを行います。Vulkan Raytracing extensionを使うことによりCPUより高速にレイトレーシングを行うことができます。また、[rust-gpu](https://github.com/EmbarkStudios/rust-gpu)を使うことでGPUで動くコードも含めすべてRustで書いていきます。
+この文章では[rust-gpu](https://github.com/EmbarkStudios/rust-gpu)と[ash](https://github.com/MaikKlein/ash)を使い、Vulkan Raytracing extension(以下VKR)を用いたレイトレーシングを行います。Vulkan Raytracing extensionを使うことによりCPUより高速にレイトレーシングを行うことができます。また、[rust-gpu](https://github.com/EmbarkStudios/rust-gpu)を使うことでGPUで動くコードも含めすべてRustで書いていきます。
 
 # 対象
 
@@ -17,4 +17,4 @@ title: "はじめに"
 の知識がある方を対象としています。
 
 想定としては[Ray Tracing in One Weekend — The Book Series](https://raytracing.github.io/)をやったけどGPUで動かしたくなった方がターゲットです。
-Raytracing extension以外のVulkanの説明は複雑すぎてこの文章では扱えませんが触ったことのない方は[Vulkan Tutorial](https://vulkan-tutorial.com/Introduction)のDrawing a Triangleまでやっておけばよいです。
+VKR以外のVulkanの説明は複雑すぎてこの文章では扱えませんが触ったことのない方は[Vulkan Tutorial](https://vulkan-tutorial.com/Introduction)のDrawing a Triangleまでやっておけばよいです。
