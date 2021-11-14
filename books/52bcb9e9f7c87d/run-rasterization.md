@@ -119,3 +119,5 @@ cargo run
 ```
 
 すると`out.png`にレンダリングされた画像が保存されます。
+
+![triangle](/images/triangle.png)
