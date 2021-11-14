@@ -5,6 +5,8 @@ title: "rust-gpu入門"
 [rust-gpu](https://github.com/EmbarkStudios/rust-gpu)はRustのコードを[SPIR-V](https://en.wikipedia.org/wiki/Standard_Portable_Intermediate_Representation)にコンパイルするツールです。
 この文章ではrust-gpuでレイトレーシングを行うことを目的としていますが、この章ではまずrust-gpuで簡単なラスタライズ用のシェーダーを作っていきます。
 
+コードは[こちら](https://github.com/hatoo/zenn-content/tree/master/rasterization-example)にあります。`src/main.rs`が次章の内容になっていますがそれ以外は同じです。
+
 # セットアップ
 
 さっそくrust-gpuをやっていきましょう。
