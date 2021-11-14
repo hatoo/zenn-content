@@ -15,6 +15,19 @@ VKRはVulkanのレイトレーシング拡張で、[2020年12月](https://www.kh
 ![Ray Accelerator](https://www.amd.com/system/files/2020-10/579976-hardware-accelerated-raytracing-1920x500.jpg)
 [AMDのページ](https://www.amd.com/ja/technologies/rdna-2)にある図。左側はメモリやキャッシュ関係があると考えると(想像)そこそこ大きな面積にレイトレーシング用のハードウェア"Ray Accelerator"があり、すごそう。
 
-# TODO
+## ベンチマーク
 
-Add benchmarks
+大体同じシーンをCPU, GPU(Compute Shader), GPU(VKR)でレンダリングして時間を計測してみました。計測時間はプログラムの最初から最後までなのでセットアップにかかった時間なども含んでいます。
+
+1200x800ピクセル1000サンプルです
+
+:::message alert
+ベンチマークに使用したプログラムは筆者が作ったものですが全然最適化されていません。
+あくまで参考程度にとらえてください。
+:::
+
+|   | CPU | GPU(Compute Shader) | GPU(VKR) |
+| - | --- | ------------------- | -------- |
+| 時間(秒) | 55.7 | 17.3 | 3.2 |
+
+![bench](/images/bench.png)
