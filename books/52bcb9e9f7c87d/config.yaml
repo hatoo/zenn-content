@@ -8,3 +8,4 @@ chapters:
   - about
   - rust-gpu-intro
   - run-rasterization
+  - vkr-overview
