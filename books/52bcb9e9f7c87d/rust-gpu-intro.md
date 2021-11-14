@@ -32,7 +32,7 @@ channel = "nightly-2021-10-26"
 components = ["rust-src", "rustc-dev", "llvm-tools-preview"]
 ```
 
-rasterization-example-shaderをSPIR-Vでコンパイルするために設定してます。
+shaderをSPIR-Vでコンパイルするために設定してます。
 
 ```toml:Cargo.toml
 ...
