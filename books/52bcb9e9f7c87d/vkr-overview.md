@@ -13,7 +13,7 @@ Vulkanのレイトレーシング関係のチュートリアルをネットで�
 
 単にGPUでレイトレーシングしたいならVKR拡張がなくてもCompute Shaderを使えば実現できます([筆者が作った例](https://github.com/hatoo/rukako))。CPUよりはだいぶ速いです。
 
-ではなぜわざわざ2018年1月からVKRの仕様を策定してきたかというと、(直接言及している文章を見たことがないので利用者目線から想像すると)Acceleration Structure(BVH)の構築とレイの当たり判定をハードウェアも含めて最適化したいからといっていいでしょう(と思っています)。
+ではなぜわざわざ2018年1月からVKRの仕様を策定してきたかというと、(直接言及している文章を見たことがないので利用者目線から想像すると)BVH(VKRではAcceleration Structureと言います)の構築とレイの当たり判定をハードウェアも含めて最適化したいからといっていいでしょう(と思っています)。
 
 [Ray Tracing: The Next Week](https://raytracing.github.io/books/RayTracingTheNextWeek.html#boundingvolumehierarchies)のBounding Volume Hierarchiesをやった方ならわかるように、レイトレーシングのソフトウェアは多くの時間をレイの当たり判定に費やします。そこをGPUベンダに、ハードウェアも含めて最適化してもらえるのは非常にありがたいというわけです。
 
