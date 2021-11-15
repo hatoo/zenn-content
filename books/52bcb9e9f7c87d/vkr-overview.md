@@ -41,3 +41,18 @@ Vulkanのレイトレーシング関係のチュートリアルをネットで�
 ![bench](/images/bench.png)
 
 VKRだと速い。BVHの最適化を丸投げできるのがとても良い。
+
+# Acceleration Structure
+
+前節で、VKRの主なモチベーションはAcceleration Structure(以下AS)にある(と思う)と述べました。
+ASとはBVHと同じ働きをします。APIを呼ぶことでGPU上で構築したりシェーダーからレイの当たり判定をすることができます。(実際にはASの実装はGPUベンダの裁量によるので中でBVHとは違うすごいアルゴリズムが使われているかもしれませんが)
+またASは、特定の条件を満たした際に低コストで再構築したり、シリアライズして例えば他のGPUで構築したASを他のGPUで使ったりする面白い機能もありますがこの文章では触れません。
+
+## Top Level Acceleration StructureとBottom Level Acceleration Structure
+
+ASはTop Level Acceleration Structure(以下TLAS)とBottom Level Acceleration Structure(BLAS)の二層構造です。
+シェーダーからはTLASのみが見え、TLASは複数のBLASをその変換行列とともに持ちます。BLASは複数のポリゴンもしくはAABBを持ちます。AABBの場合はその内部での当たり判定は独自のシェーダーを定義して計算します。TLASがポリゴン/AABBを保持することもBLASが他のBLASやTLASを持つこともありません。
+
+![Acceleration Structure](/images/acceleration_structure.png)
+
+
