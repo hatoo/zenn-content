@@ -14,8 +14,7 @@ ashはRustのためのVulkanラッパーです。この例だけなら[wgpu](htt
 
 基本的にashはVukkanの薄いラッパーなのでVulkanを触ったことをあればすぐにわかると思います。
 
-structがBuilderパターンを対応しているので少し楽になります。Builderパターンを使うとVulkanの構造体でよくある`p***`と`***Count`もスライスで入力できます。
-
+ashのstructはBuilderパターンに対応しているので構築が少し楽になります。Builderパターンを使うとVulkanの構造体でよくある`p***`と`***Count`もスライスで入力できます。
 
 ashでRenderPassを作る例
 ```rust
