@@ -51,8 +51,40 @@ ASとはBVHと同じ働きをします。APIを呼ぶことでGPU上で構築し
 ## Top Level Acceleration StructureとBottom Level Acceleration Structure
 
 ASはTop Level Acceleration Structure(以下TLAS)とBottom Level Acceleration Structure(BLAS)の二層構造です。
-シェーダーからはTLASのみが見え、TLASは複数のBLASをその変換行列とともに持ちます。BLASは複数のポリゴンもしくはAABBを持ちます。AABBの場合はその内部での当たり判定は独自のシェーダーを定義して計算します。TLASがポリゴン/AABBを保持することもBLASが他のBLASやTLASを持つこともありません。
+シェーダーからはTLASのみが見え、TLASは複数のBLASをその変換行列とともに持ちます。BLASは複数のポリゴンもしくはAABBを持ちます。AABBの場合はその内部での当たり判定はIntersection Shaderを定義して計算します。TLASがポリゴン/AABBを保持することもBLASが他のBLASやTLASを持つこともありません。
 
 ![Acceleration Structure](/images/acceleration_structure.png)
 
+# VKRのシェーダー達
 
+VKRでは新たに
+
+- Ray Generation Shader (レイトレーシングのエントリポイント)
+- Intersections Shader (独自の形状に対してレイの当たり判定をする)
+- Any-Hit Shader (レイのは当たったけどやっぱりなかったことにすることができる(例えばレイは当たったけどテクスチャを見て透明だと判断したとき))
+- Closest-Hit Shader (一通りレイの当たり判定が終わり一番近い衝突場所が分かったときに呼ばれる)
+- Miss Shader (レイが何にも当たらなかったときに呼ばれる)
+
+のシェーダーが追加されました。ちなみにAny-Hit Shaderはこの文章では実装しません。
+
+## Ray Generation Shader
+
+レイトレーシングのエントリポイントです。
+これが出力のピクセルの数だけ呼ばれるのでここからGLSLでいう[TraceRayKHR](https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_tracing.txt)をつかうと他すべてののシェーダーが動き、その結果をみてピクセルを埋めます。
+
+## Intersections Shader
+
+独自の形状に対して当たり判定をするシェーダーです。BLASに登録したAABBに当たっていた場合に哉ばれます。この文章では球の当たり判定を実装します。
+
+## Any-Hit Shader
+
+ここではレイの衝突をなかったことにできます。ここで衝突が破棄された場合次に近い衝突場所に行きます。上記のようにレイは当たったけどテクスチャを見て透明だと判断したい時などに使えます。省略した場合はすべての衝突が採用されます。
+Intersections Shaderの時点で処理してしまえばいいかと思うかもしれませんがテクスチャを見るなどの処理を可能な限り遅らせることができるという利点があります(その衝突箇所より前の時点で衝突していた場合、テクスチャを見なくてもその衝突は使わないと判断できる)。
+
+## Closest-Hit Shader
+
+Intersections ShaderとAny-Hit Shaderでいろいろやった後、最終的に衝突箇所が確定したときに呼ばれるシェーダーです。ここでRay Generation Shaderに返すデータを作ります。最終的に確定された衝突でだけ法線やマテリアルの計算をすることで無駄な計算をなくすことができます。
+
+## Miss Shader
+
+レイが何にも当たらなかったときに呼ばれるシェーダーです。例えば外界がスカイボックスの時はそういう計算をすればいいですし、光源から対象箇所にさえぎるモノがないか確認したいだけのシャドウレイの場合は真偽値を返せばよいというわけです。
