@@ -74,6 +74,8 @@ vertexシェーダーとfragmentシェーダーを書いていきます。
 vertexシェーダーで大きな三角形を描き、fragment シェーダーで色を付けます。
 
 ```rust:shader/src/lib.rs
+// ここら辺はテンプレ
+// 気になる方は一つ一つ調べれば割とすぐに把握できるでしょう
 #![cfg_attr(
     target_arch = "spirv",
     no_std,
