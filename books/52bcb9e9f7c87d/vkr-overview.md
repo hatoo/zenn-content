@@ -93,3 +93,7 @@ Interssection Shader, Any-Hit Shader, Closest-Hitは(それぞれ省略される
 
 # Shader Buinding Table
 
+前節で、Interssection Shader独自の形状に対しての当たり判定を行うと書きましたが、独自の形状と一言に言っても同じシーンに球や直方体などの別の形状があるかもしれませんし、レイを飛ばすにしてもそれが通常のレイの場合もありますしシャドウレイを飛ばしたいだけの
+もありまず。
+つまり、使うシェーダーを動的に変化させる必要があるわけです。
+それを実現するのがShader Buinding Table(以下SBT)です。
