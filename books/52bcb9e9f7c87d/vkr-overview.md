@@ -130,3 +130,7 @@ $\mathbb{G}_{ID}$ はBLASに入っている各子供のIDのため、大きく�
  ## Ray Generationの場合
 
  一回の描画で使われるRay Generation Shaderは一種類だけです。VKRのAPIコール時にどのRay Generation Shaderを使うか指定するだけです。
+
+# まとめ
+
+これでVKRの最小限の説明が終わりました。あとは上のシェーダー群をrust-gpuで実装していい感じにVulkanのAPIを呼んでいくだけです。
