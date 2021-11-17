@@ -93,7 +93,7 @@ Intersections ShaderとAny-Hit Shaderでいろいろやった後、最終的に�
 
 # Shader Record
 
-Interssection Shader, Any-Hit Shader, Closest-Hitは(それぞれ省略されることがあるものの)セットで使われるため、これらをまとめたものをHit Group Recordと言います。 Ray Generation ShaderはRay Generation Record、Miss ShaderはMiss recordです。
+Interssection Shader, Any-Hit Shader, Closest-Hitは(それぞれ省略されることがあるものの)必ずセットで使われるため、これらをまとめたものをHit Group Recordと言います。 Ray Generation ShaderはRay Generation Record、Miss ShaderはMiss recordです。
 
 # Shader Binding Table
 
@@ -110,7 +110,7 @@ Interssection Shaderで独自の形状の当たり判定を行うと書きまし
 
 ## Hit Groupの場合
 
-Hit Groupのオフセットを決める値はあらかじめBLASに登録していく値と実行時にRay Generation Shaderから渡す値に分かれます。
+Hit Groupのオフセットを決める値はあらかじめBLASに登録していく値と、実行時にRay Generation Shaderから渡す値に分かれます。
 
 $$ HG_{index} = \mathbb{I}_{offset} + R_{offset} + R_{stride} \times \mathbb{G}_{ID} $$
 $$ HG = addByteOffset(\& HG[0], HG_{stride} \times HG_{index}) $$
