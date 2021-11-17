@@ -83,7 +83,7 @@ Intersections Shaderの時点で処理してしまえばいいかと思うかも
 
 ## Closest-Hit Shader
 
-Intersections ShaderとAny-Hit Shaderでいろいろやった後、最終的に衝突箇所が確定したときに呼ばれるシェーダーです。ここでRay Generation Shaderに返すデータを作ります。最終的に確定された衝突でだけ法線やマテリアルの計算をすることで無駄な計算をなくすことができます。
+Intersections ShaderとAny-Hit Shaderでいろいろやった後、最終的に衝突箇所が確定したときに呼ばれるシェーダーです。何にも当たらなかった場合はMiss Shaderが呼ばれます。ここでRay Generation Shaderに返すデータを作ります。最終的に確定された衝突でだけ法線やマテリアルの計算をすることで無駄な計算をなくすことができます。
 
 ## Miss Shader
 
