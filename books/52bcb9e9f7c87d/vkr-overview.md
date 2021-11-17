@@ -98,3 +98,31 @@ Interssection Shader, Any-Hit Shader, Closest-Hitは(それぞれ省略される
 Interssection Shaderで独自の形状の当たり判定を行うと書きましたが、独自の形状と一口に言っても同じシーンに球や直方体などの別の形状があるかもしれませんし、レイを飛ばすにしてもそれが通常のレイの場合もありますしシャドウレイを飛ばしたいだけの場合もありまず。
 つまり、使うシェーダーを動的に変化させる必要があるわけです。
 それを実現するのがShader Binding Table(以下SBT)です。
+
+:::message
+この文章で登場する形状はすべて球なのでSBTの機能はほとんど使いません。
+詳細を知りたい方は[Ray Tracing Gems II](https://www.realtimerendering.com/raytracinggems/rtg2/index.html)がおすすめです。
+:::
+
+シェーダーはすべて一次元配列に配置されていて、そのオフセットを動的に決めるというのがSBTです。
+
+## Hit Groupの場合
+
+Hit Groupのオフセットを決める値はあらかじめBLASに登録していく値と実行時にRay Generation Shaderから渡す値に分かれます。
+
+$$ HG_{index} = \mathbb{I}_{offset} + R_{offset} + R_{stride} \times \mathbb{G}_{ID} $$
+$$ HG = addByteOffset(\& HG[0], HG_{stride} \times HG_{index}) $$
+
+$HG_{stride}$は各Hit Group Recordが占めるバイト数です。
+$\mathbb{I}_{offset}$と$\mathbb{G}_{ID}$はBLAS構築時に入力するのに対し、$R_{offset}$ + $R_{stride}$はRay Generation Shaderで指定します。この文章では１つのHit Groupしか使わないため全部0です。
+
+## Miss Groupの場合
+
+ $$ M_{index} = R_{miss} $$
+ $$ M = addByteOffset(\& M[0], M_{stride} \times M_{index}) $$
+
+ Miss RecordはRay Generation Shaderから$R_{miss}$を指定するだけです。Closest-Hit Shaderと同じ型を返すMiss Shaderを指定しましょう。
+
+ ## Ray Generationの場合
+
+ 一回の描画で使われるRay Generation Shaderは一種類だけです。VKRのAPIコール時にどのRay Generation Shaderを使うか指定するだけです。
