@@ -89,6 +89,8 @@ Intersections ShaderとAny-Hit Shaderでいろいろやった後、最終的に�
 
 レイが何にも当たらなかったときに呼ばれるシェーダーです。例えば外界がスカイボックスの時はそういう計算をすればいいですし、光源から対象箇所にさえぎるモノがないか確認したいだけのシャドウレイの場合は真偽値を返せばよいというわけです。
 
+# Shader Record
+
 Interssection Shader, Any-Hit Shader, Closest-Hitは(それぞれ省略されることがあるものの)セットで使われるため、これらをまとめたものをHit Group Recordと言います。 Ray Generation ShaderはRay Generation Record、Miss ShaderはMiss recordです。
 
 # Shader Binding Table
