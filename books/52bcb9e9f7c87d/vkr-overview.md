@@ -48,6 +48,8 @@ VKRだと速い。BVHの最適化を丸投げできるのがとても良い。
 ASとはBVHと同じ働きをします。APIを呼ぶことでGPU上で構築したりシェーダーからレイの当たり判定をすることができます。(実際にはASの実装はGPUベンダの裁量によるので中でBVHとは違うすごいアルゴリズムが使われているかもしれませんが)
 またASは、特定の条件を満たした際に低コストで再構築したり、シリアライズして例えば他のGPUで構築したASを他のGPUで使ったりする面白い機能もありますがこの文章では触れません。
 
+一般的にBVHというとAABBのほかにもOBB(Oriented Bounding Boxes)などが使われることもあるようですがVKRではAABBもしくはポリゴン(三角形)のみサポートされています。
+
 ## Top Level Acceleration StructureとBottom Level Acceleration Structure
 
 ASはTop Level Acceleration Structure(以下TLAS)とBottom Level Acceleration Structure(BLAS)の二層構造です。
