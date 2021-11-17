@@ -114,7 +114,9 @@ $$ HG_{index} = \mathbb{I}_{offset} + R_{offset} + R_{stride} \times \mathbb{G}_
 $$ HG = addByteOffset(\& HG[0], HG_{stride} \times HG_{index}) $$
 
 $HG_{stride}$は各Hit Group Recordが占めるバイト数です。
-$\mathbb{I}_{offset}$と$\mathbb{G}_{ID}$はBLAS構築時に入力するのに対し、$R_{offset}$ + $R_{stride}$はRay Generation Shaderで指定します。この文章では１つのHit Groupしか使わないため全部0です。
+$\mathbb{I}_{offset}$と$\mathbb{G}_{ID}$はBLAS構築時に入力するのに対し、$R_{offset}$ + $R_{stride}$はRay Generation Shaderで指定します。
+$\mathbb{G}_{ID}$ はBLASに入っている各子供のIDのため大きくなることがあり$R_{stride} \times \mathbb{G}_{ID}$の項はあまり使わない気がします(初心者の想像)。
+この文章では１つのHit Groupしか使わないため全部0です。
 
 ## Miss Groupの場合
 
