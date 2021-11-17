@@ -35,3 +35,7 @@ VKR以外のVulkanの説明は複雑すぎてこの文章では扱えません�
 - Vulkan SDK: 1.2.189.2
 
 で動作を確認しました。
+
+# コントリビューション
+
+この文章、およびサンプルコードは[GitHub上](https://github.com/hatoo/zenn-content)で管理しています。何かある際はGitHubでPR等よろしくお願いします🙇‍♂️。
