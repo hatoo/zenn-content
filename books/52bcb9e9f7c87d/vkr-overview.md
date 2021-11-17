@@ -51,7 +51,7 @@ ASとはBVHと同じ働きをします。APIを呼ぶことでGPU上で構築し
 ## Top Level Acceleration StructureとBottom Level Acceleration Structure
 
 ASはTop Level Acceleration Structure(以下TLAS)とBottom Level Acceleration Structure(BLAS)の二層構造です。
-シェーダーからはTLASのみが見え、TLASは複数のBLASをその変換行列とともに持ちます。BLASは複数のポリゴンもしくはAABBを持ちます。ポリゴンは非常によく使われる表現なため、特別にサポートされています。AABBの場合はその内部での当たり判定はIntersection Shaderを定義して計算します。TLASがポリゴン/AABBを保持することもBLASが他のBLASやTLASを持つこともありません。
+シェーダーからはTLASのみが見え、TLASは複数のBLASをその変換行列とともに持ちます。BLASは複数のポリゴン(三角形)もしくはAABBを持ちます。ポリゴンは非常によく使われる表現なため、特別にサポートされています。AABBの場合はその内部での当たり判定はIntersection Shaderを定義して計算します。TLASがポリゴン/AABBを保持することもBLASが他のBLASやTLASを持つこともありません。
 
 ![Acceleration Structure](/images/acceleration_structure.png)
 
