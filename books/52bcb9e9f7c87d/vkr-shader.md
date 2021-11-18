@@ -51,7 +51,7 @@ pub fn main_ray_generation(
 }
 ```
 
-疑似乱数のアルゴリズムはいろいろありますが、今回は[PCGファミリ](https://www.pcg-random.org/index.html)の中から`pcg32si`を使うことにしました、GPUでは32bit型がデフォルトのようなので内部状態に32bitしか使わないものを選びました。多少、暗号的な耐性が下がると思いますが速さを期待します。
+疑似乱数のアルゴリズムはいろいろありますが、今回は[PCGファミリ](https://www.pcg-random.org/index.html)の中から`pcg32si`を使うことにしました、GPUでは基本的に32bitアーキテクチャのようなので内部状態に32bitしか使わないものを選びました。多少、暗号的な耐性が下がると思いますが速さを期待します。
 
 ```rust:src/rand.rs
 pub struct PCG32si {
