@@ -7,6 +7,7 @@ title: "VKRのシェーダーを書く"
 
 まず、2章と同じセットアップをしてください。
 rust-gpuでレイトレーシング拡張を有効にするために`build.rs`を変更します。
+`bool`型はRustでは8ビットなので`Int8`も有効にします。
 
 ```rust:build.rs
 use std::error::Error;
@@ -16,6 +17,7 @@ use spirv_builder::{Capability, MetadataPrintout, SpirvBuilder};
 fn main() -> Result<(), Box<dyn Error>> {
     SpirvBuilder::new("./shader", "spirv-unknown-spv1.3")
         .capability(Capability::RayTracingKHR)
+        .capability(Capability::Int8)
         .extension("SPV_KHR_ray_tracing")
         .print_metadata(MetadataPrintout::Full)
         .build()?;
