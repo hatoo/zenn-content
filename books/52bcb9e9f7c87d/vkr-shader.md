@@ -234,3 +234,20 @@ Closest-Hit ShaderとMiss Shaderの返り値の型をここで定義します。
 Vulkanのメモリモデルは基本的にロジカルポインタです。つまり、ポインタに数値を足したり引いたりすることはできないしキャストすることもできません。rust-gpuにはポインタは存在せず、参照のみ存在すると考えると理解しやすいでしょう。
 
 `enum`では各バリアントに対してそれにマッチしてデータが欲しいときにデータ部分に対してキャストをします(上記のようにこれはできません!)。つまり事実上、rust-gpuでは`Option<T>`も含め`enum`を使うことは(現状)できません。
+
+しょうがないので`struct`で表現し、内部の値によって使うメンバを変えることにします。
+```rust:shader/src/lib.rs
+#[derive(Clone, Default)]
+pub struct RayPayload {
+    // レイは当たったのか?
+    pub is_miss: bool,
+    // Missの場合その色。Closest-Hitの場合その位置
+    pub position: Vec3,
+    // 法線
+    pub normal: Vec3,
+    // マテリアルの番号
+    pub material: u32,
+    // 表から例が当たったのかどうか　
+    pub front_face: bool,
+}
+```
