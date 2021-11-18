@@ -109,4 +109,4 @@ pub type DefaultRng = PCG32si;
 
 実装は[PCGのC実装](https://github.com/imneme/pcg-c)からそのまま持ってきました。
 `next_f32`は[randクレート](https://github.com/rust-random/rand/blob/master/src/distributions/float.rs#L107)から持ってきました。
-また簡単のために、どうせこれ以上の乱数生成器を作る予定もないのでトレイトで抽象化もせず、`DefaultRng`として公開しています。
+また簡単のために、どうせこれ以上の乱数生成器を作る予定もないのでトレイトで抽象化をせず、`DefaultRng`として公開しています。
