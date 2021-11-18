@@ -55,7 +55,14 @@ ASとはBVHと同じ働きをします。APIを呼ぶことでGPU上で構築し
 ASはTop Level Acceleration Structure(以下TLAS)とBottom Level Acceleration Structure(BLAS)の二層構造です。
 シェーダーからはTLASのみが見え、TLASは複数のBLASをその変換行列とともに持ちます。BLASは複数のポリゴン(三角形)もしくはAABBを持ちます。ポリゴンは非常によく使われる表現なため、特別にサポートされています。AABBの場合はその内部での当たり判定はIntersection Shaderを定義して計算します。TLASがポリゴン/AABBを保持することもBLASが他のBLASやTLASを持つこともありません。
 
-![Acceleration Structure](/images/acceleration_structure.png)
+```mermaid
+graph TB
+    シェーダー --> |レイ当たった?| TLAS1
+    TLAS1 --> シェーダー
+    TLAS1 -->|変換行列| BLAS1
+    TLAS1 -->|変換行列| BLAS1
+    TLAS1 -->|変換行列| BLAS2
+```
 
 # VKRのシェーダー達
 
