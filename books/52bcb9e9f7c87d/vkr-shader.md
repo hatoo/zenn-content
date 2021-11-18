@@ -220,7 +220,7 @@ Closest-Hit ShaderとMiss Shaderの返り値の型をここで定義します。
 `RayPayload`型にどのような情報が欲しいかというと...
 
 - レイは当たったのか? (Closest-HitかMissか？)
-- Miss Shaderだった場合
+- Missだった場合
     - その色 (もう二度と反射したりしないのでこれだけでよい)
 - Closest-Hitだった場合
     - 衝突位置
