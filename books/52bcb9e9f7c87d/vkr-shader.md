@@ -221,7 +221,7 @@ Closest-Hit ShaderとMiss Shaderの返り値の型をここで定義します。
 
 - レイは当たったのか? (Closest-HitかMissか？)
 - Miss Shaderだった場合
-    - その色
+    - その色 (もう二度と反射したりしないのでこれだけでよい)
 - Closest-Hitだった場合
     - 衝突位置
     - 法線の方向
