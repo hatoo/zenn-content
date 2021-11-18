@@ -8,7 +8,7 @@
 use crate::bool::Bool32;
 use camera::Camera;
 use material::{EnumMaterial, Material, Scatter};
-use rand::DefaultRng;
+use crate::rand::DefaultRng;
 #[cfg(not(target_arch = "spirv"))]
 use spirv_std::macros::spirv;
 
