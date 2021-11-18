@@ -82,7 +82,7 @@ impl<'a> Material for Lambertian<'a> {
     ) -> bool {
         let scatter_direction = ray_payload.normal + random_in_unit_sphere(rng).normalize();
 
-        let scatter_direction = if scatter_direction.is_near_zero().into() {
+        let scatter_direction = if scatter_direction.is_near_zero() {
             ray_payload.normal
         } else {
             scatter_direction
@@ -150,7 +150,7 @@ impl<'a> Material for Dielectric<'a> {
         rng: &mut DefaultRng,
         scatter: &mut Scatter,
     ) -> bool {
-        let refraction_ratio = if ray_payload.front_face.into() {
+        let refraction_ratio = if ray_payload.front_face {
             1.0 / self.ir()
         } else {
             self.ir()

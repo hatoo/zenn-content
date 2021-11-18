@@ -53,7 +53,7 @@ impl RayPayload {
             position,
             normal,
             is_miss: false,
-            front_face: front_face.into(),
+            front_face: front_face,
             material,
         }
     }
@@ -139,15 +139,12 @@ pub fn main_ray_generation(
             );
         }
 
-        if payload.is_miss.into() {
+        if payload.is_miss {
             color *= payload.position;
             break;
         } else {
             let mut scatter = Scatter::default();
-            if materials[payload.material as usize]
-                .scatter(&ray, payload, &mut rng, &mut scatter)
-                .into()
-            {
+            if materials[payload.material as usize].scatter(&ray, payload, &mut rng, &mut scatter) {
                 color *= scatter.color;
                 ray = scatter.ray;
             } else {
