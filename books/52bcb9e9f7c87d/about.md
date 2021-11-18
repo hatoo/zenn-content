@@ -24,7 +24,7 @@ VKR以外のVulkanの説明は複雑すぎてこの文章では扱えません�
 この文章は1, 2章でrust-gpuとashの外観をつかみ、残りの章でVKRの内容になっていき、最終的には[Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)の最後のイメージと同じものをレンダリングすることを目標とします。
 
 ![bench](/images/weekend.png)
-最終目標のイメージ。5000サンプルで約9.3秒かかった。
+最終目標のイメージ。5000サンプルで約13.5秒かかった。
 
 # 動作環境
 
