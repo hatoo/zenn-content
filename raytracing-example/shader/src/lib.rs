@@ -5,7 +5,6 @@
     register_attr(spirv)
 )]
 
-use crate::bool::Bool32;
 use crate::rand::DefaultRng;
 use camera::Camera;
 use material::{EnumMaterial, Material, Scatter};
@@ -21,7 +20,6 @@ use spirv_std::{
     ray_tracing::{AccelerationStructure, RayFlags},
 };
 
-pub mod bool;
 pub mod camera;
 pub mod material;
 pub mod math;
@@ -37,9 +35,9 @@ pub struct Ray {
 pub struct RayPayload {
     pub position: Vec3,
     pub normal: Vec3,
-    pub is_miss: Bool32,
+    pub is_miss: bool,
     pub material: u32,
-    pub front_face: Bool32,
+    pub front_face: bool,
 }
 
 impl RayPayload {
@@ -54,7 +52,7 @@ impl RayPayload {
         Self {
             position,
             normal,
-            is_miss: Bool32::FALSE,
+            is_miss: false,
             front_face: front_face.into(),
             material,
         }
@@ -75,7 +73,7 @@ pub fn main_miss(
     let color = vec3(1.0, 1.0, 1.0).lerp(vec3(0.5, 0.7, 1.0), t);
 
     *out = RayPayload {
-        is_miss: Bool32::TRUE,
+        is_miss: true,
         position: color,
         ..Default::default()
     };

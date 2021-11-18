@@ -3,7 +3,7 @@ use spirv_std::glam::{vec3, Vec3};
 use spirv_std::num_traits::Float;
 use spirv_std::num_traits::FloatConst;
 
-use crate::{bool::Bool32, rand::DefaultRng};
+use crate::rand::DefaultRng;
 
 pub fn random_in_unit_sphere(rng: &mut DefaultRng) -> Vec3 {
     loop {
@@ -73,14 +73,12 @@ pub fn sphere_uv(point: Vec3) -> (f32, f32) {
 }
 
 pub trait IsNearZero {
-    fn is_near_zero(&self) -> Bool32;
+    fn is_near_zero(&self) -> bool;
 }
 
 impl IsNearZero for Vec3 {
-    fn is_near_zero(&self) -> Bool32 {
+    fn is_near_zero(&self) -> bool {
         const S: f32 = 1e-8;
-        Bool32::new(self.x.abs() < S)
-            .and(Bool32::new(self.y.abs() < S))
-            .and(Bool32::new(self.z.abs() < S))
+        self.x.abs() < S && self.y.abs() < S && self.z.abs() < S
     }
 }

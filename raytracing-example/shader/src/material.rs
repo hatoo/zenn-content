@@ -3,7 +3,6 @@ use spirv_std::glam::{vec3, Vec3, Vec4, Vec4Swizzles};
 use spirv_std::num_traits::Float;
 
 use crate::{
-    bool::Bool32,
     math::{random_in_unit_sphere, IsNearZero},
     rand::DefaultRng,
     Ray, RayPayload,
@@ -22,7 +21,7 @@ pub trait Material {
         ray_payload: &RayPayload,
         rng: &mut DefaultRng,
         scatter: &mut Scatter,
-    ) -> Bool32;
+    ) -> bool;
 }
 
 #[derive(Clone, Copy, Default)]
@@ -80,7 +79,7 @@ impl<'a> Material for Lambertian<'a> {
         ray_payload: &RayPayload,
         rng: &mut DefaultRng,
         scatter: &mut Scatter,
-    ) -> Bool32 {
+    ) -> bool {
         let scatter_direction = ray_payload.normal + random_in_unit_sphere(rng).normalize();
 
         let scatter_direction = if scatter_direction.is_near_zero().into() {
@@ -98,7 +97,7 @@ impl<'a> Material for Lambertian<'a> {
             color: self.albedo(),
             ray: scatterd,
         };
-        Bool32::TRUE
+        true
     }
 }
 
@@ -119,7 +118,7 @@ impl<'a> Material for Metal<'a> {
         ray_payload: &RayPayload,
         rng: &mut DefaultRng,
         scatter: &mut Scatter,
-    ) -> Bool32 {
+    ) -> bool {
         let reflected = reflect(ray.direction.normalize(), ray_payload.normal);
         let scatterd = reflected + self.fuzz() * random_in_unit_sphere(rng);
         if scatterd.dot(ray_payload.normal) > 0.0 {
@@ -130,9 +129,9 @@ impl<'a> Material for Metal<'a> {
                     direction: scatterd,
                 },
             };
-            Bool32::TRUE
+            true
         } else {
-            Bool32::FALSE
+            false
         }
     }
 }
@@ -150,7 +149,7 @@ impl<'a> Material for Dielectric<'a> {
         ray_payload: &RayPayload,
         rng: &mut DefaultRng,
         scatter: &mut Scatter,
-    ) -> Bool32 {
+    ) -> bool {
         let refraction_ratio = if ray_payload.front_face.into() {
             1.0 / self.ir()
         } else {
@@ -162,16 +161,12 @@ impl<'a> Material for Dielectric<'a> {
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
         let cannot_refract = refraction_ratio * sin_theta > 1.0;
 
-        let direction = if Bool32::new(cannot_refract)
-            .or(Bool32::new(
-                reflectance(cos_theta, refraction_ratio) > rng.next_f32(),
-            ))
-            .into()
-        {
-            reflect(unit_direction, ray_payload.normal)
-        } else {
-            refract(unit_direction, ray_payload.normal, refraction_ratio)
-        };
+        let direction =
+            if cannot_refract || reflectance(cos_theta, refraction_ratio) > rng.next_f32() {
+                reflect(unit_direction, ray_payload.normal)
+            } else {
+                refract(unit_direction, ray_payload.normal, refraction_ratio)
+            };
 
         *scatter = Scatter {
             color: vec3(1.0, 1.0, 1.0),
@@ -180,7 +175,7 @@ impl<'a> Material for Dielectric<'a> {
                 direction,
             },
         };
-        Bool32::TRUE
+        true
     }
 }
 
@@ -191,7 +186,7 @@ impl Material for EnumMaterial {
         ray_payload: &RayPayload,
         rng: &mut DefaultRng,
         scatter: &mut Scatter,
-    ) -> Bool32 {
+    ) -> bool {
         match self.t {
             0 => Lambertian { data: &self.data }.scatter(ray, ray_payload, rng, scatter),
             1 => Metal { data: &self.data }.scatter(ray, ray_payload, rng, scatter),
