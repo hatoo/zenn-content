@@ -1,3 +1,4 @@
+#[repr(transparent)]
 pub struct PCG32si {
     state: u32,
 }
