@@ -9,3 +9,4 @@ chapters:
   - rust-gpu-intro
   - run-rasterization
   - vkr-overview
+  - vkr-shader
