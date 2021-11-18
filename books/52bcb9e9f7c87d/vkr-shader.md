@@ -4,6 +4,7 @@ title: "VKRのシェーダーを書く"
 
 さっそくシェーダーを書いていきましょう。
 コードは[こちら](https://github.com/hatoo/zenn-content/tree/master/raytracing-example)にあります。
+文章内にコード片を記載していますが完全なコードではないのでリポジトリを確認してください。
 
 まず、2章と同じセットアップをしてください。
 rust-gpuでレイトレーシング拡張を有効にするために`build.rs`を変更します。
@@ -34,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 まず、疑似乱数のシードを得ようと思います。
 今回は、ピクセルの座標とホストで作った乱数(Push Constantsで渡す)をxorしてシードとします。
 
-```rust
+```rust:shader/src/lib.rs
 pub struct PushConstants {
     seed: u32,
 }
@@ -55,7 +56,7 @@ pub fn main_ray_generation(
 
 疑似乱数のアルゴリズムはいろいろありますが、今回は[PCGファミリ](https://www.pcg-random.org/index.html)の中から`pcg32si`を使うことにしました、GPUでは基本的に32bitアーキテクチャのようなので内部状態に32bitしか使わないものを選びました。多少、暗号的な耐性が下がると思いますが速さを期待します。
 
-```rust:src/rand.rs
+```rust:shader/src/rand.rs
 pub struct PCG32si {
     state: u32,
 }
@@ -112,3 +113,101 @@ pub type DefaultRng = PCG32si;
 実装は[PCGのC実装](https://github.com/imneme/pcg-c)からそのまま持ってきました。
 `next_f32`は[randクレート](https://github.com/rust-random/rand/blob/master/src/distributions/float.rs#L107)から持ってきました。
 また簡単のために、どうせこれ以上の乱数生成器を作る予定もないのでトレイトで抽象化をせず、`DefaultRng`として公開しています。
+
+# カメラを実装する
+
+ピクセル座標から、どこからどの方向にレイを飛ばすかを決定します。
+[Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)のカメラをそのまま持ってきます。
+
+まず、`Ray`型を定義します。モーションブラーは今回は実装しないので位置と方向だけです。
+
+```rust:shader/src/lib.rs
+#[derive(Clone, Copy, Default)]
+pub struct Ray {
+    pub origin: Vec3,
+    pub direction: Vec3,
+}
+```
+
+`random_in_unit_disk`などの数学系の関数は`shader/src/math.rs`に実装することにします。
+
+```rust:shader/src/math.rs
+pub fn random_in_unit_disk(rng: &mut DefaultRng) -> Vec3 {
+    loop {
+        let p = vec3(
+            rng.next_f32_range(-1.0, 1.0),
+            rng.next_f32_range(-1.0, 1.0),
+            0.0,
+        );
+        if p.length_squared() < 1.0 {
+            break p;
+        }
+    }
+}
+```
+
+```rust:shader/src/camera.rs
+#[derive(Copy, Clone)]
+pub struct Camera {
+    origin: Vec3,
+    lower_left_corner: Vec3,
+    horizontal: Vec3,
+    vertical: Vec3,
+    u: Vec3,
+    v: Vec3,
+    // w: Vec3,
+    lens_radius: f32,
+}
+
+impl Camera {
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        look_from: Vec3,
+        look_at: Vec3,
+        vup: Vec3,
+        vfov: f32,
+        aspect_ratio: f32,
+        aperture: f32,
+        focus_dist: f32,
+    ) -> Self {
+        let theta = vfov;
+        let h = (theta / 2.0).tan();
+        let viewport_height = 2.0 * h;
+        let viewport_width = aspect_ratio * viewport_height;
+
+        let w = (look_from - look_at).normalize();
+        let u = vup.cross(w).normalize();
+        let v = w.cross(u);
+
+        let origin = look_from;
+        let horizontal = focus_dist * viewport_width * u;
+        let vertical = focus_dist * viewport_height * v;
+        let lower_left_corner = origin - horizontal / 2.0 - vertical / 2.0 - focus_dist * w;
+
+        Self {
+            origin,
+            lower_left_corner,
+            horizontal,
+            vertical,
+            u,
+            v,
+            // w,
+            lens_radius: aperture / 2.0,
+        }
+    }
+
+    pub fn get_ray(&self, s: f32, t: f32, rng: &mut DefaultRng) -> Ray {
+        let rd = self.lens_radius * random_in_unit_disk(rng);
+        let offset = self.u * rd.x + self.v * rd.y;
+
+        Ray {
+            origin: self.origin + offset,
+            direction: (self.lower_left_corner + s * self.horizontal + t * self.vertical
+                - self.origin
+                - offset),
+        }
+    }
+}
+```
+
+先ほど実装した乱数生成器を使ってデフォーカスブラーを実装しています。

@@ -1,4 +1,3 @@
-// use rand::Rng;
 use spirv_std::glam::Vec3;
 #[allow(unused_imports)]
 use spirv_std::num_traits::Float;
