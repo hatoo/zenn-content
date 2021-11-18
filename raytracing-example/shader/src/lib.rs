@@ -4,7 +4,6 @@
     feature(register_attr),
     register_attr(spirv)
 )]
-#![feature(macro_attributes_in_derive_output)]
 
 use crate::bool::Bool32;
 use camera::Camera;

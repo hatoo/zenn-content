@@ -29,7 +29,7 @@ fn main() {
     const HEIGHT: u32 = 800;
     const COLOR_FORMAT: vk::Format = vk::Format::R32G32B32A32_SFLOAT;
 
-    const N_SAMPLES: u32 = 1000;
+    const N_SAMPLES: u32 = 5000;
     const N_SAMPLES_ITER: u32 = 100;
 
     let validation_layers: Vec<CString> = if ENABLE_VALIDATION_LAYER {
@@ -1337,12 +1337,13 @@ fn main() {
     let mut png_encoder = png::Encoder::new(File::create("out.png").unwrap(), WIDTH, HEIGHT);
 
     png_encoder.set_depth(png::BitDepth::Eight);
-    png_encoder.set_color(png::ColorType::RGBA);
+    png_encoder.set_color(png::ColorType::Rgba);
 
     let mut png_writer = png_encoder
         .write_header()
         .unwrap()
-        .into_stream_writer_with_size((4 * WIDTH) as usize);
+        .into_stream_writer_with_size((4 * WIDTH) as usize)
+        .unwrap();
 
     let scale = 1.0 / N_SAMPLES as f32;
     for _ in 0..HEIGHT {
@@ -1582,6 +1583,7 @@ impl BufferResource {
     fn store<T: Copy>(&mut self, data: &[T], device: &ash::Device) {
         unsafe {
             let size = (std::mem::size_of::<T>() * data.len()) as u64;
+            assert!(self.size >= size);
             let mapped_ptr = self.map(size, device);
             let mut mapped_slice = Align::new(mapped_ptr, std::mem::align_of::<T>() as u64, size);
             mapped_slice.copy_from_slice(&data);
