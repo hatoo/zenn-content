@@ -214,7 +214,7 @@ impl Camera {
 
 # RayPayload型を作成
 
-Closest-Hit ShaderとMiss Shaderの返り値の型をここで定義します。レイを飛ばしたとき、{Closest-Hit, Miss} Shaderどちらからも値が返ってくる可能性があるため、両方の返り値はもちろん同じ型でなければなりません。
+Closest-Hit ShaderとMiss Shaderの返り値の型をここで定義します。レイを飛ばしたとき、{Closest-Hit, Miss} Shaderのどちらからも値が返ってくる可能性があるため、両方の返り値はもちろん同じ型でなければなりません。
 その型を`RayPayload`型とします。
 
 `RayPayload`型にどのような情報が欲しいかというと...
