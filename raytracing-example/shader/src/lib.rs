@@ -6,9 +6,9 @@
 )]
 
 use crate::bool::Bool32;
+use crate::rand::DefaultRng;
 use camera::Camera;
 use material::{EnumMaterial, Material, Scatter};
-use crate::rand::DefaultRng;
 #[cfg(not(target_arch = "spirv"))]
 use spirv_std::macros::spirv;
 
@@ -16,7 +16,7 @@ use spirv_std::macros::spirv;
 use spirv_std::num_traits::Float;
 use spirv_std::{
     arch::report_intersection,
-    glam::{uvec2, vec3, vec4, UVec3, Vec3, Vec4},
+    glam::{uvec2, vec3, UVec3, Vec3, Vec4},
     image::Image,
     ray_tracing::{AccelerationStructure, RayFlags},
 };
@@ -63,31 +63,6 @@ impl RayPayload {
 
 pub struct PushConstants {
     seed: u32,
-}
-
-#[spirv(fragment)]
-pub fn main_fs(output: &mut Vec4, color: Vec3) {
-    *output = color.extend(1.0);
-}
-
-#[spirv(vertex)]
-pub fn main_vs(
-    #[spirv(vertex_index)] vert_id: i32,
-    #[spirv(position, invariant)] out_pos: &mut Vec4,
-    color: &mut Vec3,
-) {
-    *out_pos = vec4(
-        (vert_id - 1) as f32,
-        ((vert_id & 1) * 2 - 1) as f32,
-        0.0,
-        1.0,
-    );
-
-    *color = [
-        vec3(1.0, 0.0, 0.0),
-        vec3(0.0, 1.0, 0.0),
-        vec3(0.0, 0.0, 1.0),
-    ][vert_id as usize];
 }
 
 #[spirv(miss)]
