@@ -33,9 +33,9 @@ pub struct Ray {
 }
 #[derive(Clone, Default)]
 pub struct RayPayload {
+    pub is_miss: bool,
     pub position: Vec3,
     pub normal: Vec3,
-    pub is_miss: bool,
     pub material: u32,
     pub front_face: bool,
 }
