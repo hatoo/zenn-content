@@ -247,7 +247,7 @@ pub struct RayPayload {
     pub normal: Vec3,
     // マテリアルの番号
     pub material: u32,
-    // 表から例が当たったのかどうか　
+    // 表からレイが当たったのかどうか　
     pub front_face: bool,
 }
 ```
