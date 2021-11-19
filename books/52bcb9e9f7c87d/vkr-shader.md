@@ -362,7 +362,7 @@ pub fn sphere_intersection(
 }
 
 // glamの行列はSPIR-Vの行列型にはなっていないためここで行列型を作る
-// 具体的には#[spirv(matyrix)]した型はSPIR-Vの`OpTypeMatrix`の型となる
+// 具体的には#[spirv(matrix)]した型はSPIR-Vの`OpTypeMatrix`の型となる
 #[derive(Clone, Copy)]
 #[spirv(matrix)]
 #[repr(C)]
