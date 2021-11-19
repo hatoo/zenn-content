@@ -314,9 +314,9 @@ impl RayPayload {
 }
 #[spirv(intersection)]
 pub fn sphere_intersection(
-    // 変換済みのレイの原点
+    // TLASで登録した変換行列の逆を変換したレイの原点
     #[spirv(object_ray_origin)] ray_origin: Vec3,
-    // 変換済みのレイの方向
+    // TLASで登録した変換行列の逆を変換したレイの方向
     #[spirv(object_ray_direction)] ray_direction: Vec3,
     // レイの開始時間
     #[spirv(ray_tmin)] t_min: f32,
