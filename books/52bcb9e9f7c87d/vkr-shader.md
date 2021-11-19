@@ -375,7 +375,7 @@ pub struct Affine3 {
 
 #[spirv(closest_hit)]
 pub fn sphere_closest_hit(
-    // Intersectionで入れた衝突時刻
+    // Intersectionで入れたレイの衝突時刻
     #[spirv(hit_attribute)] t: &f32,
     // TLASで登録した変換行列
     #[spirv(object_to_world)] object_to_world: Affine3,
