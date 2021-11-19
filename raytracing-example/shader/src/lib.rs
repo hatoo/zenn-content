@@ -193,34 +193,12 @@ pub fn sphere_intersection(
 
 #[derive(Clone, Copy)]
 #[spirv(matrix)]
+#[repr(C)]
 pub struct Affine3 {
     pub x: Vec3,
     pub y: Vec3,
     pub z: Vec3,
     pub w: Vec3,
-}
-
-impl Affine3 {
-    pub const ZERO: Self = Self {
-        x: Vec3::ZERO,
-        y: Vec3::ZERO,
-        z: Vec3::ZERO,
-        w: Vec3::ZERO,
-    };
-
-    pub const IDENTITY: Self = Self {
-        x: Vec3::X,
-        y: Vec3::Y,
-        z: Vec3::Z,
-        w: Vec3::ZERO,
-    };
-}
-
-impl Default for Affine3 {
-    #[inline]
-    fn default() -> Self {
-        Self::IDENTITY
-    }
 }
 
 #[spirv(closest_hit)]

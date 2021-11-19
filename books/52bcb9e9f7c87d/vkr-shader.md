@@ -252,3 +252,146 @@ pub struct RayPayload {
     pub front_face: bool,
 }
 ```
+
+# Miss Shaderの作成
+
+`RayPayload`型が定義できたので早速Miss Shaderを書いていきます。といってもRay Tracing in One Weekendと同じように空を描くだけです。
+
+```rust:shader/src/lib.rs
+#[spirv(miss)]
+pub fn main_miss(
+    // レイの方向
+    #[spirv(world_ray_direction)] world_ray_direction: Vec3,
+    // RayPayload
+    #[spirv(incoming_ray_payload)] out: &mut RayPayload,
+) {
+    let unit_direction = world_ray_direction.normalize();
+    let t = 0.5 * (unit_direction.y + 1.0);
+    let color = vec3(1.0, 1.0, 1.0).lerp(vec3(0.5, 0.7, 1.0), t);
+
+    *out = RayPayload {
+        is_miss: true,
+        position: color,
+        ..Default::default()
+    };
+}
+```
+
+前述したように`position`に空の色を入れています。
+
+# Intersection, Closest-Hit Shaderの作成
+
+目的とするシーンには球しか存在しないので、球のためのIntersection ShaderとClosest-Hit Shaderを作るだけです。
+BLASに中心が原点で長さが2のAABB(半径1の球)を用意、TLASから変換行列(拡大含む)でそのBLASを参照していく想定です。
+レイを移動させると実質対象の物体を動かしたことになることを思い出してください。やっていない方は[Ray Tracing: The Next Week](https://raytracing.github.io/books/RayTracingTheNextWeek.html#instances)のInstancesをやるとよいでしょう。
+
+```mermaid
+graph TB
+    TLAS -->|変換行列| BLAS
+    TLAS -->|変換行列| BLAS
+    TLAS -->|変換行列| BLAS
+    TLAS -->|変換行列| BLAS
+```
+
+```rust:shader/src/lib.rs
+impl RayPayload {
+    pub fn new(position: Vec3, outward_normal: Vec3, ray_direction: Vec3, material: u32) -> Self {
+        let front_face = ray_direction.dot(outward_normal) < 0.0;
+        let normal = if front_face {
+            outward_normal
+        } else {
+            -outward_normal
+        };
+
+        Self {
+            position,
+            normal,
+            is_miss: false,
+            front_face: front_face,
+            material,
+        }
+    }
+}
+#[spirv(intersection)]
+pub fn sphere_intersection(
+    // 変換済みのレイの原点
+    #[spirv(object_ray_origin)] ray_origin: Vec3,
+    // 変換済みのレイの方向
+    #[spirv(object_ray_direction)] ray_direction: Vec3,
+    // レイの開始時間
+    #[spirv(ray_tmin)] t_min: f32,
+    // レイの終了時間
+    #[spirv(ray_tmax)] t_max: f32,
+    // ここで値を書くとClosest-Hitから読める
+    // レイがの衝突時刻を書き込むことにする
+    #[spirv(hit_attribute)] t: &mut f32,
+) {
+    // Ray Tracing in One Weekendの球の当たり判定そのまま
+    // レイは変換済みなので常に原点、半径1の球に対する判定をすればよい。
+    let oc = ray_origin;
+    let a = ray_direction.length_squared();
+    let half_b = oc.dot(ray_direction);
+    let c = oc.length_squared() - 1.0;
+
+    let discriminant = half_b * half_b - a * c;
+    if discriminant < 0.0 {
+        return;
+    }
+
+    let sqrtd = discriminant.sqrt();
+
+    let root0 = (-half_b - sqrtd) / a;
+    let root1 = (-half_b + sqrtd) / a;
+
+    if root0 >= t_min && root0 <= t_max {
+        // 小さい方の解が当たっている
+        *t = root0;
+        unsafe {
+            report_intersection(root0, 0);
+        }
+        return;
+    }
+
+    if root1 >= t_min && root1 <= t_max {
+        // 大きい方の解が当たっている
+        *t = root1;
+        unsafe {
+            report_intersection(root1, 0);
+        }
+    }
+}
+
+// glamの行列はSPIR-Vの行列型にはなっていないためここで行列型を作る
+// 具体的には#[spirv(matyrix)]した型はSPIR-Vの`OpTypeMatrix`の型となる
+#[derive(Clone, Copy)]
+#[spirv(matrix)]
+#[repr(C)]
+pub struct Affine3 {
+    pub x: Vec3,
+    pub y: Vec3,
+    pub z: Vec3,
+    pub w: Vec3,
+}
+
+#[spirv(closest_hit)]
+pub fn sphere_closest_hit(
+    // Intersectionで入れた衝突時刻
+    #[spirv(hit_attribute)] t: &f32,
+    // TLASで登録した変換行列
+    #[spirv(object_to_world)] object_to_world: Affine3,
+    // レイの位置
+    #[spirv(world_ray_origin)] world_ray_origin: Vec3,
+    // レイの方向
+    #[spirv(world_ray_direction)] world_ray_direction: Vec3,
+    // RayPayload。これがRay Generationに返る
+    #[spirv(incoming_ray_payload)] out: &mut RayPayload,
+    // TLASで登録した番号。これをマテリアルのindexとする
+    #[spirv(instance_custom_index)] instance_custom_index: u32,
+) {
+    // レイの衝突位置、法線をここで計算する。Intersectionで行わないことで計算を遅延していることに注意、
+    let hit_pos = world_ray_origin + *t * world_ray_direction;
+    // object_to_world.wに変換行列の平行移動の部分が入っている。
+    let normal = (hit_pos - object_to_world.w).normalize();
+    *out = RayPayload::new(hit_pos, normal, world_ray_direction, instance_custom_index);
+}
+```
