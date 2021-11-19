@@ -530,4 +530,4 @@ impl EnumMaterialPod {
 }
 ```
 
-POD(piles of bytes)という表現を`bytemuck`から拝借してきて`EnumMaterialPod`型を作りました。これは`EnumMaterial`と完全に同じレイアウトをしています。これをCPUで作ってGPUに渡すというわけです。
+POD(plain old data)という表現を`bytemuck`から拝借してきて`EnumMaterialPod`型を作りました。これは`EnumMaterial`と完全に同じレイアウトをしています。これをCPUで作ってGPUに渡すというわけです。
