@@ -175,22 +175,18 @@ pub fn sphere_intersection(
     let root0 = (-half_b - sqrtd) / a;
     let root1 = (-half_b + sqrtd) / a;
 
-    if root0 >= t_min {
-        if root0 <= t_max {
-            *t = root0;
-            unsafe {
-                report_intersection(root0, 0);
-            }
-            return;
+    if root0 >= t_min && root0 <= t_max {
+        *t = root0;
+        unsafe {
+            report_intersection(root0, 0);
         }
+        return;
     }
 
-    if root1 >= t_min {
-        if root1 <= t_max {
-            *t = root1;
-            unsafe {
-                report_intersection(root1, 0);
-            }
+    if root1 >= t_min && root1 <= t_max {
+        *t = root1;
+        unsafe {
+            report_intersection(root1, 0);
         }
     }
 }
