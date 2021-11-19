@@ -395,3 +395,98 @@ pub fn sphere_closest_hit(
     *out = RayPayload::new(hit_pos, normal, world_ray_direction, instance_custom_index);
 }
 ```
+
+# マテリアル
+
+ここでマテリアルの実装をします。
+マテリアルはレイと`RayPayload`を受け取り、色と反射したレイを返すか何も返しません。
+
+Ray Tracing in One Weekendででてきた三つのマテリアルを実装します。
+
+- Lambertian
+    - 色(albedo)の情報があればよい
+- Metal
+    - 色(albedo)とFuzzy Reflectionの係数があればよい
+- Dielectric
+    - reflectionかrefractionの確立を決める係数一つあればよい
+
+前述のように`enum`は使えないので自力で`enum`のような`struct`を作るとして、どのマテリアルかを決める値と`f32`が4つあればよいということになります。
+
+```rust:shader/src/material.rs
+#[derive(Clone, Copy, Default)]
+#[repr(C)]
+pub struct EnumMaterialData {
+    v0: Vec4,
+}
+
+#[derive(Clone, Copy, Default)]
+#[repr(C)]
+pub struct EnumMaterial {
+    data: EnumMaterialData,
+    t: u32,
+    // _pad: [u32; 3]
+}
+```
+
+簡単にするためにデータ部分は`Vec4`で表したいので16byteのアラインメントが必要です。
+つまり、`[EnumMaterial]`は各要素が16byteでアラインメントされてなければならないので各要素は32byteの大きさを持ちます。
+
+アラインメントなどの情報に関しては、WGSLの仕様を見るとわかりやすいです。
+
+https://www.w3.org/TR/WGSL/
+
+WGSLはSPIR-Vと一対一に変換できることを狙っているのでかなり参考になります。
+
+絶対にポインタのキャストはやってはいけないので、各マテリアルは`&'a EnumMaterialData`をメンバに持つ`struct`として実装していきます。
+まず、マテリアルの`trait`を作ります。
+
+```rust:shader/src/material.rs
+#[derive(Clone, Default)]
+pub struct Scatter {
+    pub color: Vec3,
+    pub ray: Ray,
+}
+
+struct Lambertian<'a> {
+    data: &'a EnumMaterialData,
+}
+
+struct Metal<'a> {
+    data: &'a EnumMaterialData,
+}
+
+struct Dielectric<'a> {
+    data: &'a EnumMaterialData,
+}
+
+pub trait Material {
+    fn scatter(
+        &self,
+        ray: &Ray,
+        ray_payload: &RayPayload,
+        rng: &mut DefaultRng,
+        scatter: &mut Scatter,
+    ) -> bool;
+}
+```
+
+本当は`Option<Scatter>`を返したいのですが、`Option<T>`は使えないので`&mut Scatter`を編集してもらって返り値の`bool`でその`Scatter`が有効かどうか返してもらいます。
+```rust:shader/src/material.rs
+impl Material for EnumMaterial {
+    fn scatter(
+        &self,
+        ray: &Ray,
+        ray_payload: &RayPayload,
+        rng: &mut DefaultRng,
+        scatter: &mut Scatter,
+    ) -> bool {
+        match self.t {
+            0 => Lambertian { data: &self.data }.scatter(ray, ray_payload, rng, scatter),
+            1 => Metal { data: &self.data }.scatter(ray, ray_payload, rng, scatter),
+            _ => Dielectric { data: &self.data }.scatter(ray, ray_payload, rng, scatter),
+        }
+    }
+}
+```
+
+各マテリアルの実装はソースを見てください。Ray Tracing in One Weekendそのままです。
