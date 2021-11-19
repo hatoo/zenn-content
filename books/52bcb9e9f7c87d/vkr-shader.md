@@ -490,3 +490,44 @@ impl Material for EnumMaterial {
 ```
 
 各マテリアルの実装はソースを見てください。Ray Tracing in One Weekendそのままです。
+
+実際のマテリアルのデータはCPUで作るため、どうにかして上記の`EnumMaterial`を[u8]にしなければなりません。
+そういう用途では[bytemuck](https://crates.io/crates/bytemuck)がよく使われますが、`spirv-std`にはいっている`glam`は現状`bytemuck`に対応していないので自分で作ります。
+
+```rust:shader/src/pod.rs
+#[derive(Clone, Copy, Default, Zeroable, Pod)]
+#[repr(C)]
+pub struct EnumMaterialPod {
+    data: [f32; 4],
+    t: u32,
+    _pad: [f32; 3],
+}
+
+impl EnumMaterialPod {
+    pub fn new_lambertian(albedo: Vec3) -> Self {
+        Self {
+            data: [albedo.x, albedo.y, albedo.z, 0.0],
+            t: 0,
+            _pad: [0.0, 0.0, 0.0],
+        }
+    }
+
+    pub fn new_metal(albedo: Vec3, fuzz: f32) -> Self {
+        Self {
+            data: [albedo.x, albedo.y, albedo.z, fuzz],
+            t: 1,
+            _pad: [0.0, 0.0, 0.0],
+        }
+    }
+
+    pub fn new_dielectric(ir: f32) -> Self {
+        Self {
+            data: [ir, 0.0, 0.0, 0.0],
+            t: 2,
+            _pad: [0.0, 0.0, 0.0],
+        }
+    }
+}
+```
+
+POD(piles of bytes)という表現を`bytemuck`から拝借してきて`EnumMaterialPod`型を作りました。これは`EnumMaterial`と完全に同じレイアウトをしています。
