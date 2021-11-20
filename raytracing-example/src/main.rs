@@ -1642,7 +1642,7 @@ fn create_sphere_instance(
         },
         instance_custom_index_and_mask: 0xff << 24,
         instance_shader_binding_table_record_offset_and_flags:
-            vk::GeometryInstanceFlagsKHR::TRIANGLE_FACING_CULL_DISABLE.as_raw() << 24 | 0,
+            vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE.as_raw() << 24 | 0,
         acceleration_structure_reference: vk::AccelerationStructureReferenceKHR {
             device_handle: sphere_accel_handle,
         },

@@ -272,3 +272,121 @@ graph TB
         (bottom_as, bottom_as_buffer, aabb_buffer)
     };
 ```
+
+# TLASをつくる
+
+上でつくったBLASを参照するTLASをつくります。
+まず、Ray Tracing in One Weekendと同じシーンを作ります。
+
+```rust:src/main.rs
+// 球一つ分のTLASのインスタンスを作る
+fn create_sphere_instance(
+    pos: glam::Vec3,
+    size: f32,
+    sphere_accel_handle: u64,
+) -> vk::AccelerationStructureInstanceKHR {
+    vk::AccelerationStructureInstanceKHR {
+        transform: vk::TransformMatrixKHR {
+            // 変換行列4x3
+            matrix: [
+                size, 0.0, 0.0, pos.x, 0.0, size, 0.0, pos.y, 0.0, 0.0, size, pos.z,
+            ],
+        },
+        // MSBから8bit分がMask。これに`TraceRay`に指定したMaskがマッチしないと無視される。
+        // のこり24bitがインスタンスのindex。これでマテリアルのindexを指定するが後で編集する。
+        instance_custom_index_and_mask: 0xff << 24,
+        // MASBから8bit分がフラグ。ここでもOPAQUEかどうか指定できる
+        // のこりがSBTのオフセット。ここでは0
+        instance_shader_binding_table_record_offset_and_flags:
+            vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE.as_raw() << 24 | 0,
+        acceleration_structure_reference: vk::AccelerationStructureReferenceKHR {
+            device_handle: sphere_accel_handle,
+        },
+    }
+}
+
+// TLASインスタンスとマテリアルをつくる
+fn sample_scene(
+    sphere_accel_handle: u64,
+) -> (
+    Vec<vk::AccelerationStructureInstanceKHR>,
+    Vec<EnumMaterialPod>,
+) {
+    let mut rng = StdRng::from_entropy();
+    let mut world = Vec::new();
+
+    world.push((
+        create_sphere_instance(vec3(0.0, -1000.0, 0.0), 1000.0, sphere_accel_handle),
+        EnumMaterialPod::new_lambertian(vec3(0.5, 0.5, 0.5)),
+    ));
+
+    for a in -11..11 {
+        for b in -11..11 {
+            let center = vec3(
+                a as f32 + 0.9 * rng.gen::<f32>(),
+                0.2,
+                b as f32 + 0.9 * rng.gen::<f32>(),
+            );
+
+            let choose_mat: f32 = rng.gen();
+
+            if (center - vec3(4.0, 0.2, 0.0)).length() > 0.9 {
+                match choose_mat {
+                    x if x < 0.8 => {
+                        let albedo = vec3(rng.gen(), rng.gen(), rng.gen())
+                            * vec3(rng.gen(), rng.gen(), rng.gen());
+
+                        world.push((
+                            create_sphere_instance(center, 0.3, sphere_accel_handle),
+                            EnumMaterialPod::new_lambertian(albedo),
+                        ));
+                    }
+                    x if x < 0.95 => {
+                        let albedo = vec3(
+                            rng.gen_range(0.5..1.0),
+                            rng.gen_range(0.5..1.0),
+                            rng.gen_range(0.5..1.0),
+                        );
+                        let fuzz = rng.gen_range(0.0..0.5);
+
+                        world.push((
+                            create_sphere_instance(center, 0.2, sphere_accel_handle),
+                            EnumMaterialPod::new_metal(albedo, fuzz),
+                        ));
+                    }
+                    _ => world.push((
+                        create_sphere_instance(center, 0.2, sphere_accel_handle),
+                        EnumMaterialPod::new_dielectric(1.5),
+                    )),
+                }
+            }
+        }
+    }
+
+    world.push((
+        create_sphere_instance(vec3(0.0, 1.0, 0.0), 1.0, sphere_accel_handle),
+        EnumMaterialPod::new_dielectric(1.5),
+    ));
+
+    world.push((
+        create_sphere_instance(vec3(-4.0, 1.0, 0.0), 1.0, sphere_accel_handle),
+        EnumMaterialPod::new_lambertian(vec3(0.4, 0.2, 0.1)),
+    ));
+
+    world.push((
+        create_sphere_instance(vec3(4.0, 1.0, 0.0), 1.0, sphere_accel_handle),
+        EnumMaterialPod::new_metal(vec3(0.7, 0.6, 0.5), 0.0),
+    ));
+
+    let mut spheres = Vec::new();
+    let mut materials = Vec::new();
+
+    for (i, (mut sphere, material)) in world.into_iter().enumerate() {
+        sphere.instance_custom_index_and_mask |= i as u32;
+        spheres.push(sphere);
+        materials.push(material);
+    }
+
+    (spheres, materials)
+}
+```
