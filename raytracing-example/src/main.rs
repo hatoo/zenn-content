@@ -1379,7 +1379,6 @@ fn main() {
     }
 
     unsafe {
-        // device.destroy_descriptor_set_layout(layout, allocation_callbacks)
         device.destroy_descriptor_pool(descriptor_pool, None);
         shader_binding_table_buffer.destroy(&device);
         device.destroy_pipeline(graphics_pipeline, None);
