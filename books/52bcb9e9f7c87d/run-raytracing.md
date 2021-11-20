@@ -514,7 +514,7 @@ fn sample_scene(
         // build_scratch_size: 74368,
         // }
         // だった。
-        // 思ったよりacceleration_structure_sizeは思ったより大きい。
+        // 思ったよりacceleration_structure_sizeが大きい。
 
         let top_as_buffer = BufferResource::new(
             size_info.acceleration_structure_size,
