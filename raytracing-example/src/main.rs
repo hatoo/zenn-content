@@ -682,7 +682,7 @@ fn main() {
 
         let shader_module = unsafe { create_shader_module(&device, SHADER).unwrap() };
 
-        let layouts = vec![descriptor_set_layout];
+        let layouts = [descriptor_set_layout];
         let layout_create_info = vk::PipelineLayoutCreateInfo::builder()
             .set_layouts(&layouts)
             .push_constant_ranges(&[push_constant_range])
