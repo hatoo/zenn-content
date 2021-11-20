@@ -7,7 +7,7 @@ title: "レイトレーシングのシェーダーを実行する"
 
 # GPUバッファ用の便利structをつくる
 
-この章ではGPUのメモリ確保を多く扱うためそれようの便利structを作ります
+この章ではGPUのメモリ確保を多く扱うためそれ用の便利structを作ります
 
 ```rust:src/main.rs
 #[derive(Clone)]
