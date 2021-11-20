@@ -275,8 +275,8 @@ graph TB
 
 # TLASをつくる
 
-上でつくったBLASを参照するTLASをつくります。
-まず、Ray Tracing in One Weekendと同じシーンを作ります。
+上でつくったBLASを参照するTLASとマテリアルをつくります。
+今回は、Ray Tracing in One Weekendと同じシーンをつくります。
 
 ```rust:src/main.rs
 // 球一つ分のTLASのインスタンスを作る
@@ -287,7 +287,7 @@ fn create_sphere_instance(
 ) -> vk::AccelerationStructureInstanceKHR {
     vk::AccelerationStructureInstanceKHR {
         transform: vk::TransformMatrixKHR {
-            // 変換行列4x3
+            // 変換行列3x4
             matrix: [
                 size, 0.0, 0.0, pos.x, 0.0, size, 0.0, pos.y, 0.0, 0.0, size, pos.z,
             ],
