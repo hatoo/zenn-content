@@ -708,6 +708,8 @@ RaytracingPipelineはレイトレーシング用のGraphicsPipelineのような�
                 &[vk::RayTracingPipelineCreateInfoKHR::builder()
                     .stages(&shader_stages)
                     .groups(&shader_groups)
+                    // その気になれば例えばレイ処理中のIntersection Shaderからさらにレイを飛ばすこともできます。
+                    // そのような再帰はこの例では起きないので0
                     .max_pipeline_ray_recursion_depth(0)
                     .layout(pipeline_layout)
                     .build()],
