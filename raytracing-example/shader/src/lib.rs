@@ -53,7 +53,7 @@ impl RayPayload {
             position,
             normal,
             is_miss: false,
-            front_face: front_face,
+            front_face,
             material,
         }
     }
