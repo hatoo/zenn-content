@@ -577,3 +577,154 @@ fn sample_scene(
     };
  ```
 
+# レイトレーシングパイプラインをつくる
+
+RaytracingPipelineはレイトレーシング用のGraphicsPipelineのようなものです。
+ここで各シェーダーを登録し、DescriptorSet、Push Constantの情報も教えてあげます。
+
+```rust:src/main.rs
+    let (descriptor_set_layout, graphics_pipeline, pipeline_layout, shader_groups_len) = {
+        let binding_flags_inner = [
+            vk::DescriptorBindingFlagsEXT::empty(),
+            vk::DescriptorBindingFlagsEXT::empty(),
+            vk::DescriptorBindingFlagsEXT::empty(),
+        ];
+
+        let mut binding_flags = vk::DescriptorSetLayoutBindingFlagsCreateInfoEXT::builder()
+            .binding_flags(&binding_flags_inner)
+            .build();
+
+        let descriptor_set_layout = unsafe {
+            device.create_descriptor_set_layout(
+                &vk::DescriptorSetLayoutCreateInfo::builder()
+                    .bindings(&[
+                        // descriptor_set = 0, binding = 0
+                        // TLAS
+                        vk::DescriptorSetLayoutBinding::builder()
+                            .descriptor_count(1)
+                            .descriptor_type(vk::DescriptorType::ACCELERATION_STRUCTURE_KHR)
+                            .stage_flags(vk::ShaderStageFlags::RAYGEN_KHR)
+                            .binding(0)
+                            .build(),
+                        // descriptor_set = 0, binding = 1
+                        // 出力画像
+                        vk::DescriptorSetLayoutBinding::builder()
+                            .descriptor_count(1)
+                            .descriptor_type(vk::DescriptorType::STORAGE_IMAGE)
+                            .stage_flags(vk::ShaderStageFlags::RAYGEN_KHR)
+                            .binding(1)
+                            .build(),
+                        // descriptor_set = 0, binding = 2
+                        // マテリアル
+                        vk::DescriptorSetLayoutBinding::builder()
+                            .descriptor_count(1)
+                            .descriptor_type(vk::DescriptorType::STORAGE_BUFFER)
+                            .stage_flags(vk::ShaderStageFlags::RAYGEN_KHR)
+                            .binding(2)
+                            .build(),
+                    ])
+                    .push_next(&mut binding_flags)
+                    .build(),
+                None,
+            )
+        }
+        .unwrap();
+
+        // Push Constantはホストから渡す乱数の4byte
+        let push_constant_range = vk::PushConstantRange::builder()
+            .offset(0)
+            .size(4)
+            .stage_flags(vk::ShaderStageFlags::RAYGEN_KHR)
+            .build();
+
+        const SHADER: &[u8] = include_bytes!(env!("shader.spv"));
+
+        let shader_module = unsafe { create_shader_module(&device, SHADER).unwrap() };
+
+        let layouts = vec![descriptor_set_layout];
+        let layout_create_info = vk::PipelineLayoutCreateInfo::builder()
+            .set_layouts(&layouts)
+            .push_constant_ranges(&[push_constant_range])
+            .build();
+
+        let pipeline_layout =
+            unsafe { device.create_pipeline_layout(&layout_create_info, None) }.unwrap();
+
+        let shader_groups = vec![
+            // group0 = [ raygen ]
+            vk::RayTracingShaderGroupCreateInfoKHR::builder()
+                .ty(vk::RayTracingShaderGroupTypeKHR::GENERAL)
+                .general_shader(0)
+                .closest_hit_shader(vk::SHADER_UNUSED_KHR)
+                .any_hit_shader(vk::SHADER_UNUSED_KHR)
+                .intersection_shader(vk::SHADER_UNUSED_KHR)
+                .build(),
+            // group1 = [ miss ]
+            vk::RayTracingShaderGroupCreateInfoKHR::builder()
+                .ty(vk::RayTracingShaderGroupTypeKHR::GENERAL)
+                .general_shader(1)
+                .closest_hit_shader(vk::SHADER_UNUSED_KHR)
+                .any_hit_shader(vk::SHADER_UNUSED_KHR)
+                .intersection_shader(vk::SHADER_UNUSED_KHR)
+                .build(),
+            // group2 = [ chit ]
+            vk::RayTracingShaderGroupCreateInfoKHR::builder()
+                .ty(vk::RayTracingShaderGroupTypeKHR::PROCEDURAL_HIT_GROUP)
+                .general_shader(vk::SHADER_UNUSED_KHR)
+                .closest_hit_shader(3)
+                .any_hit_shader(vk::SHADER_UNUSED_KHR)
+                .intersection_shader(2)
+                .build(),
+        ];
+
+        let shader_stages = vec![
+            vk::PipelineShaderStageCreateInfo::builder()
+                .stage(vk::ShaderStageFlags::RAYGEN_KHR)
+                .module(shader_module)
+                .name(std::ffi::CStr::from_bytes_with_nul(b"main_ray_generation\0").unwrap())
+                .build(),
+            vk::PipelineShaderStageCreateInfo::builder()
+                .stage(vk::ShaderStageFlags::MISS_KHR)
+                .module(shader_module)
+                .name(std::ffi::CStr::from_bytes_with_nul(b"main_miss\0").unwrap())
+                .build(),
+            vk::PipelineShaderStageCreateInfo::builder()
+                .stage(vk::ShaderStageFlags::INTERSECTION_KHR)
+                .module(shader_module)
+                .name(std::ffi::CStr::from_bytes_with_nul(b"sphere_intersection\0").unwrap())
+                .build(),
+            vk::PipelineShaderStageCreateInfo::builder()
+                .stage(vk::ShaderStageFlags::CLOSEST_HIT_KHR)
+                .module(shader_module)
+                .name(std::ffi::CStr::from_bytes_with_nul(b"sphere_closest_hit\0").unwrap())
+                .build(),
+        ];
+
+        let pipeline = unsafe {
+            rt_pipeline.create_ray_tracing_pipelines(
+                vk::DeferredOperationKHR::null(),
+                vk::PipelineCache::null(),
+                &[vk::RayTracingPipelineCreateInfoKHR::builder()
+                    .stages(&shader_stages)
+                    .groups(&shader_groups)
+                    .max_pipeline_ray_recursion_depth(0)
+                    .layout(pipeline_layout)
+                    .build()],
+                None,
+            )
+        }
+        .unwrap()[0];
+
+        unsafe {
+            device.destroy_shader_module(shader_module, None);
+        }
+
+        (
+            descriptor_set_layout,
+            pipeline,
+            pipeline_layout,
+            shader_groups.len(),
+        )
+    };
+```
+
