@@ -585,11 +585,14 @@ pub fn main_ray_generation(
         *payload = RayPayload::default();
         unsafe {
             top_level_as.trace_ray(
+                // すべてのレイの衝突はOPAQUEだと指定。つまりAny-Hit Shaderは実行されない
                 RayFlags::OPAQUE,
                 cull_mask,
+                // sbt_offset, sbt_stride, miss_indexは全部0
                 0,
                 0,
                 0,
+                // ここで引数が交互にVec3, f32, Vec3, f32となっているのはアラインメントのためだろう
                 ray.origin,
                 tmin,
                 ray.direction,
