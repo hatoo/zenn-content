@@ -2,7 +2,7 @@
 title: "ashでシェーダーを実行する"
 ---
 
-この章では前回rust-gpuで作ったシェーダーを[ash](https://github.com/MaikKlein/ash)でレンダリングします。
+この章では前回rust-gpuでつくったシェーダーを[ash](https://github.com/MaikKlein/ash)でレンダリングします。
 
 # ashとは
 
@@ -91,7 +91,7 @@ let render_pass = {
 ```
 
 こんな風にすると**Debugビルドでは割と問題なく動きますがReleaseビルドで落ちてしまう可能性があります**。
-(想像するに、)なぜならashはVulkanのstructをそのままRustで表現しているので一時的に作ったスライスのライフタイムを保持できないからです。
+(想像するに、)なぜならashはVulkanのstructをそのままRustで表現しているので一時的につくったスライスのライフタイムを保持できないからです。
 
 例。ABIを保つためにポインタで持っている。
 ```rust

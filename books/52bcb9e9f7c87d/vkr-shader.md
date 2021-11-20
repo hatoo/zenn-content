@@ -33,7 +33,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 なので自分で実装していきます。
 
 まず、疑似乱数のシードを得ようと思います。
-今回は、ピクセルの座標とホストで作った乱数(Push Constantsで渡す)をxorしてシードとします。
+今回は、ピクセルの座標とホストでつくった乱数(Push Constantsで渡す)をxorしてシードとします。
 
 ```rust:shader/src/lib.rs
 pub struct PushConstants {
@@ -281,7 +281,7 @@ pub fn main_miss(
 
 # Intersection, Closest-Hit Shaderの作成
 
-目的とするシーンには球しか存在しないので、球のためのIntersection ShaderとClosest-Hit Shaderを作るだけです。
+目的とするシーンには球しか存在しないので、球のためのIntersection ShaderとClosest-Hit Shaderをつくるだけです。
 BLASに中心が原点で長さが2のAABB(半径1の球)を用意して、TLASから変換行列(拡大含む)でそのBLASを参照していく想定です。
 レイを移動させると実質、対象の物体を動かしたことになることを思い出してください。やっていない方は[Ray Tracing: The Next Week](https://raytracing.github.io/books/RayTracingTheNextWeek.html#instances)のInstancesをやるとよいでしょう。
 
@@ -410,7 +410,7 @@ Ray Tracing in One Weekendででてきた三つのマテリアルを実装しま
 - Dielectric
     - reflectionかrefractionの確立を決める係数一つあればよい
 
-前述のように`enum`は使えないので自力で`enum`のような`struct`を作るとして、どのマテリアルかを決める値と`f32`が4つあればよいということになります。
+前述のように`enum`は使えないので自力で`enum`のような`struct`をつくるとして、どのマテリアルかを決める値と`f32`が4つあればよいということになります。
 
 ```rust:shader/src/material.rs
 #[derive(Clone, Copy, Default)]
@@ -491,7 +491,7 @@ impl Material for EnumMaterial {
 
 各マテリアルの実装はソースを見てください。Ray Tracing in One Weekendそのままです。
 
-実際のマテリアルのデータはCPUで作るため、Vulkanにデータを渡すためにどうにかして上記の`&[EnumMaterial]`を`&[u8]`にしなければなりません。
+実際のマテリアルのデータはCPUでつくるため、Vulkanにデータを渡すためにどうにかして上記の`&[EnumMaterial]`を`&[u8]`にしなければなりません。
 そういう用途では[bytemuck](https://crates.io/crates/bytemuck)がよく使われますが、`spirv-std`にはいっている`glam`は現状`bytemuck`に対応していないので自分で作ります。
 
 ```rust:shader/src/pod.rs
@@ -530,7 +530,7 @@ impl EnumMaterialPod {
 }
 ```
 
-POD(plain old data)という表現を`bytemuck`から拝借してきて`EnumMaterialPod`型を作りました。これは`EnumMaterial`と完全に同じレイアウトをしています。これをCPUで作ってGPUに渡すというわけです。
+POD(plain old data)という表現を`bytemuck`から拝借してきて`EnumMaterialPod`型をつくりました。これは`EnumMaterial`と完全に同じレイアウトをしています。これをCPUでつくってGPUに渡すというわけです。
 
 # Ray Generation
 

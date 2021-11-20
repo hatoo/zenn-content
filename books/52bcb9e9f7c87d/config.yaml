@@ -10,3 +10,4 @@ chapters:
   - run-rasterization
   - vkr-overview
   - vkr-shader
+  - run-raytracing
