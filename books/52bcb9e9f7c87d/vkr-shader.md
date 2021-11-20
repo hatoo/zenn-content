@@ -491,7 +491,7 @@ impl Material for EnumMaterial {
 
 各マテリアルの実装はソースを見てください。Ray Tracing in One Weekendそのままです。
 
-実際のマテリアルのデータはCPUで作るため、どうにかして上記の`&[EnumMaterial]`を`&[u8]`にしなければなりません。
+実際のマテリアルのデータはCPUで作るため、Vulkanにデータを渡すためにどうにかして上記の`&[EnumMaterial]`を`&[u8]`にしなければなりません。
 そういう用途では[bytemuck](https://crates.io/crates/bytemuck)がよく使われますが、`spirv-std`にはいっている`glam`は現状`bytemuck`に対応していないので自分で作ります。
 
 ```rust:shader/src/pod.rs
