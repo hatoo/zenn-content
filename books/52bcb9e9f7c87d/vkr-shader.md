@@ -282,8 +282,8 @@ pub fn main_miss(
 # Intersection, Closest-Hit Shaderの作成
 
 目的とするシーンには球しか存在しないので、球のためのIntersection ShaderとClosest-Hit Shaderを作るだけです。
-BLASに中心が原点で長さが2のAABB(半径1の球)を用意、TLASから変換行列(拡大含む)でそのBLASを参照していく想定です。
-レイを移動させると実質対象の物体を動かしたことになることを思い出してください。やっていない方は[Ray Tracing: The Next Week](https://raytracing.github.io/books/RayTracingTheNextWeek.html#instances)のInstancesをやるとよいでしょう。
+BLASに中心が原点で長さが2のAABB(半径1の球)を用意して、TLASから変換行列(拡大含む)でそのBLASを参照していく想定です。
+レイを移動させると実質、対象の物体を動かしたことになることを思い出してください。やっていない方は[Ray Tracing: The Next Week](https://raytracing.github.io/books/RayTracingTheNextWeek.html#instances)のInstancesをやるとよいでしょう。
 
 ```mermaid
 graph TB
@@ -314,16 +314,16 @@ impl RayPayload {
 }
 #[spirv(intersection)]
 pub fn sphere_intersection(
-    // TLASで登録した変換行列の逆を変換したレイの原点
+    // TLASで登録した変換行列の逆で変換したレイの原点
     #[spirv(object_ray_origin)] ray_origin: Vec3,
-    // TLASで登録した変換行列の逆を変換したレイの方向
+    // TLASで登録した変換行列の逆で変換したレイの方向
     #[spirv(object_ray_direction)] ray_direction: Vec3,
     // レイの開始時間
     #[spirv(ray_tmin)] t_min: f32,
     // レイの終了時間
     #[spirv(ray_tmax)] t_max: f32,
     // ここで値を書くとClosest-Hitから読める
-    // レイがの衝突時刻を書き込むことにする
+    // レイの衝突時刻を書き込むことにする
     #[spirv(hit_attribute)] t: &mut f32,
 ) {
     // Ray Tracing in One Weekendの球の当たり判定そのまま
@@ -361,7 +361,7 @@ pub fn sphere_intersection(
     }
 }
 
-// glamの行列はSPIR-Vの行列型にはなっていないためここで行列型を作る
+// glamの行列型はSPIR-Vの行列型ではないここで行列型を作る
 // 具体的には#[spirv(matrix)]した型はSPIR-Vの`OpTypeMatrix`の型となる
 #[derive(Clone, Copy)]
 #[spirv(matrix)]
@@ -428,7 +428,7 @@ pub struct EnumMaterial {
 }
 ```
 
-簡単にするためにデータ部分は`Vec4`で表したいので16byteのアラインメントが必要です。
+簡単にするためにデータ部分は`Vec4`で表したいので[16byteのアラインメント](https://www.w3.org/TR/WGSL/#alignment-and-size)が必要です。
 つまり、`[EnumMaterial]`は各要素が16byteでアラインメントされてなければならないので各要素は32byteの大きさを持ちます。
 
 アラインメントなどの情報に関しては、WGSLの仕様を見るとわかりやすいです。

@@ -59,7 +59,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 # シェーダーを書く
 
 ここからシェーダーを書いていきます。
-Cargo.tomlにlibを設定しspirv-stdをdependenciesに加えます。
+Cargo.tomlにlibを設定し[spirv-std](https://embarkstudios.github.io/rust-gpu/api/spirv_std/)をdependenciesに加えます。
+spirv-stdはSPIR-Vターゲットでのstdみたいなものに相当します。
+
 
 ```toml:shader/Cargo.toml
 ...

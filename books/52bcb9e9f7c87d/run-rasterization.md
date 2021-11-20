@@ -6,13 +6,13 @@ title: "ashでシェーダーを実行する"
 
 # ashとは
 
-ashはRustのためのVulkanラッパーです。この例だけなら[wgpu](https://github.com/gfx-rs/wgpu)を使えばよりシンプルになりますが、VKRの機能が使えないので今からashを使います。
+ashはRustのためのVulkanラッパーです。この例だけなら[wgpu](https://github.com/gfx-rs/wgpu)を使えばよりシンプルになりますが、VKRの機能が使えないので([#1040](https://github.com/gfx-rs/wgpu/issues/1040))今からashを使います。
 といってもVulkanの説明は複雑すぎて自分にはできないので(すいません🙇‍♂️)、ashを使う際のポイントを書くだけにとどめておきます。
 また、ネットでよく出てくるVulkanのチュートリアルはウインドウに描画するものが多いですがここでは直接画像ファイルに保存します(オフスクリーンレンダリング)。これは、いくらVKRがリアルタイム用のAPIといっても後々Ray Tracing in One Weekendと同じ処理をするとどうしてもリアルタイムに描画することはできないからです。
 
 # ashの使い方
 
-基本的にashはVukkanの薄いラッパーなのでVulkanを触ったことをあればすぐにわかると思います。
+基本的にashはVulkanの薄いラッパーなのでVulkanを触ったことをあればすぐにわかると思います。
 コンパイルするにはVulkan SDKが必要なのでインストールしておきましょう。
 
 ashのstructはBuilderパターンに対応しているので構築が少し楽になります。Builderパターンを使うとVulkanの構造体でよくある`p***`と`***Count`もスライスで入力できます。
