@@ -107,7 +107,7 @@ impl BufferResource {
 # BLASをつくる
 
 BLASを作ります。この文章では1つのBLASをTLASで使いまわしていくのでAABBを一個持ったBLASを作ればよいです。
-ASの構築時には追加でScratch Bufferが必要です。Vulkanが暗黙的にGPUの守りを確保することはまずないのでこれも自分で確保する必要があります。
+ASの構築時には追加でScratch Bufferが必要です。Vulkanが暗黙的にGPUのメモリを確保することはまずないのでこれも自分で確保する必要があります。
 
 ```mermaid
 graph TB
