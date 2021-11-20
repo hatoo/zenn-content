@@ -617,6 +617,7 @@ pub fn main_ray_generation(
         }
     }
 
+    // 座標の上下が反対なので変換している
     let pos = uvec2(launch_id.x, launch_size.y - 1 - launch_id.y);
     let prev: Vec4 = image.read(pos);
 
