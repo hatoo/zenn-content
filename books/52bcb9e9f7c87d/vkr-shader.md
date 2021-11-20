@@ -531,3 +531,96 @@ impl EnumMaterialPod {
 ```
 
 POD(plain old data)という表現を`bytemuck`から拝借してきて`EnumMaterialPod`型を作りました。これは`EnumMaterial`と完全に同じレイアウトをしています。これをCPUで作ってGPUに渡すというわけです。
+
+# Ray Generation
+
+すべてのパーツがそろったのでRay Generation Shaderを完成させます。
+
+```rust:shader/src/lib.rs
+#[spirv(ray_generation)]
+pub fn main_ray_generation(
+    #[spirv(launch_id)] launch_id: UVec3,
+    #[spirv(launch_size)] launch_size: UVec3,
+    #[spirv(push_constant)] constants: &PushConstants,
+    // TLAS
+    #[spirv(descriptor_set = 0, binding = 0)] top_level_as: &AccelerationStructure,
+    // 出力画像
+    #[spirv(descriptor_set = 0, binding = 1)] image: &Image!(2D, format=rgba32f, sampled=false),
+    // マテリアルのリスト
+    #[spirv(storage_buffer, descriptor_set = 0, binding = 2)] materials: &[EnumMaterial],
+    // RayPayload
+    // APIの都合上ここで宣言しておく
+    #[spirv(ray_payload)] payload: &mut RayPayload,
+) {
+    let rand_seed = (launch_id.y * launch_size.x + launch_id.x) ^ constants.seed;
+    let mut rng = DefaultRng::new(rand_seed);
+
+    let camera = Camera::new(
+        vec3(13.0, 2.0, 3.0),
+        vec3(0.0, 0.0, 0.0),
+        vec3(0.0, 1.0, 0.0),
+        20.0 / 180.0 * core::f32::consts::PI,
+        launch_size.x as f32 / launch_size.y as f32,
+        0.1,
+        10.0,
+    );
+
+    let u = (launch_id.x as f32 + rng.next_f32()) / (launch_size.x - 1) as f32;
+    let v = (launch_id.y as f32 + rng.next_f32()) / (launch_size.y - 1) as f32;
+
+    // あらかじめTLASで設定した値とcull_maskとの論理積が0のインスタンスは無視される。
+    // 今回はこの機能は使わない。
+    let cull_mask = 0xff;
+    let tmin = 0.001;
+    let tmax = 100000.0;
+
+    // レイの色
+    let mut color = vec3(1.0, 1.0, 1.0);
+
+    // レイの位置と方向
+    let mut ray = camera.get_ray(u, v, &mut rng);
+
+    // レイトレーシングはよく再帰的なアルゴリズムだといわれるが、SPIR-Vにはスタックがないので再帰は使えない
+    for _ in 0..50 /* 最大の反射回数 */ {
+        *payload = RayPayload::default();
+        unsafe {
+            top_level_as.trace_ray(
+                RayFlags::OPAQUE,
+                cull_mask,
+                0,
+                0,
+                0,
+                ray.origin,
+                tmin,
+                ray.direction,
+                tmax,
+                payload,
+            );
+        }
+
+        if payload.is_miss {
+            // レイが何にも当たらなかった
+            // 終わり
+            color *= payload.position;
+            break;
+        } else {
+            let mut scatter = Scatter::default();
+            if materials[payload.material as usize].scatter(&ray, payload, &mut rng, &mut scatter) {
+                color *= scatter.color;
+                ray = scatter.ray;
+            } else {
+                break;
+            }
+        }
+    }
+
+    let pos = uvec2(launch_id.x, launch_size.y - 1 - launch_id.y);
+    let prev: Vec4 = image.read(pos);
+
+    unsafe {
+        // 画像に色を加算していく
+        // 最後に自分でイテレーション回数で割ることで平均値を得る
+        image.write(pos, prev + color.extend(1.0));
+    }
+}
+```
