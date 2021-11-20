@@ -173,6 +173,8 @@ graph TB
         let geometries = [geometry];
 
         let mut build_info = vk::AccelerationStructureBuildGeometryInfoKHR::builder()
+            // レイのトレースをしっかり最適化してビルドするか、最適化はほどほどにしてビルド時間を短く済ませるかなどを選べる
+            // ここではTLASの構築は一回しか行わないので`PREFER_FAST_TRACE`でしっかり最適化してもらう
             .flags(vk::BuildAccelerationStructureFlagsKHR::PREFER_FAST_TRACE)
             .geometries(&geometries)
             .mode(vk::BuildAccelerationStructureModeKHR::BUILD)
@@ -488,8 +490,6 @@ fn sample_scene(
         let geometries = [geometry];
 
         let mut build_info = vk::AccelerationStructureBuildGeometryInfoKHR::builder()
-            // レイのトレースをしっかり最適化してビルドするか、最適化はほどほどにしてビルド時間を短く済ませるかなどを選べる
-            // ここではTLASの構築は一回しか行わないので`PREFER_FAST_TRACE`でしっかり最適化してもらう
             .flags(vk::BuildAccelerationStructureFlagsKHR::PREFER_FAST_TRACE)
             .geometries(&geometries)
             .mode(vk::BuildAccelerationStructureModeKHR::BUILD)
