@@ -245,11 +245,14 @@ graph TB
                 )
                 .unwrap();
 
+            let build_infos = [build_info];
+            let build_range_infos: &[&[_]] = &[&[build_range_info]];
+
             // 前に書いたように、ASの構築もGPU上で行われる。リアルタイムなAPIなので当然か
             acceleration_structure.cmd_build_acceleration_structures(
                 build_command_buffer,
-                &[build_info],
-                &[&[build_range_info]],
+                &build_infos,
+                build_range_infos,
             );
             device.end_command_buffer(build_command_buffer).unwrap();
             device

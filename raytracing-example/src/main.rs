@@ -438,10 +438,13 @@ fn main() {
                 )
                 .unwrap();
 
+            let build_infos = [build_info];
+            let build_range_infos: &[&[_]] = &[&[build_range_info]];
+
             acceleration_structure.cmd_build_acceleration_structures(
                 build_command_buffer,
-                &[build_info],
-                &[&[build_range_info]],
+                &build_infos,
+                build_range_infos,
             );
             device.end_command_buffer(build_command_buffer).unwrap();
             device
@@ -601,10 +604,12 @@ fn main() {
         };
 
         unsafe {
+            let build_infos = [build_info];
+            let build_range_infos: &[&[_]] = &[&[build_range_info]];
             acceleration_structure.cmd_build_acceleration_structures(
                 build_command_buffer,
-                &[build_info],
-                &[&[build_range_info]],
+                &build_infos,
+                build_range_infos,
             );
             device.end_command_buffer(build_command_buffer).unwrap();
             device
