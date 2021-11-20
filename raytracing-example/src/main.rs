@@ -121,6 +121,7 @@ fn main() {
         };
 
         let mut features12 = vk::PhysicalDeviceVulkan12Features::builder()
+            .shader_int8(true)
             .buffer_device_address(true)
             .vulkan_memory_model(true)
             .build();
