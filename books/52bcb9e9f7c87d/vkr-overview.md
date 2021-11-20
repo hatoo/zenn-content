@@ -7,7 +7,7 @@ title: "Vulkan Raytracing外観"
 VKRはVulkanでリアルタイムにレイトレーシングをする拡張で、[2020年12月](https://www.khronos.org/blog/vulkan-ray-tracing-final-specification-release)にSDKが配布されたようです。
 
 :::message
-Vulkanのレイトレーシング関係のチュートリアルをネットで探すと`VK_NV_ray_tracing`などのNvidia独自の拡張を使ったものが見つかるかもしれません。これは古いAPIなので避けたほうが良いかしれません。
+VKRのチュートリアルをネットで探すと`VK_NV_ray_tracing`などのNvidia独自の拡張を使ったものが見つかるかもしれません。これは古いAPIなので避けたほうが良いかしれません。
 といっても現在標準のKHR拡張とそこまで大きな違いがあるわけではありません。
 :::
 
