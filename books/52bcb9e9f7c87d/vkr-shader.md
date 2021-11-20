@@ -408,7 +408,7 @@ Ray Tracing in One Weekendででてきた三つのマテリアルを実装しま
 - Metal
     - 色(albedo)とFuzzy Reflectionの係数があればよい
 - Dielectric
-    - reflectionかrefractionの確立を決める係数一つあればよい
+    - reflectionかrefractionの確率を決める係数一つあればよい
 
 前述のように`enum`は使えないので自力で`enum`のような`struct`をつくるとして、どのマテリアルかを決める値と`f32`が4つあればよいということになります。
 
