@@ -504,6 +504,18 @@ fn sample_scene(
             )
         };
 
+        // 自分の環境では
+        // build_range_info.primitive_count = 484
+        // size_info = AccelerationStructureBuildSizesInfoKHR {
+        // s_type: ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR,
+        // p_next: 0x0000000000000000,
+        // acceleration_structure_size: 241920,
+        // update_scratch_size: 0,
+        // build_scratch_size: 74368,
+        // }
+        // だった。
+        // 思ったよりacceleration_structure_sizeは思ったより大きい。
+
         let top_as_buffer = BufferResource::new(
             size_info.acceleration_structure_size,
             vk::BufferUsageFlags::ACCELERATION_STRUCTURE_STORAGE_KHR
