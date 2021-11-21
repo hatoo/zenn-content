@@ -298,7 +298,7 @@ fn create_sphere_instance(
         // MSBから8bit分がMask。これに`TraceRay`に指定したMaskがマッチしないと無視される。
         // のこり24bitがインスタンスのindex。これでマテリアルのindexを指定するが後で編集する。
         instance_custom_index_and_mask: 0xff << 24,
-        // MASBから8bit分がフラグ。ここでもOPAQUEかどうか指定できる
+        // MSBから8bit分がフラグ。ここでもOPAQUEかどうか指定できる
         // のこりがSBTのオフセット。ここでは0
         instance_shader_binding_table_record_offset_and_flags:
             vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE.as_raw() << 24 | 0,
