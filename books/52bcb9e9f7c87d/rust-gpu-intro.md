@@ -34,7 +34,7 @@ channel = "nightly-2021-10-26"
 components = ["rust-src", "rustc-dev", "llvm-tools-preview"]
 ```
 
-shaderをSPIR-Vでコンパイルするために設定します。
+shaderをrust-gpuでコンパイルするために設定します。
 
 ```toml:Cargo.toml
 ...
