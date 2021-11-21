@@ -750,6 +750,109 @@ RaytracingPipelineはレイトレーシング用のGraphicsPipelineのような�
     };
 ```
 
+# Descriptorの設定
+
+シェーダーに渡すDescriptorを書いていきます。
+
+- descriptor_set = 0, binding = 0
+    - TLAS
+- descriptor_set = 0, binding = 1
+    - 出力画像
+- descriptor_set = 0, binding = 2
+    - マテリアル
+
+です。
+
+```rust:src/main.rs
+    let descriptor_sizes = [
+        vk::DescriptorPoolSize {
+            ty: vk::DescriptorType::ACCELERATION_STRUCTURE_KHR,
+            descriptor_count: 1,
+        },
+        vk::DescriptorPoolSize {
+            ty: vk::DescriptorType::STORAGE_IMAGE,
+            descriptor_count: 1,
+        },
+        vk::DescriptorPoolSize {
+            ty: vk::DescriptorType::STORAGE_BUFFER,
+            descriptor_count: 1,
+        },
+    ];
+
+    let descriptor_pool_info = vk::DescriptorPoolCreateInfo::builder()
+        .pool_sizes(&descriptor_sizes)
+        .max_sets(1);
+
+    let descriptor_pool =
+        unsafe { device.create_descriptor_pool(&descriptor_pool_info, None) }.unwrap();
+
+    let descriptor_counts = [1];
+
+    let mut count_allocate_info = vk::DescriptorSetVariableDescriptorCountAllocateInfo::builder()
+        .descriptor_counts(&descriptor_counts)
+        .build();
+
+    let descriptor_sets = unsafe {
+        device.allocate_descriptor_sets(
+            &vk::DescriptorSetAllocateInfo::builder()
+                .descriptor_pool(descriptor_pool)
+                .set_layouts(&[descriptor_set_layout])
+                .push_next(&mut count_allocate_info)
+                .build(),
+        )
+    }
+    .unwrap();
+
+    let descriptor_set = descriptor_sets[0];
+
+    let accel_structs = [top_as];
+    let mut accel_info = vk::WriteDescriptorSetAccelerationStructureKHR::builder()
+        .acceleration_structures(&accel_structs)
+        .build();
+
+    let mut accel_write = vk::WriteDescriptorSet::builder()
+        .dst_set(descriptor_set)
+        .dst_binding(0)
+        .dst_array_element(0)
+        .descriptor_type(vk::DescriptorType::ACCELERATION_STRUCTURE_KHR)
+        .push_next(&mut accel_info)
+        .build();
+
+    // This is only set by the builder for images, buffers, or views; need to set explicitly after
+    accel_write.descriptor_count = 1;
+
+    // image_viewの作成は省略。ソースを確認してください。
+    let image_info = [vk::DescriptorImageInfo::builder()
+        .image_layout(vk::ImageLayout::GENERAL)
+        .image_view(image_view)
+        .build()];
+
+    let image_write = vk::WriteDescriptorSet::builder()
+        .dst_set(descriptor_set)
+        .dst_binding(1)
+        .dst_array_element(0)
+        .descriptor_type(vk::DescriptorType::STORAGE_IMAGE)
+        .image_info(&image_info)
+        .build();
+
+    let buffer_info = [vk::DescriptorBufferInfo::builder()
+        .buffer(material_buffer.buffer)
+        .range(vk::WHOLE_SIZE)
+        .build()];
+
+    let buffers_write = vk::WriteDescriptorSet::builder()
+        .dst_set(descriptor_set)
+        .dst_binding(2)
+        .dst_array_element(0)
+        .descriptor_type(vk::DescriptorType::STORAGE_BUFFER)
+        .buffer_info(&buffer_info)
+        .build();
+
+    unsafe {
+        device.update_descriptor_sets(&[accel_write, image_write, buffers_write], &[]);
+    }
+```
+
 # Shader Binding Tableをつくる
 
 パイプラインからSBT用のバッファをつくります。これはシェーダーの情報が並んだ一次元配列です。
