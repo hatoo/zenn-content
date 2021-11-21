@@ -911,3 +911,245 @@ fn aligned_size(value: u32, alignment: u32) -> u32 {
         shader_binding_table_buffer
     };
 ```
+
+# vkCmdTraceRaysKHRを呼ぶ
+
+準備が終わったのであとはいいレイトレーシングを呼ぶだけです。100回づつに分けて`vkCmdTraceRaysKHR`を呼んでいきます。
+
+
+```rust:src/main.rs
+    {
+        let handle_size_aligned = aligned_size(
+            rt_pipeline_properties.shader_group_handle_size,
+            rt_pipeline_properties.shader_group_base_alignment,
+        ) as u64;
+
+        // |[ raygen shader ]|[ miss shader ]|[ hit shader  ]|
+        // |                 |               |               |
+        // | 0               | 1             | 2             |
+
+        let sbt_address =
+            unsafe { get_buffer_device_address(&device, shader_binding_table_buffer.buffer) };
+
+        // それぞれのRTecordに対応するSBTの領域を指定する
+        let sbt_raygen_region = vk::StridedDeviceAddressRegionKHR::builder()
+            .device_address(sbt_address + 0)
+            .size(handle_size_aligned)
+            .stride(handle_size_aligned)
+            .build();
+
+        let sbt_miss_region = vk::StridedDeviceAddressRegionKHR::builder()
+            .device_address(sbt_address + 1 * handle_size_aligned)
+            .size(handle_size_aligned)
+            .stride(handle_size_aligned)
+            .build();
+
+        let sbt_hit_region = vk::StridedDeviceAddressRegionKHR::builder()
+            .device_address(sbt_address + 2 * handle_size_aligned)
+            .size(handle_size_aligned)
+            .stride(handle_size_aligned)
+            .build();
+
+        let sbt_call_region = vk::StridedDeviceAddressRegionKHR::default();
+
+        let command_buffer = {
+            let command_buffer_allocate_info = vk::CommandBufferAllocateInfo::builder()
+                .command_buffer_count(1)
+                .command_pool(command_pool)
+                .level(vk::CommandBufferLevel::PRIMARY)
+                .build();
+
+            unsafe { device.allocate_command_buffers(&command_buffer_allocate_info) }
+                .expect("Failed to allocate Command Buffers!")[0]
+        };
+
+        {
+            let command_buffer_begin_info = vk::CommandBufferBeginInfo::builder()
+                .flags(vk::CommandBufferUsageFlags::SIMULTANEOUS_USE)
+                .build();
+
+            unsafe { device.begin_command_buffer(command_buffer, &command_buffer_begin_info) }
+                .expect("Failed to begin recording Command Buffer at beginning!");
+        }
+        unsafe {
+            let range = vk::ImageSubresourceRange::builder()
+                .aspect_mask(vk::ImageAspectFlags::COLOR)
+                .base_mip_level(0)
+                .level_count(1)
+                .base_array_layer(0)
+                .layer_count(1)
+                .build();
+
+            device.cmd_clear_color_image(
+                command_buffer,
+                image,
+                vk::ImageLayout::GENERAL,
+                &vk::ClearColorValue {
+                    float32: [0.0, 0.0, 0.0, 0.0],
+                },
+                &[range],
+            );
+
+            let image_barrier = vk::ImageMemoryBarrier::builder()
+                .src_access_mask(vk::AccessFlags::COLOR_ATTACHMENT_WRITE)
+                .dst_access_mask(vk::AccessFlags::SHADER_WRITE | vk::AccessFlags::SHADER_READ)
+                .old_layout(vk::ImageLayout::GENERAL)
+                .new_layout(vk::ImageLayout::GENERAL)
+                .image(image)
+                .subresource_range(
+                    vk::ImageSubresourceRange::builder()
+                        .aspect_mask(vk::ImageAspectFlags::COLOR)
+                        .base_mip_level(0)
+                        .level_count(1)
+                        .base_array_layer(0)
+                        .layer_count(1)
+                        .build(),
+                )
+                .build();
+
+            device.cmd_pipeline_barrier(
+                command_buffer,
+                vk::PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT,
+                vk::PipelineStageFlags::RAY_TRACING_SHADER_KHR,
+                vk::DependencyFlags::empty(),
+                &[],
+                &[],
+                &[image_barrier],
+            );
+
+            device.end_command_buffer(command_buffer).unwrap();
+        }
+
+        let command_buffers = [command_buffer];
+
+        let submit_infos = [vk::SubmitInfo::builder()
+            .command_buffers(&command_buffers)
+            .build()];
+
+        unsafe {
+            device
+                .queue_submit(graphics_queue, &submit_infos, vk::Fence::null())
+                .expect("Failed to execute queue submit.");
+
+            device.queue_wait_idle(graphics_queue).unwrap();
+            device.free_command_buffers(command_pool, &[command_buffer]);
+        }
+
+        let image_barrier2 = vk::ImageMemoryBarrier::builder()
+            .src_access_mask(vk::AccessFlags::SHADER_WRITE | vk::AccessFlags::SHADER_READ)
+            .dst_access_mask(vk::AccessFlags::SHADER_WRITE | vk::AccessFlags::SHADER_READ)
+            .old_layout(vk::ImageLayout::GENERAL)
+            .new_layout(vk::ImageLayout::GENERAL)
+            .image(image)
+            .subresource_range(
+                vk::ImageSubresourceRange::builder()
+                    .aspect_mask(vk::ImageAspectFlags::COLOR)
+                    .base_mip_level(0)
+                    .level_count(1)
+                    .base_array_layer(0)
+                    .layer_count(1)
+                    .build(),
+            )
+            .build();
+
+        let mut rng = StdRng::from_entropy();
+        let mut sampled = 0;
+
+        let command_buffer = {
+            let command_buffer_allocate_info = vk::CommandBufferAllocateInfo::builder()
+                .command_buffer_count(1)
+                .command_pool(command_pool)
+                .level(vk::CommandBufferLevel::PRIMARY)
+                .build();
+
+            unsafe { device.allocate_command_buffers(&command_buffer_allocate_info) }
+                .expect("Failed to allocate Command Buffers!")[0]
+        };
+
+        while sampled < N_SAMPLES {
+            // N_SAMPLES_ITER(100)回づつレイトレーシングしていく
+            let samples = std::cmp::min(N_SAMPLES - sampled, N_SAMPLES_ITER);
+            sampled += samples;
+
+            {
+                let command_buffer_begin_info = vk::CommandBufferBeginInfo::builder()
+                    .flags(vk::CommandBufferUsageFlags::SIMULTANEOUS_USE)
+                    .build();
+
+                unsafe { device.begin_command_buffer(command_buffer, &command_buffer_begin_info) }
+                    .expect("Failed to begin recording Command Buffer at beginning!");
+            }
+
+            unsafe {
+                device.cmd_bind_pipeline(
+                    command_buffer,
+                    vk::PipelineBindPoint::RAY_TRACING_KHR,
+                    graphics_pipeline,
+                );
+                device.cmd_bind_descriptor_sets(
+                    command_buffer,
+                    vk::PipelineBindPoint::RAY_TRACING_KHR,
+                    pipeline_layout,
+                    0,
+                    &[descriptor_set],
+                    &[],
+                );
+            }
+            for _ in 0..samples {
+                unsafe {
+                    // ここよくわかってない
+                    device.cmd_pipeline_barrier(
+                        command_buffer,
+                        vk::PipelineStageFlags::RAY_TRACING_SHADER_KHR,
+                        vk::PipelineStageFlags::RAY_TRACING_SHADER_KHR,
+                        vk::DependencyFlags::empty(),
+                        &[],
+                        &[],
+                        &[image_barrier2],
+                    );
+
+                    // Push Constantの指定
+                    device.cmd_push_constants(
+                        command_buffer,
+                        pipeline_layout,
+                        vk::ShaderStageFlags::RAYGEN_KHR,
+                        0,
+                        &rng.next_u32().to_le_bytes(),
+                    );
+
+                    // レイトレース実行
+                    rt_pipeline.cmd_trace_rays(
+                        command_buffer,
+                        &sbt_raygen_region,
+                        &sbt_miss_region,
+                        &sbt_hit_region,
+                        &sbt_call_region,
+                        WIDTH,
+                        HEIGHT,
+                        1,
+                    );
+                }
+            }
+            unsafe {
+                device.end_command_buffer(command_buffer).unwrap();
+
+                let command_buffers = [command_buffer];
+
+                let submit_infos = [vk::SubmitInfo::builder()
+                    .command_buffers(&command_buffers)
+                    .build()];
+
+                device
+                    .queue_submit(graphics_queue, &submit_infos, vk::Fence::null())
+                    .expect("Failed to execute queue submit.");
+
+                device.queue_wait_idle(graphics_queue).unwrap();
+            }
+            eprint!("\rSamples: {} / {} ", sampled, N_SAMPLES);
+        }
+        unsafe {
+            device.free_command_buffers(command_pool, &[command_buffer]);
+        }
+        eprint!("\nDone");
+    }
+```
