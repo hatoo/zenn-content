@@ -309,7 +309,7 @@ fn create_sphere_instance(
 }
 
 // TLASインスタンスとマテリアルをつくる
-// GeometryInstanceFlagsKHRそのまま
+// Ray Tracing in One Weekendそのまま
 fn sample_scene(
     sphere_accel_handle: u64,
 ) -> (
