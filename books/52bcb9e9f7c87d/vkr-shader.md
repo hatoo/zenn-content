@@ -304,11 +304,11 @@ impl RayPayload {
         };
 
         Self {
+            is_miss: false,
             position,
             normal,
-            is_miss: false,
-            front_face: front_face,
             material,
+            front_face,
         }
     }
 }
