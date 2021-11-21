@@ -6,7 +6,7 @@ title: "VKRのシェーダーを書く"
 コードは[こちら](https://github.com/hatoo/zenn-content/tree/master/raytracing-example)にあります。
 文章内にコード片を記載していますが完全なコードではないのでリポジトリを確認してください。
 
-まず、2章と同じセットアップをしてください。
+まず、2章と同じセットアップをしてください^[といってもこの文章に書かれたコードを自力でコピペするのはおすすめしません。大体把握出来たらリポジトリを見てください。]。
 rust-gpuでレイトレーシング拡張を有効にするために`build.rs`を変更します。
 `bool`型はRustでは8ビットなので`Int8`も有効にします。
 
@@ -93,6 +93,7 @@ impl PCG32si {
 
     // 0.0..1.0
     pub fn next_f32(&mut self) -> f32 {
+        // stdは使えないがcoreは使えるよ
         let float_size = core::mem::size_of::<f32>() as u32 * 8;
         let precision = 23 + 1;
         let scale = 1.0 / ((1 << precision) as f32);
