@@ -783,50 +783,6 @@ fn main() {
         )
     };
 
-    let shader_binding_table_buffer = {
-        let incoming_table_data = unsafe {
-            rt_pipeline.get_ray_tracing_shader_group_handles(
-                graphics_pipeline,
-                0,
-                shader_groups_len as u32,
-                shader_groups_len * rt_pipeline_properties.shader_group_handle_size as usize,
-            )
-        }
-        .unwrap();
-
-        let handle_size_aligned = aligned_size(
-            rt_pipeline_properties.shader_group_handle_size,
-            rt_pipeline_properties.shader_group_base_alignment,
-        );
-
-        let table_size = shader_groups_len * handle_size_aligned as usize;
-        let mut table_data = vec![0u8; table_size];
-
-        for i in 0..shader_groups_len {
-            table_data[i * handle_size_aligned as usize
-                ..i * handle_size_aligned as usize
-                    + rt_pipeline_properties.shader_group_handle_size as usize]
-                .copy_from_slice(
-                    &incoming_table_data[i * rt_pipeline_properties.shader_group_handle_size
-                        as usize
-                        ..i * rt_pipeline_properties.shader_group_handle_size as usize
-                            + rt_pipeline_properties.shader_group_handle_size as usize],
-                );
-        }
-
-        let mut shader_binding_table_buffer = BufferResource::new(
-            table_size as u64,
-            vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
-            vk::MemoryPropertyFlags::HOST_VISIBLE,
-            &device,
-            device_memory_properties,
-        );
-
-        shader_binding_table_buffer.store(&table_data, &device);
-
-        shader_binding_table_buffer
-    };
-
     let descriptor_sizes = [
         vk::DescriptorPoolSize {
             ty: vk::DescriptorType::ACCELERATION_STRUCTURE_KHR,
@@ -913,6 +869,50 @@ fn main() {
     unsafe {
         device.update_descriptor_sets(&[accel_write, image_write, buffers_write], &[]);
     }
+
+    let shader_binding_table_buffer = {
+        let incoming_table_data = unsafe {
+            rt_pipeline.get_ray_tracing_shader_group_handles(
+                graphics_pipeline,
+                0,
+                shader_groups_len as u32,
+                shader_groups_len * rt_pipeline_properties.shader_group_handle_size as usize,
+            )
+        }
+        .unwrap();
+
+        let handle_size_aligned = aligned_size(
+            rt_pipeline_properties.shader_group_handle_size,
+            rt_pipeline_properties.shader_group_base_alignment,
+        );
+
+        let table_size = shader_groups_len * handle_size_aligned as usize;
+        let mut table_data = vec![0u8; table_size];
+
+        for i in 0..shader_groups_len {
+            table_data[i * handle_size_aligned as usize
+                ..i * handle_size_aligned as usize
+                    + rt_pipeline_properties.shader_group_handle_size as usize]
+                .copy_from_slice(
+                    &incoming_table_data[i * rt_pipeline_properties.shader_group_handle_size
+                        as usize
+                        ..i * rt_pipeline_properties.shader_group_handle_size as usize
+                            + rt_pipeline_properties.shader_group_handle_size as usize],
+                );
+        }
+
+        let mut shader_binding_table_buffer = BufferResource::new(
+            table_size as u64,
+            vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
+            vk::MemoryPropertyFlags::HOST_VISIBLE,
+            &device,
+            device_memory_properties,
+        );
+
+        shader_binding_table_buffer.store(&table_data, &device);
+
+        shader_binding_table_buffer
+    };
 
     {
         let handle_size_aligned = aligned_size(
