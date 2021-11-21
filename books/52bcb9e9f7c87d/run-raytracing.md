@@ -1161,3 +1161,7 @@ fn aligned_size(value: u32, alignment: u32) -> u32 {
         eprint!("\nDone");
     }
 ```
+
+レンダリング結果はこちらです。
+
+![final image](/images/final_image.png)
