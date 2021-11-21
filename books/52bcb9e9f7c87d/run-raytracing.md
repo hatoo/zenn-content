@@ -972,6 +972,7 @@ fn aligned_size(value: u32, alignment: u32) -> u32 {
                 .expect("Failed to begin recording Command Buffer at beginning!");
         }
         unsafe {
+            // 出力画像の初期化
             let range = vk::ImageSubresourceRange::builder()
                 .aspect_mask(vk::ImageAspectFlags::COLOR)
                 .base_mip_level(0)
@@ -1097,7 +1098,6 @@ fn aligned_size(value: u32, alignment: u32) -> u32 {
             }
             for _ in 0..samples {
                 unsafe {
-                    // ここよくわかってない
                     device.cmd_pipeline_barrier(
                         command_buffer,
                         vk::PipelineStageFlags::RAY_TRACING_SHADER_KHR,
