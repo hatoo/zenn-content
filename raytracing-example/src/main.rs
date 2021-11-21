@@ -631,6 +631,21 @@ fn main() {
         (top_as, top_as_buffer)
     };
 
+    let material_buffer = {
+        let buffer_size = bytemuck::cast_slice::<_, u8>(&materials).len() as vk::DeviceSize;
+
+        let mut material_buffer = BufferResource::new(
+            buffer_size,
+            vk::BufferUsageFlags::STORAGE_BUFFER,
+            vk::MemoryPropertyFlags::HOST_VISIBLE,
+            &device,
+            device_memory_properties,
+        );
+        material_buffer.store(&materials, &device);
+
+        material_buffer
+    };
+
     let (descriptor_set_layout, graphics_pipeline, pipeline_layout, shader_groups_len) = {
         let binding_flags_inner = [
             vk::DescriptorBindingFlagsEXT::empty(),
@@ -812,23 +827,6 @@ fn main() {
         shader_binding_table_buffer
     };
 
-    let color_buffer = {
-        let color = materials;
-
-        let buffer_size = bytemuck::cast_slice::<_, u8>(&color).len() as vk::DeviceSize;
-
-        let mut color_buffer = BufferResource::new(
-            buffer_size,
-            vk::BufferUsageFlags::STORAGE_BUFFER,
-            vk::MemoryPropertyFlags::HOST_VISIBLE,
-            &device,
-            device_memory_properties,
-        );
-        color_buffer.store(&color, &device);
-
-        color_buffer
-    };
-
     let descriptor_sizes = [
         vk::DescriptorPoolSize {
             ty: vk::DescriptorType::ACCELERATION_STRUCTURE_KHR,
@@ -898,7 +896,7 @@ fn main() {
         .build();
 
     let buffer_info = [vk::DescriptorBufferInfo::builder()
-        .buffer(color_buffer.buffer)
+        .buffer(material_buffer.buffer)
         .range(vk::WHOLE_SIZE)
         .build()];
 
@@ -1404,7 +1402,7 @@ fn main() {
     }
 
     unsafe {
-        color_buffer.destroy(&device);
+        material_buffer.destroy(&device);
         instance_buffer.destroy(&device);
     }
 

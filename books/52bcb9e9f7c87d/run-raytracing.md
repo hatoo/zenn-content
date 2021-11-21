@@ -140,7 +140,7 @@ graph TB
             std::mem::size_of::<vk::AabbPositionsKHR>() as u64,
             vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS
                 | vk::BufferUsageFlags::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_KHR,
-            vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
+            vk::MemoryPropertyFlags::HOST_VISIBLE,
             &device,
             device_memory_properties,
         );
@@ -418,7 +418,7 @@ fn sample_scene(
             instance_buffer_size as vk::DeviceSize,
             vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS
                 | vk::BufferUsageFlags::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_KHR,
-            vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
+            vk::MemoryPropertyFlags::HOST_VISIBLE,
             &device,
             device_memory_properties,
         );
@@ -731,7 +731,61 @@ RaytracingPipelineはレイトレーシング用のGraphicsPipelineのような�
     };
 ```
 
-# Shader Binding Tableの領域ををつくる
+# Shader Binding Tableをつくる
 
-パイプラインからSBTをつくります。
-[vkGetRayTracingShaderGroupHandlesKHR](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetRayTracingShaderGroupHandlesKHR.html)で
+パイプラインからSBT用のバッファをつくります。これはシェーダーの情報が並んだ一次元配列です。
+[vkGetRayTracingShaderGroupHandlesKHR](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetRayTracingShaderGroupHandlesKHR.html)で得ることができますが、メモリのストライドが小さいので適切な大きさのストライドに再配置します。
+
+```rust:/src/main.rs
+fn aligned_size(value: u32, alignment: u32) -> u32 {
+    (value + alignment - 1) & !(alignment - 1)
+}
+
+    let shader_binding_table_buffer = {
+        let incoming_table_data = unsafe {
+            rt_pipeline.get_ray_tracing_shader_group_handles(
+                graphics_pipeline,
+                0,
+                shader_groups_len as u32,
+                shader_groups_len * rt_pipeline_properties.shader_group_handle_size as usize,
+            )
+        }
+        .unwrap();
+
+        // vkGetRayTracingShaderGroupHandlesKHRは最大のメモリ効率で返してくるが、
+        // 後でGPUから使うにはストライドが決められた要求に従っていなければならない
+
+        let handle_size_aligned = aligned_size(
+            rt_pipeline_properties.shader_group_handle_size,
+            rt_pipeline_properties.shader_group_base_alignment,
+        );
+
+        let table_size = shader_groups_len * handle_size_aligned as usize;
+        let mut table_data = vec![0u8; table_size];
+
+        // 再配置
+        for i in 0..shader_groups_len {
+            table_data[i * handle_size_aligned as usize
+                ..i * handle_size_aligned as usize
+                    + rt_pipeline_properties.shader_group_handle_size as usize]
+                .copy_from_slice(
+                    &incoming_table_data[i * rt_pipeline_properties.shader_group_handle_size
+                        as usize
+                        ..i * rt_pipeline_properties.shader_group_handle_size as usize
+                            + rt_pipeline_properties.shader_group_handle_size as usize],
+                );
+        }
+
+        let mut shader_binding_table_buffer = BufferResource::new(
+            table_size as u64,
+            vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS | vk::BufferUsageFlags::TRANSFER_SRC,
+            vk::MemoryPropertyFlags::HOST_VISIBLE,
+            &device,
+            device_memory_properties,
+        );
+
+        shader_binding_table_buffer.store(&table_data, &device);
+
+        shader_binding_table_buffer
+    };
+```
