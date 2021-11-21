@@ -77,7 +77,7 @@ VKRでは新たに
 
 のシェーダーが追加されました。
 これらが協調してレイトレーシングをします。
-ちなみにAny-Hit ShaderとCallable Shaderはこの文章では実装しません。
+Any-Hit ShaderとCallable Shaderはこの文章では実装しません。
 
 ## Ray Generation Shader
 
