@@ -1162,7 +1162,7 @@ fn aligned_size(value: u32, alignment: u32) -> u32 {
     }
 ```
 
-レンダリング結果はこちらです。約13.5秒。
+レンダリング結果はこちらです。1200x800ピクセル5000サンプル。約13.5秒。
 
 ![final image](/images/final_image.png)
 
