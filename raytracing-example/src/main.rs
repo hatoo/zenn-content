@@ -211,6 +211,7 @@ fn main() {
                     | vk::ImageUsageFlags::STORAGE
                     | vk::ImageUsageFlags::TRANSFER_SRC,
             )
+            .sharing_mode(vk::SharingMode::EXCLUSIVE)
             .build();
 
         unsafe { device.create_image(&image_create_info, None) }.unwrap()
@@ -1163,6 +1164,7 @@ fn main() {
             .samples(vk::SampleCountFlags::TYPE_1)
             .tiling(vk::ImageTiling::LINEAR)
             .usage(vk::ImageUsageFlags::TRANSFER_DST)
+            .sharing_mode(vk::SharingMode::EXCLUSIVE)
             .build();
 
         unsafe { device.create_image(&dst_image_create_info, None) }.unwrap()
