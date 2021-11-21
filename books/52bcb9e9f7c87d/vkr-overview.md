@@ -73,7 +73,7 @@ VKRでは新たに
 - Any-Hit Shader (レイは当たったけどやっぱりなかったことにすることができる(例えばレイは当たったけどテクスチャを見て透明だと判断したとき))
 - Closest-Hit Shader (一通りレイの当たり判定が終わり一番近い衝突場所が分かったときに呼ばれる)
 - Miss Shader (レイが何にも当たらなかったときに呼ばれる)
-- Callable Shader (他のシェーダーから呼べるシェーダー。関数のようなものだが、別のシェーダーに切り分けることでスケジュール最適化できる場合に使う(よくわかってない)([参考](https://www.reddit.com/r/vulkan/comments/gtqrym/use_case_for_callable_shaders/)))
+- Callable Shader (他のシェーダーから呼べるシェーダー。関数のようなものだが、別のシェーダーに切り分けることでスケジュールを最適化できる場合に使う(よくわかってない)([参考](https://www.reddit.com/r/vulkan/comments/gtqrym/use_case_for_callable_shaders/)))
 
 のシェーダーが追加されました。
 これらが協調してレイトレーシングをします。
