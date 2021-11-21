@@ -731,3 +731,7 @@ RaytracingPipelineはレイトレーシング用のGraphicsPipelineのような�
     };
 ```
 
+# Shader Binding Tableの領域ををつくる
+
+パイプラインからSBTをつくります。
+[vkGetRayTracingShaderGroupHandlesKHR](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetRayTracingShaderGroupHandlesKHR.html)で

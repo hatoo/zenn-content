@@ -336,7 +336,7 @@ fn main() {
             std::mem::size_of::<vk::AabbPositionsKHR>() as u64,
             vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS
                 | vk::BufferUsageFlags::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_KHR,
-            vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
+            vk::MemoryPropertyFlags::HOST_VISIBLE,
             &device,
             device_memory_properties,
         );
@@ -484,7 +484,7 @@ fn main() {
             instance_buffer_size as vk::DeviceSize,
             vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS
                 | vk::BufferUsageFlags::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_KHR,
-            vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
+            vk::MemoryPropertyFlags::HOST_VISIBLE,
             &device,
             device_memory_properties,
         );
@@ -1175,7 +1175,7 @@ fn main() {
             .memory_type_index(get_memory_type_index(
                 device_memory_properties,
                 dst_mem_reqs.memory_type_bits,
-                vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
+                vk::MemoryPropertyFlags::HOST_VISIBLE,
             ));
 
         unsafe { device.allocate_memory(&dst_mem_alloc_info, None) }.unwrap()
