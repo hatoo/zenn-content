@@ -70,9 +70,7 @@ pub fn main_miss(
 ) {
     let unit_direction = world_ray_direction.normalize();
     let t = 0.5 * (unit_direction.y + 1.0);
-    // https://github.com/EmbarkStudios/rust-gpu/issues/796
-    // let color = vec3(1.0, 1.0, 1.0).lerp(vec3(0.5, 0.7, 1.0), t);
-    let color = (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
+    let color = vec3(1.0, 1.0, 1.0).lerp(vec3(0.5, 0.7, 1.0), t);
 
     *out = RayPayload {
         is_miss: true,
