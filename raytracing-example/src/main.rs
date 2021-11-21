@@ -337,7 +337,9 @@ fn main() {
             std::mem::size_of::<vk::AabbPositionsKHR>() as u64,
             vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS
                 | vk::BufferUsageFlags::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_KHR,
-            vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::DEVICE_LOCAL,
+            vk::MemoryPropertyFlags::HOST_VISIBLE
+                | vk::MemoryPropertyFlags::HOST_COHERENT
+                | vk::MemoryPropertyFlags::DEVICE_LOCAL,
             &device,
             device_memory_properties,
         );
@@ -485,7 +487,9 @@ fn main() {
             instance_buffer_size as vk::DeviceSize,
             vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS
                 | vk::BufferUsageFlags::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_KHR,
-            vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::DEVICE_LOCAL,
+            vk::MemoryPropertyFlags::HOST_VISIBLE
+                | vk::MemoryPropertyFlags::HOST_COHERENT
+                | vk::MemoryPropertyFlags::DEVICE_LOCAL,
             &device,
             device_memory_properties,
         );
@@ -638,7 +642,9 @@ fn main() {
         let mut material_buffer = BufferResource::new(
             buffer_size,
             vk::BufferUsageFlags::STORAGE_BUFFER,
-            vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::DEVICE_LOCAL,
+            vk::MemoryPropertyFlags::HOST_VISIBLE
+                | vk::MemoryPropertyFlags::HOST_COHERENT
+                | vk::MemoryPropertyFlags::DEVICE_LOCAL,
             &device,
             device_memory_properties,
         );
@@ -905,7 +911,9 @@ fn main() {
         let mut shader_binding_table_buffer = BufferResource::new(
             table_size as u64,
             vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
-            vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::DEVICE_LOCAL,
+            vk::MemoryPropertyFlags::HOST_VISIBLE
+                | vk::MemoryPropertyFlags::HOST_COHERENT
+                | vk::MemoryPropertyFlags::DEVICE_LOCAL,
             &device,
             device_memory_properties,
         );
@@ -1177,7 +1185,7 @@ fn main() {
             .memory_type_index(get_memory_type_index(
                 device_memory_properties,
                 dst_mem_reqs.memory_type_bits,
-                vk::MemoryPropertyFlags::HOST_VISIBLE,
+                vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
             ));
 
         unsafe { device.allocate_memory(&dst_mem_alloc_info, None) }.unwrap()
