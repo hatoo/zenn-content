@@ -849,8 +849,10 @@ fn main() {
     let descriptor_pool =
         unsafe { device.create_descriptor_pool(&descriptor_pool_info, None) }.unwrap();
 
+    let descriptor_counts = [1];
+
     let mut count_allocate_info = vk::DescriptorSetVariableDescriptorCountAllocateInfo::builder()
-        .descriptor_counts(&[1])
+        .descriptor_counts(&descriptor_counts)
         .build();
 
     let descriptor_sets = unsafe {
