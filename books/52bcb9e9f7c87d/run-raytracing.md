@@ -1169,5 +1169,3 @@ fn aligned_size(value: u32, alignment: u32) -> u32 {
 # まとめ
 
 みなさんが[Ray Tracing in One Weekend — The Book Series](https://raytracing.github.io/)をやったときどのように実装したかはわかりませんが、VKRを使うことでそれよりかなり速くレイトレーシングできたのではないでしょうか？
-
-性能に大きく影響するBVHの最適化をVKRに丸投げできたのでこれより大きく性能を上げる余地は(おそらく)そんなにないというのもうれしいポイントです。
