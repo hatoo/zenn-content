@@ -254,7 +254,8 @@ pub fn triangle_closest_hit(
         object_to_world.x.dot(nrm),
         object_to_world.y.dot(nrm),
         object_to_world.z.dot(nrm),
-    ) + object_to_world.w;
+    )
+    .normalize();
 
     *out = RayPayload::new(hit_pos, normal, world_ray_direction, instance_custom_index);
 }

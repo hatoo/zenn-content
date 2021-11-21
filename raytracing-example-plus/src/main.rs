@@ -1945,6 +1945,7 @@ fn sample_scene(
             },
         },
         EnumMaterialPod::new_lambertian(vec3(1.0, 0.0, 0.0)),
+        // EnumMaterialPod::new_metal(vec3(0.0, 0.0, 0.0), 0.4),
     ));
 
     world.push((
