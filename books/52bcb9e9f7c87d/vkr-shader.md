@@ -282,7 +282,7 @@ pub fn main_miss(
 # Intersection, Closest-Hit Shaderの作成
 
 目的とするシーンには球しか存在しないので、球のためのIntersection ShaderとClosest-Hit Shaderをつくるだけです。
-BLASに中心が原点で長さが2のAABB(半径1の球)を用意して、TLASから変換行列(拡大含む)でそのBLASを参照していく想定です。
+BLASに中心が原点で各長さが2のAABB(半径1の球)を用意して、TLASから変換行列(拡大含む)でそのBLASを参照していく想定です。
 レイを移動させると実質、対象の物体を動かしたことになることを思い出してください。やっていない方は[Ray Tracing: The Next Week](https://raytracing.github.io/books/RayTracingTheNextWeek.html#instances)のInstancesをやるとよいでしょう。
 
 ```mermaid
