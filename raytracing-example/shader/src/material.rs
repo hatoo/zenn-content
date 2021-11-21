@@ -37,14 +37,17 @@ pub struct EnumMaterial {
     t: u32,
 }
 
+#[repr(transparent)]
 struct Lambertian<'a> {
     data: &'a EnumMaterialData,
 }
 
+#[repr(transparent)]
 struct Metal<'a> {
     data: &'a EnumMaterialData,
 }
 
+#[repr(transparent)]
 struct Dielectric<'a> {
     data: &'a EnumMaterialData,
 }
