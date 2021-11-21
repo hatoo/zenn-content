@@ -578,6 +578,25 @@ fn sample_scene(
     };
  ```
 
+ マテリアルのリストもつくったのでGPUに入れておきます
+
+ ```rust:src/main.rs
+    let material_buffer = {
+        let buffer_size = bytemuck::cast_slice::<_, u8>(&materials).len() as vk::DeviceSize;
+
+        let mut material_buffer = BufferResource::new(
+            buffer_size,
+            vk::BufferUsageFlags::STORAGE_BUFFER,
+            vk::MemoryPropertyFlags::HOST_VISIBLE,
+            &device,
+            device_memory_properties,
+        );
+        material_buffer.store(&materials, &device);
+
+        material_buffer
+    };
+```
+
 # レイトレーシングパイプラインをつくる
 
 RaytracingPipelineはレイトレーシング用のGraphicsPipelineのようなものです。
