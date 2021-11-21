@@ -816,7 +816,7 @@ fn main() {
 
         let mut shader_binding_table_buffer = BufferResource::new(
             table_size as u64,
-            vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS | vk::BufferUsageFlags::TRANSFER_SRC,
+            vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
             vk::MemoryPropertyFlags::HOST_VISIBLE,
             &device,
             device_memory_properties,
