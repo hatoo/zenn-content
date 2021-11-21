@@ -325,3 +325,7 @@ void main()
 この例ではあまり問題になりませんがrust-gpuで生成されたSPIR-Vは最適化が甘い可能性があります。
 ただ、ドライバはSPIR-VをさらにGPU用のコードに変換して実行するのでそこで最適化されることに期待しましょう。
 :::
+
+:::message
+`#[spirv(...)]`で他にどのような機能が使えるかを知りたい方は[ソース](https://github.com/EmbarkStudios/rust-gpu/blob/main/crates/rustc_codegen_spirv/src/symbols.rs)をみてエスパーするとよいでしょう。
+:::
