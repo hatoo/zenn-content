@@ -1926,7 +1926,7 @@ fn sample_scene(
     world.push((
         vk::AccelerationStructureInstanceKHR {
             transform: vk::TransformMatrixKHR {
-                matrix: [4.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, -1.0, 1.2],
+                matrix: [4.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.2],
             },
             instance_custom_index_and_mask: 0xff << 24,
             instance_shader_binding_table_record_offset_and_flags:
