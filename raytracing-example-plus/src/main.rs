@@ -1176,9 +1176,9 @@ fn main() {
             rt_pipeline_properties.shader_group_base_alignment,
         ) as u64;
 
-        // |[ raygen shader ]|[ miss shader ]|[ hit shader  ]|
-        // |                 |               |               |
-        // | 0               | 1             | 2             |
+        // |[ raygen shader ]|[ miss shader ]|[ hit shader  ]|[ hit shader  ]|
+        // |                 |               |               |               |
+        // | 0               | 1             | 2             | 3             |
 
         let sbt_address =
             unsafe { get_buffer_device_address(&device, shader_binding_table_buffer.buffer) };

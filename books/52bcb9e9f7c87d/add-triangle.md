@@ -283,3 +283,9 @@ fn sample_scene(
     // ...
 }
 ```
+
+# 動かす
+
+あとはDescriptorにVertexとIndexバッファーを追加して、SBTでHit Record二個分の領域を確保するだけです。
+
+// TODO
