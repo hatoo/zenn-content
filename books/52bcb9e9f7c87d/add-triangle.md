@@ -51,6 +51,7 @@ pub fn triangle_closest_hit(
     let nrm = v0.normal * barycentrics.x + v1.normal * barycentrics.y + v2.normal * barycentrics.z;
 
     // 座標変換
+    // 行列*ベクトルの演算をする簡単な関数はrust-gpuにはまだない
     // asm!(...)を使えば1命令でできそうだが簡単のために自力で計算している
     let hit_pos = vec3(
         object_to_world.x.dot(pos),
