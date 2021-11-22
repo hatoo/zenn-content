@@ -482,8 +482,7 @@ fn main() {
 
         let mut vertex_buffer = BufferResource::new(
             vertex_buffer_size as vk::DeviceSize,
-            vk::BufferUsageFlags::VERTEX_BUFFER
-                | vk::BufferUsageFlags::STORAGE_BUFFER
+            vk::BufferUsageFlags::STORAGE_BUFFER
                 | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS
                 | vk::BufferUsageFlags::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_KHR,
             vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
@@ -497,8 +496,7 @@ fn main() {
 
         let mut index_buffer = BufferResource::new(
             index_buffer_size as vk::DeviceSize,
-            vk::BufferUsageFlags::INDEX_BUFFER
-                | vk::BufferUsageFlags::STORAGE_BUFFER
+            vk::BufferUsageFlags::STORAGE_BUFFER
                 | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS
                 | vk::BufferUsageFlags::ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_KHR,
             vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
