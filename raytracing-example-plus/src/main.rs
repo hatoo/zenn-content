@@ -13,7 +13,7 @@ use ash::{
     vk::{self},
 };
 
-use glam::{uvec3, vec3, UVec3};
+use glam::vec3;
 use rand::prelude::*;
 use shader::pod::EnumMaterialPod;
 
@@ -29,7 +29,7 @@ fn main() {
     const HEIGHT: u32 = 800;
     const COLOR_FORMAT: vk::Format = vk::Format::R32G32B32A32_SFLOAT;
 
-    const N_SAMPLES: u32 = 5000;
+    const N_SAMPLES: u32 = 1000;
     const N_SAMPLES_ITER: u32 = 100;
 
     let validation_layers: Vec<CString> = if ENABLE_VALIDATION_LAYER {
@@ -470,23 +470,14 @@ fn main() {
 
     let (bottom_as_triangle, bottom_as_triangle_buffer, vertex_buffer, index_buffer) = {
         let vertices = [
-            shader::Vertex {
-                position: vec3(1.0, 1.0, 0.0),
-                normal: vec3(0.0, 0.0, -1.0),
-            },
-            shader::Vertex {
-                position: vec3(0.0, -1.0, 0.0),
-                normal: vec3(0.0, 0.0, -1.0),
-            },
-            shader::Vertex {
-                position: vec3(-1.0, 1.0, 0.0),
-                normal: vec3(0.0, 0.0, -1.0),
-            },
+            [1.0f32, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
+            [0.0, -1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
+            [-1.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
         ];
 
-        let indices = [uvec3(0, 1, 2)];
+        let indices = [0u32, 1, 2];
 
-        let vertex_stride = std::mem::size_of::<shader::Vertex>();
+        let vertex_stride = std::mem::size_of::<f32>() * 8;
         let vertex_buffer_size = vertex_stride * vertices.len();
 
         let mut vertex_buffer = BufferResource::new(
@@ -502,7 +493,7 @@ fn main() {
 
         vertex_buffer.store(&vertices, &device);
 
-        let index_buffer_size = std::mem::size_of::<UVec3>() * indices.len();
+        let index_buffer_size = std::mem::size_of::<f32>() * 3 * indices.len();
 
         let mut index_buffer = BufferResource::new(
             index_buffer_size as vk::DeviceSize,
@@ -1208,7 +1199,7 @@ fn main() {
 
         let sbt_hit_region = vk::StridedDeviceAddressRegionKHR::builder()
             .device_address(sbt_address + 2 * handle_size_aligned)
-            .size(handle_size_aligned)
+            .size(2 * handle_size_aligned)
             .stride(handle_size_aligned)
             .build();
 
@@ -1939,13 +1930,17 @@ fn sample_scene(
             },
             instance_custom_index_and_mask: 0xff << 24,
             instance_shader_binding_table_record_offset_and_flags:
-                vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE.as_raw() << 24 | 1,
+                (vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE
+                    | vk::GeometryInstanceFlagsKHR::TRIANGLE_FACING_CULL_DISABLE)
+                    .as_raw()
+                    << 24
+                    | 1,
             acceleration_structure_reference: vk::AccelerationStructureReferenceKHR {
                 device_handle: triangle_accel_handle,
             },
         },
-        EnumMaterialPod::new_lambertian(vec3(1.0, 0.0, 0.0)),
-        // EnumMaterialPod::new_metal(vec3(0.0, 0.0, 0.0), 0.4),
+        // EnumMaterialPod::new_lambertian(vec3(1.0, 0.0, 0.0)),
+        EnumMaterialPod::new_metal(vec3(0.7, 0.6, 0.5), 0.0),
     ));
 
     world.push((

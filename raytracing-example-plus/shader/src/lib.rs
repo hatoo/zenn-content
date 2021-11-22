@@ -225,17 +225,16 @@ pub struct Vertex {
 pub fn triangle_closest_hit(
     #[spirv(hit_attribute)] attribute: &Vec2,
     #[spirv(object_to_world)] object_to_world: Affine3,
+    #[spirv(world_to_object)] world_to_object: Affine3,
     #[spirv(world_ray_direction)] world_ray_direction: Vec3,
     #[spirv(storage_buffer, descriptor_set = 0, binding = 3)] vertices: &[Vertex],
-    #[spirv(storage_buffer, descriptor_set = 0, binding = 4)] indices: &[UVec3],
+    #[spirv(storage_buffer, descriptor_set = 0, binding = 4)] indices: &[u32],
     #[spirv(incoming_ray_payload)] out: &mut RayPayload,
     #[spirv(instance_custom_index)] instance_custom_index: u32,
 ) {
-    let index = indices[instance_custom_index as usize];
-
-    let v0 = vertices[index.x as usize];
-    let v1 = vertices[index.y as usize];
-    let v2 = vertices[index.z as usize];
+    let v0 = vertices[indices[3 * instance_custom_index as usize + 0] as usize];
+    let v1 = vertices[indices[3 * instance_custom_index as usize + 1] as usize];
+    let v2 = vertices[indices[3 * instance_custom_index as usize + 2] as usize];
 
     let barycentrics = vec3(1.0 - attribute.x - attribute.y, attribute.x, attribute.y);
 
@@ -251,9 +250,9 @@ pub fn triangle_closest_hit(
     ) + object_to_world.w;
 
     let normal = vec3(
-        object_to_world.x.dot(nrm),
-        object_to_world.y.dot(nrm),
-        object_to_world.z.dot(nrm),
+        world_to_object.x.dot(nrm),
+        world_to_object.y.dot(nrm),
+        world_to_object.z.dot(nrm),
     )
     .normalize();
 
