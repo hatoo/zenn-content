@@ -86,6 +86,7 @@ pub fn triangle_closest_hit(
         let vertex_stride = std::mem::size_of::<f32>() * 8;
         let vertex_buffer_size = vertex_stride * vertices.len();
 
+        // Vertex用のバッファを作成。これはBLASの作成にも使うしシェーダーにも渡す。
         let mut vertex_buffer = BufferResource::new(
             vertex_buffer_size as vk::DeviceSize,
             vk::BufferUsageFlags::STORAGE_BUFFER
@@ -98,7 +99,8 @@ pub fn triangle_closest_hit(
 
         vertex_buffer.store(&VERTICES, &device);
 
-        let index_buffer_size = std::mem::size_of::<f32>() * 3 * INDICES.len();
+        // Index用のバッファを作成。これもBLASの作成にも使うしシェーダーにも渡す。
+        let index_buffer_size = std::mem::size_of::<u32>() * INDICES.len();
 
         let mut index_buffer = BufferResource::new(
             index_buffer_size as vk::DeviceSize,

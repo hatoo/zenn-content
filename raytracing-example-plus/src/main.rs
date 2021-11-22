@@ -492,7 +492,7 @@ fn main() {
 
         vertex_buffer.store(&VERTICES, &device);
 
-        let index_buffer_size = std::mem::size_of::<f32>() * 3 * INDICES.len();
+        let index_buffer_size = std::mem::size_of::<u32>() * INDICES.len();
 
         let mut index_buffer = BufferResource::new(
             index_buffer_size as vk::DeviceSize,
