@@ -469,16 +469,16 @@ fn main() {
     };
 
     let (bottom_as_triangle, bottom_as_triangle_buffer, vertex_buffer, index_buffer) = {
-        let vertices = [
-            [1.0f32, -1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
+        const VERTICES: [[f32; 8]; 3] = [
+            [1.0, -1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
             [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
             [-1.0, -1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
         ];
 
-        let indices = [0u32, 1, 2];
+        const INDICES: [u32; 3] = [0u32, 1, 2];
 
         let vertex_stride = std::mem::size_of::<f32>() * 8;
-        let vertex_buffer_size = vertex_stride * vertices.len();
+        let vertex_buffer_size = vertex_stride * VERTICES.len();
 
         let mut vertex_buffer = BufferResource::new(
             vertex_buffer_size as vk::DeviceSize,
@@ -491,9 +491,9 @@ fn main() {
             device_memory_properties,
         );
 
-        vertex_buffer.store(&vertices, &device);
+        vertex_buffer.store(&VERTICES, &device);
 
-        let index_buffer_size = std::mem::size_of::<f32>() * 3 * indices.len();
+        let index_buffer_size = std::mem::size_of::<f32>() * 3 * INDICES.len();
 
         let mut index_buffer = BufferResource::new(
             index_buffer_size as vk::DeviceSize,
@@ -506,7 +506,7 @@ fn main() {
             device_memory_properties,
         );
 
-        index_buffer.store(&indices, &device);
+        index_buffer.store(&INDICES, &device);
 
         let geometry = vk::AccelerationStructureGeometryKHR::builder()
             .geometry_type(vk::GeometryTypeKHR::TRIANGLES)
@@ -517,7 +517,7 @@ fn main() {
                             get_buffer_device_address(&device, vertex_buffer.buffer)
                         },
                     })
-                    .max_vertex(vertices.len() as u32 - 1)
+                    .max_vertex(VERTICES.len() as u32 - 1)
                     .vertex_stride(vertex_stride as u64)
                     .vertex_format(vk::Format::R32G32B32_SFLOAT)
                     .index_data(vk::DeviceOrHostAddressConstKHR {
@@ -533,7 +533,7 @@ fn main() {
 
         let build_range_info = vk::AccelerationStructureBuildRangeInfoKHR::builder()
             .first_vertex(0)
-            .primitive_count(indices.len() as u32)
+            .primitive_count(INDICES.len() as u32)
             .primitive_offset(0)
             .transform_offset(0)
             .build();
