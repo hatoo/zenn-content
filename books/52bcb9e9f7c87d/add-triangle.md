@@ -288,4 +288,4 @@ fn sample_scene(
 
 あとはDescriptorにVertexとIndexバッファーを追加して、SBTでHit Record二個分の領域を確保するだけです。
 
-// TODO
+![plus triangle](/images/plus-triangle.png)
