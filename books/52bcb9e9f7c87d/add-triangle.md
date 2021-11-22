@@ -84,7 +84,7 @@ pub fn triangle_closest_hit(
             [-1.0, -1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
         ];
 
-        const INDICES: [u32; 3] = [0u32, 1, 2];
+        const INDICES: [u32; 3] = [0, 1, 2];
 
         let vertex_stride = std::mem::size_of::<f32>() * 8;
         let vertex_buffer_size = vertex_stride * vertices.len();
