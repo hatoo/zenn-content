@@ -1939,7 +1939,6 @@ fn sample_scene(
                 device_handle: triangle_accel_handle,
             },
         },
-        // EnumMaterialPod::new_lambertian(vec3(1.0, 0.0, 0.0)),
         EnumMaterialPod::new_metal(vec3(0.7, 0.6, 0.5), 0.0),
     ));
 
