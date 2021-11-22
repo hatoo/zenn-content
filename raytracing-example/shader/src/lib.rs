@@ -41,7 +41,20 @@ pub struct RayPayload {
 }
 
 impl RayPayload {
-    pub fn new(position: Vec3, outward_normal: Vec3, ray_direction: Vec3, material: u32) -> Self {
+    pub fn new_miss(color: Vec3) -> Self {
+        Self {
+            is_miss: true,
+            position: color,
+            ..Default::default()
+        }
+    }
+
+    pub fn new_hit(
+        position: Vec3,
+        outward_normal: Vec3,
+        ray_direction: Vec3,
+        material: u32,
+    ) -> Self {
         let front_face = ray_direction.dot(outward_normal) < 0.0;
         let normal = if front_face {
             outward_normal
@@ -72,11 +85,7 @@ pub fn main_miss(
     let t = 0.5 * (unit_direction.y + 1.0);
     let color = vec3(1.0, 1.0, 1.0).lerp(vec3(0.5, 0.7, 1.0), t);
 
-    *out = RayPayload {
-        is_miss: true,
-        position: color,
-        ..Default::default()
-    };
+    *out = RayPayload::new_miss(color);
 }
 
 #[spirv(ray_generation)]
@@ -212,5 +221,5 @@ pub fn sphere_closest_hit(
 ) {
     let hit_pos = world_ray_origin + *t * world_ray_direction;
     let normal = (hit_pos - object_to_world.w).normalize();
-    *out = RayPayload::new(hit_pos, normal, world_ray_direction, instance_custom_index);
+    *out = RayPayload::new_hit(hit_pos, normal, world_ray_direction, instance_custom_index);
 }

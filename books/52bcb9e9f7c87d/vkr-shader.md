@@ -259,6 +259,17 @@ pub struct RayPayload {
 `RayPayload`型が定義できたので早速Miss Shaderを書いていきます。といってもRay Tracing in One Weekendと同じように空を描くだけです。
 
 ```rust:shader/src/lib.rs
+impl RayPayload {
+    pub fn new_miss(color: Vec3) -> Self {
+        Self {
+            is_miss: true,
+            position: color,
+            ..Default::default()
+        }
+    }
+}
+
+
 #[spirv(miss)]
 pub fn main_miss(
     // レイの方向
@@ -270,11 +281,7 @@ pub fn main_miss(
     let t = 0.5 * (unit_direction.y + 1.0);
     let color = vec3(1.0, 1.0, 1.0).lerp(vec3(0.5, 0.7, 1.0), t);
 
-    *out = RayPayload {
-        is_miss: true,
-        position: color,
-        ..Default::default()
-    };
+    *out = RayPayload::new_miss(color);
 }
 ```
 
