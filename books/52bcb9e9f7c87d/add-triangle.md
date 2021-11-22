@@ -32,12 +32,14 @@ pub fn triangle_closest_hit(
     // あらかじめ用意しておく
     #[spirv(storage_buffer, descriptor_set = 0, binding = 4)] indices: &[u32],
     #[spirv(incoming_ray_payload)] out: &mut RayPayload,
+    // 面の番号
+    #[spirv(primitive_id)] primitive_id: u32,
     #[spirv(instance_custom_index)] instance_custom_index: u32,
 ) {
     // 各頂点の座標
-    let v0 = vertices[indices[3 * instance_custom_index as usize + 0] as usize];
-    let v1 = vertices[indices[3 * instance_custom_index as usize + 1] as usize];
-    let v2 = vertices[indices[3 * instance_custom_index as usize + 2] as usize];
+    let v0 = vertices[indices[3 * primitive_id as usize + 0] as usize];
+    let v1 = vertices[indices[3 * primitive_id as usize + 1] as usize];
+    let v2 = vertices[indices[3 * primitive_id as usize + 2] as usize];
 
     let barycentrics = vec3(1.0 - attribute.x - attribute.y, attribute.x, attribute.y);
 
@@ -243,4 +245,40 @@ pub fn triangle_closest_hit(
         }
         (bottom_as, bottom_as_buffer, vertex_buffer, index_buffer)
     };
+```
+
+# TLASにBLASを配置する
+
+```rust:src/main.rs
+fn sample_scene(
+    sphere_accel_handle: u64,
+    // 三角形のBLASのハンドル
+    triangle_accel_handle: u64,
+) -> (
+    Vec<vk::AccelerationStructureInstanceKHR>,
+    Vec<EnumMaterialPod>,
+) {
+    // ...
+
+    world.push((
+        vk::AccelerationStructureInstanceKHR {
+            transform: vk::TransformMatrixKHR {
+                matrix: [4.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.2],
+            },
+            instance_custom_index_and_mask: 0xff << 24,
+            instance_shader_binding_table_record_offset_and_flags:
+                // 球とは違うシェーダーが動いてほしいのでオフセットを設定している
+                (vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE
+                    | vk::GeometryInstanceFlagsKHR::TRIANGLE_FACING_CULL_DISABLE)
+                    .as_raw()
+                    << 24
+                    | 1,
+            acceleration_structure_reference: vk::AccelerationStructureReferenceKHR {
+                device_handle: triangle_accel_handle,
+            },
+        },
+        EnumMaterialPod::new_metal(vec3(0.7, 0.6, 0.5), 0.0),
+    ));
+
+    // ...
 ```

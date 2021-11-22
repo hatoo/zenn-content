@@ -238,11 +238,12 @@ pub fn triangle_closest_hit(
     #[spirv(storage_buffer, descriptor_set = 0, binding = 3)] vertices: &[Vertex],
     #[spirv(storage_buffer, descriptor_set = 0, binding = 4)] indices: &[u32],
     #[spirv(incoming_ray_payload)] out: &mut RayPayload,
+    #[spirv(primitive_id)] primitive_id: u32,
     #[spirv(instance_custom_index)] instance_custom_index: u32,
 ) {
-    let v0 = vertices[indices[3 * instance_custom_index as usize + 0] as usize];
-    let v1 = vertices[indices[3 * instance_custom_index as usize + 1] as usize];
-    let v2 = vertices[indices[3 * instance_custom_index as usize + 2] as usize];
+    let v0 = vertices[indices[3 * primitive_id as usize + 0] as usize];
+    let v1 = vertices[indices[3 * primitive_id as usize + 1] as usize];
+    let v2 = vertices[indices[3 * primitive_id as usize + 2] as usize];
 
     let barycentrics = vec3(1.0 - attribute.x - attribute.y, attribute.x, attribute.y);
 

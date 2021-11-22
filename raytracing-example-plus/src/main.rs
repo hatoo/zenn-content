@@ -1922,25 +1922,6 @@ fn sample_scene(
     let mut world = Vec::new();
 
     world.push((
-        vk::AccelerationStructureInstanceKHR {
-            transform: vk::TransformMatrixKHR {
-                matrix: [4.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.2],
-            },
-            instance_custom_index_and_mask: 0xff << 24,
-            instance_shader_binding_table_record_offset_and_flags:
-                (vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE
-                    | vk::GeometryInstanceFlagsKHR::TRIANGLE_FACING_CULL_DISABLE)
-                    .as_raw()
-                    << 24
-                    | 1,
-            acceleration_structure_reference: vk::AccelerationStructureReferenceKHR {
-                device_handle: triangle_accel_handle,
-            },
-        },
-        EnumMaterialPod::new_metal(vec3(0.7, 0.6, 0.5), 0.0),
-    ));
-
-    world.push((
         create_sphere_instance(vec3(0.0, -1000.0, 0.0), 1000.0, sphere_accel_handle),
         EnumMaterialPod::new_lambertian(vec3(0.5, 0.5, 0.5)),
     ));
@@ -2000,6 +1981,25 @@ fn sample_scene(
 
     world.push((
         create_sphere_instance(vec3(4.0, 1.0, 0.0), 1.0, sphere_accel_handle),
+        EnumMaterialPod::new_metal(vec3(0.7, 0.6, 0.5), 0.0),
+    ));
+
+    world.push((
+        vk::AccelerationStructureInstanceKHR {
+            transform: vk::TransformMatrixKHR {
+                matrix: [4.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.2],
+            },
+            instance_custom_index_and_mask: 0xff << 24,
+            instance_shader_binding_table_record_offset_and_flags:
+                (vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE
+                    | vk::GeometryInstanceFlagsKHR::TRIANGLE_FACING_CULL_DISABLE)
+                    .as_raw()
+                    << 24
+                    | 1,
+            acceleration_structure_reference: vk::AccelerationStructureReferenceKHR {
+                device_handle: triangle_accel_handle,
+            },
+        },
         EnumMaterialPod::new_metal(vec3(0.7, 0.6, 0.5), 0.0),
     ));
 
