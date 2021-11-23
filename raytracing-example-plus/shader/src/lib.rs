@@ -23,7 +23,6 @@ use spirv_std::{
 pub mod camera;
 pub mod material;
 pub mod math;
-pub mod pod;
 pub mod rand;
 
 #[derive(Clone, Copy, Default)]

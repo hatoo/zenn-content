@@ -480,6 +480,35 @@ pub trait Material {
 
 本当は`Option<Scatter>`を返したいのですが、`Option<T>`は使えないので`&mut Scatter`を編集してもらって返り値の`bool`でその`Scatter`が有効かどうか返してもらいます。
 ```rust:shader/src/material.rs
+impl EnumMaterial {
+    pub fn new_lambertian(albedo: Vec3) -> Self {
+        Self {
+            data: EnumMaterialData {
+                v0: vec4(albedo.x, albedo.y, albedo.z, 0.0),
+            },
+            t: 0,
+        }
+    }
+
+    pub fn new_metal(albedo: Vec3, fuzz: f32) -> Self {
+        Self {
+            data: EnumMaterialData {
+                v0: vec4(albedo.x, albedo.y, albedo.z, fuzz),
+            },
+            t: 1,
+        }
+    }
+
+    pub fn new_dielectric(ir: f32) -> Self {
+        Self {
+            data: EnumMaterialData {
+                v0: vec4(ir, 0.0, 0.0, 0.0),
+            },
+            t: 2,
+        }
+    }
+}
+
 impl Material for EnumMaterial {
     fn scatter(
         &self,
@@ -498,47 +527,6 @@ impl Material for EnumMaterial {
 ```
 
 各マテリアルの実装はソースを見てください。Ray Tracing in One Weekendそのままです。
-
-実際のマテリアルのデータはCPUでつくるため、Vulkanにデータを渡すためにどうにかして上記の`&[EnumMaterial]`を`&[u8]`にしなければなりません。
-そういう用途では[bytemuck](https://crates.io/crates/bytemuck)がよく使われますが、`spirv-std`にはいっている`glam`は現状`bytemuck`に対応していないので自分で作ります。
-
-```rust:shader/src/pod.rs
-#[derive(Clone, Copy, Default, Zeroable, Pod)]
-#[repr(C)]
-pub struct EnumMaterialPod {
-    data: [f32; 4],
-    t: u32,
-    _pad: [f32; 3],
-}
-
-impl EnumMaterialPod {
-    pub fn new_lambertian(albedo: Vec3) -> Self {
-        Self {
-            data: [albedo.x, albedo.y, albedo.z, 0.0],
-            t: 0,
-            _pad: [0.0, 0.0, 0.0],
-        }
-    }
-
-    pub fn new_metal(albedo: Vec3, fuzz: f32) -> Self {
-        Self {
-            data: [albedo.x, albedo.y, albedo.z, fuzz],
-            t: 1,
-            _pad: [0.0, 0.0, 0.0],
-        }
-    }
-
-    pub fn new_dielectric(ir: f32) -> Self {
-        Self {
-            data: [ir, 0.0, 0.0, 0.0],
-            t: 2,
-            _pad: [0.0, 0.0, 0.0],
-        }
-    }
-}
-```
-
-POD(plain old data)という表現を`bytemuck`から拝借してきて`EnumMaterialPod`型をつくりました。これは`EnumMaterial`と完全に同じレイアウトをしています。これをCPUでつくってGPUに渡すというわけです。
 
 # Ray Generation
 

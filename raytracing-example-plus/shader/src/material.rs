@@ -1,4 +1,4 @@
-use spirv_std::glam::{vec3, Vec3, Vec4, Vec4Swizzles};
+use spirv_std::glam::{vec3, vec4, Vec3, Vec4, Vec4Swizzles};
 #[allow(unused_imports)]
 use spirv_std::num_traits::Float;
 
@@ -179,6 +179,35 @@ impl<'a> Material for Dielectric<'a> {
             },
         };
         true
+    }
+}
+
+impl EnumMaterial {
+    pub fn new_lambertian(albedo: Vec3) -> Self {
+        Self {
+            data: EnumMaterialData {
+                v0: vec4(albedo.x, albedo.y, albedo.z, 0.0),
+            },
+            t: 0,
+        }
+    }
+
+    pub fn new_metal(albedo: Vec3, fuzz: f32) -> Self {
+        Self {
+            data: EnumMaterialData {
+                v0: vec4(albedo.x, albedo.y, albedo.z, fuzz),
+            },
+            t: 1,
+        }
+    }
+
+    pub fn new_dielectric(ir: f32) -> Self {
+        Self {
+            data: EnumMaterialData {
+                v0: vec4(ir, 0.0, 0.0, 0.0),
+            },
+            t: 2,
+        }
     }
 }
 

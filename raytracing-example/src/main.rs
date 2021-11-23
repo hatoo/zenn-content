@@ -15,7 +15,7 @@ use ash::{
 
 use glam::vec3;
 use rand::prelude::*;
-use shader::pod::EnumMaterialPod;
+use shader::material::EnumMaterial;
 
 #[repr(C)]
 #[derive(Clone, Debug, Copy)]
@@ -637,7 +637,7 @@ fn main() {
     };
 
     let material_buffer = {
-        let buffer_size = bytemuck::cast_slice::<_, u8>(&materials).len() as vk::DeviceSize;
+        let buffer_size = (materials.len() * std::mem::size_of::<EnumMaterial>()) as vk::DeviceSize;
 
         let mut material_buffer = BufferResource::new(
             buffer_size,
@@ -1661,16 +1661,13 @@ fn create_sphere_instance(
 
 fn sample_scene(
     sphere_accel_handle: u64,
-) -> (
-    Vec<vk::AccelerationStructureInstanceKHR>,
-    Vec<EnumMaterialPod>,
-) {
+) -> (Vec<vk::AccelerationStructureInstanceKHR>, Vec<EnumMaterial>) {
     let mut rng = StdRng::from_entropy();
     let mut world = Vec::new();
 
     world.push((
         create_sphere_instance(vec3(0.0, -1000.0, 0.0), 1000.0, sphere_accel_handle),
-        EnumMaterialPod::new_lambertian(vec3(0.5, 0.5, 0.5)),
+        EnumMaterial::new_lambertian(vec3(0.5, 0.5, 0.5)),
     ));
 
     for a in -11..11 {
@@ -1691,7 +1688,7 @@ fn sample_scene(
 
                         world.push((
                             create_sphere_instance(center, 0.3, sphere_accel_handle),
-                            EnumMaterialPod::new_lambertian(albedo),
+                            EnumMaterial::new_lambertian(albedo),
                         ));
                     }
                     x if x < 0.95 => {
@@ -1704,12 +1701,12 @@ fn sample_scene(
 
                         world.push((
                             create_sphere_instance(center, 0.2, sphere_accel_handle),
-                            EnumMaterialPod::new_metal(albedo, fuzz),
+                            EnumMaterial::new_metal(albedo, fuzz),
                         ));
                     }
                     _ => world.push((
                         create_sphere_instance(center, 0.2, sphere_accel_handle),
-                        EnumMaterialPod::new_dielectric(1.5),
+                        EnumMaterial::new_dielectric(1.5),
                     )),
                 }
             }
@@ -1718,17 +1715,17 @@ fn sample_scene(
 
     world.push((
         create_sphere_instance(vec3(0.0, 1.0, 0.0), 1.0, sphere_accel_handle),
-        EnumMaterialPod::new_dielectric(1.5),
+        EnumMaterial::new_dielectric(1.5),
     ));
 
     world.push((
         create_sphere_instance(vec3(-4.0, 1.0, 0.0), 1.0, sphere_accel_handle),
-        EnumMaterialPod::new_lambertian(vec3(0.4, 0.2, 0.1)),
+        EnumMaterial::new_lambertian(vec3(0.4, 0.2, 0.1)),
     ));
 
     world.push((
         create_sphere_instance(vec3(4.0, 1.0, 0.0), 1.0, sphere_accel_handle),
-        EnumMaterialPod::new_metal(vec3(0.7, 0.6, 0.5), 0.0),
+        EnumMaterial::new_metal(vec3(0.7, 0.6, 0.5), 0.0),
     ));
 
     let mut spheres = Vec::new();
