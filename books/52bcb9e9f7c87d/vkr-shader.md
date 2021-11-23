@@ -422,17 +422,16 @@ Ray Tracing in One Weekendででてきた三つのマテリアルを実装しま
 
 ```rust:shader/src/material.rs
 #[derive(Clone, Copy, Default)]
-#[repr(C)]
+#[repr(transparent)]
 pub struct EnumMaterialData {
     v0: Vec4,
 }
 
 #[derive(Clone, Copy, Default)]
-#[repr(C)]
 pub struct EnumMaterial {
-    data: EnumMaterialData,
     t: u32,
     // _pad: [u32; 3]
+    data: EnumMaterialData,
 }
 ```
 

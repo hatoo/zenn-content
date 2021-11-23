@@ -25,16 +25,15 @@ pub trait Material {
 }
 
 #[derive(Clone, Copy, Default)]
-#[repr(C)]
+#[repr(transparent)]
 pub struct EnumMaterialData {
     v0: Vec4,
 }
 
 #[derive(Clone, Copy, Default)]
-#[repr(C)]
 pub struct EnumMaterial {
-    data: EnumMaterialData,
     t: u32,
+    data: EnumMaterialData,
 }
 
 #[repr(transparent)]
