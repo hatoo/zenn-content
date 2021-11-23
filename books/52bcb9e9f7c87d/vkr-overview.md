@@ -79,6 +79,17 @@ VKRでは新たに
 これらが協調してレイトレーシングをします。
 Any-Hit ShaderとCallable Shaderはこの文章では実装しません。
 
+```mermaid
+graph TB
+    G[Ray Generation] --> RT{{レイの当たり判定}}
+    RT --> I[Intersection]
+    RT --> Miss
+    I --> A[Any-Hit]
+    A --> C[Closest Hit]
+    C --> G
+    Miss --> G
+```
+
 ## Ray Generation Shader
 
 レイトレーシングのエントリポイントです。
