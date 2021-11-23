@@ -220,15 +220,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "heck"
-version = "0.3.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6d621efb26863f0e9924c6ac577e8275e5e6b77455db64ffa6c65c904e9e132c"
-dependencies = [
- "unicode-segmentation",
-]
-
-[[package]]
 name = "indexmap"
 version = "1.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -261,9 +252,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.107"
+version = "0.2.108"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fbe5e23404da5b4f555ef85ebed98fb4083e55a00c317800bc2a50ede9f3d219"
+checksum = "8521a1b57e76b1ec69af7599e75e38e7b7fad6610f037db8c79b127201b5d119"
 
 [[package]]
 name = "libloading"
@@ -444,7 +435,7 @@ checksum = "7ef03e0a2b150c7a90d01faf6254c9c48a41e95fb2a8c2ac1c6f0d2b9aefc342"
 [[package]]
 name = "rustc_codegen_spirv"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#7f832800f2ed0a6e99533a56b9bcca0793015ac1"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#c1dd14d86368df660b11e80a4ba16dec5a9b3ee5"
 dependencies = [
  "ar",
  "bimap",
@@ -460,7 +451,6 @@ dependencies = [
  "smallvec",
  "spirv-tools",
  "syn",
- "topological-sort",
 ]
 
 [[package]]
@@ -537,7 +527,7 @@ dependencies = [
 [[package]]
 name = "spirv-builder"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#7f832800f2ed0a6e99533a56b9bcca0793015ac1"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#c1dd14d86368df660b11e80a4ba16dec5a9b3ee5"
 dependencies = [
  "memchr",
  "raw-string",
@@ -549,7 +539,7 @@ dependencies = [
 [[package]]
 name = "spirv-std"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#7f832800f2ed0a6e99533a56b9bcca0793015ac1"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#c1dd14d86368df660b11e80a4ba16dec5a9b3ee5"
 dependencies = [
  "bitflags",
  "glam",
@@ -561,9 +551,8 @@ dependencies = [
 [[package]]
 name = "spirv-std-macros"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#7f832800f2ed0a6e99533a56b9bcca0793015ac1"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#c1dd14d86368df660b11e80a4ba16dec5a9b3ee5"
 dependencies = [
- "heck",
  "proc-macro2",
  "quote",
  "spirv-types",
@@ -591,7 +580,7 @@ dependencies = [
 [[package]]
 name = "spirv-types"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#7f832800f2ed0a6e99533a56b9bcca0793015ac1"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#c1dd14d86368df660b11e80a4ba16dec5a9b3ee5"
 
 [[package]]
 name = "syn"
@@ -603,18 +592,6 @@ dependencies = [
  "quote",
  "unicode-xid",
 ]
-
-[[package]]
-name = "topological-sort"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aa7c7f42dea4b1b99439786f5633aeb9c14c1b53f75e282803c2ec2ad545873c"
-
-[[package]]
-name = "unicode-segmentation"
-version = "1.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8895849a949e7845e06bd6dc1aa51731a103c42707010a5b591c0038fb73385b"
 
 [[package]]
 name = "unicode-xid"
