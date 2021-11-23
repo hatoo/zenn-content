@@ -551,6 +551,7 @@ pub fn main_ray_generation(
     let rand_seed = (launch_id.y * launch_size.x + launch_id.x) ^ constants.seed;
     let mut rng = DefaultRng::new(rand_seed);
 
+    // カメラの場所などは簡単のために固定値
     let camera = Camera::new(
         vec3(13.0, 2.0, 3.0),
         vec3(0.0, 0.0, 0.0),
