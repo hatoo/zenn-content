@@ -43,7 +43,7 @@ pub struct PushConstants {
 // 前章で書いたようにレイトレーシングのエントリポイントはRay Generation Shader
 #[spirv(ray_generation)]
 pub fn main_ray_generation(
-    // 並列実行された呼び出しのID。ここではこの値を出力のピクセル座標としている
+    // 並列実行された呼び出しのID。ここではこの値を出力のピクセルの座標としている
     #[spirv(launch_id)] launch_id: UVec3,
     // サイズ
     #[spirv(launch_size)] launch_size: UVec3,
