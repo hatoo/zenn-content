@@ -85,7 +85,7 @@ graph TB
     RT --> I[Intersection]
     RT --> Miss
     I --> A[Any-Hit]
-    A --> C[Closest Hit]
+    A --> C[Closest-Hit]
     C --> G
     Miss --> G
 ```
