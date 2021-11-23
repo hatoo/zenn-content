@@ -430,19 +430,9 @@ pub struct EnumMaterialData {
 #[derive(Clone, Copy, Default)]
 pub struct EnumMaterial {
     t: u32,
-    // _pad: [u32; 3]
     data: EnumMaterialData,
 }
 ```
-
-簡単にするためにデータ部分は`Vec4`で表したいので[16byteのアラインメント](https://www.w3.org/TR/WGSL/#alignment-and-size)が必要です。
-つまり、`[EnumMaterial]`は各要素が16byteでアラインメントされてなければならないので各要素は32byteの大きさを持ちます。
-
-アラインメントなどの情報に関しては、WGSLの仕様を見るとわかりやすいです。
-
-https://www.w3.org/TR/WGSL/
-
-WGSLはSPIR-Vと一対一に変換できることを狙っているのでかなり参考になります。
 
 絶対にポインタのキャストはやってはいけないので、各マテリアルは`&'a EnumMaterialData`をメンバに持つ`struct`として実装していきます。
 まず、マテリアルの`trait`を作ります。
