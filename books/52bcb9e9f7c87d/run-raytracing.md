@@ -862,7 +862,7 @@ RaytracingPipelineはレイトレーシング用のGraphicsPipelineのような�
 # Shader Binding Tableをつくる
 
 パイプラインからSBT用のバッファをつくります。これはシェーダーの情報が並んだ一次元配列です。すべての情報が連続してないといけないわけではありませんが、簡単のためにRay Generation, Miss, HitすべてのRecordを連続して確保します。
-[vkGetRayTracingShaderGroupHandlesKHR](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetRayTracingShaderGroupHandlesKHR.html)で得ることができますが、メモリのストライドが小さいので適切な大きさのストライドに再配置します。
+[vkGetRayTracingShaderGroupHandlesKHR](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkGetRayTracingShaderGroupHandlesKHR.html)でパイプラインに入っているShader Groupを得ることができますが、メモリのストライドが小さいので適切な大きさのストライドに再配置します。
 
 ```rust:/src/main.rs
 fn aligned_size(value: u32, alignment: u32) -> u32 {
