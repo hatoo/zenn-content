@@ -5,6 +5,15 @@ title: "三角形も描画してみる"
 前章まででVKRで球を描いていきましたが、もうすこしVKRに慣れるために追加で三角形も描画していきます。
 SBTの機能を使うことで、球を描く用のシェーダー、三角形を描く用のシェーダーを動的に切り替えることができます。
 
+```mermaid
+graph TB
+    TLAS -->|変換行列| BLAS["BLAS - 球"]
+    TLAS -->|変換行列| BLAS
+    TLAS -->|変換行列| BLAS
+    TLAS -->|変換行列| BLAS
+    TLAS -->|変換行列| BLAS2["BLAS - 三角形"]
+```
+
 今までのraytracing-exampleをコピーしてraytracing-example-plusとして続けていきます。
 コードは[こちら](https://github.com/hatoo/zenn-content/tree/master/raytracing-example-plus)。
 
