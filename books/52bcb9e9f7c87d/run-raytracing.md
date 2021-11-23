@@ -586,7 +586,7 @@ fn sample_scene(
 
  ```rust:src/main.rs
     let material_buffer = {
-        let buffer_size = bytemuck::cast_slice::<_, u8>(&materials).len() as vk::DeviceSize;
+        let buffer_size = (materials.len() * std::mem::size_of::<EnumMaterial>()) as vk::DeviceSize;
 
         let mut material_buffer = BufferResource::new(
             buffer_size,
