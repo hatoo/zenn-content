@@ -1,4 +1,4 @@
-title: "rust-gpuでレイトレーシングする"
+title: "rust-gpuではじめるVulkan Raytracing"
 summary: "rust-gpuとashでレイトレーシングします"
 topics: ["Rust", "rustgpu", "Vulkan"]
 published: false
