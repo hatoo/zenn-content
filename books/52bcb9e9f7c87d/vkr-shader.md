@@ -120,7 +120,7 @@ pub type DefaultRng = PCG32si;
 ピクセル座標から、どの位置からどの方向にレイを飛ばすかを決定します。
 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)のカメラをそのまま持ってきます。
 
-まず、`Ray`型を定義します。モーションブラーは今回は実装しないので位置と方向だけです。
+まず、`Ray`型を定義します。今回はモーションブラーを実装しないので位置と方向だけです。
 
 ```rust:shader/src/lib.rs
 #[derive(Clone, Copy, Default)]
