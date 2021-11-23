@@ -472,28 +472,28 @@ pub trait Material {
 impl EnumMaterial {
     pub fn new_lambertian(albedo: Vec3) -> Self {
         Self {
+            t: 0,
             data: EnumMaterialData {
                 v0: vec4(albedo.x, albedo.y, albedo.z, 0.0),
             },
-            t: 0,
         }
     }
 
     pub fn new_metal(albedo: Vec3, fuzz: f32) -> Self {
         Self {
+            t: 1,
             data: EnumMaterialData {
                 v0: vec4(albedo.x, albedo.y, albedo.z, fuzz),
             },
-            t: 1,
         }
     }
 
     pub fn new_dielectric(ir: f32) -> Self {
         Self {
+            t: 2,
             data: EnumMaterialData {
                 v0: vec4(ir, 0.0, 0.0, 0.0),
             },
-            t: 2,
         }
     }
 }
