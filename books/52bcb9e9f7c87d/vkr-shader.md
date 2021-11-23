@@ -322,7 +322,7 @@ impl RayPayload {
 }
 #[spirv(intersection)]
 pub fn sphere_intersection(
-    // TLASで登録した変換行列の逆で変換したレイの原点
+    // TLASで登録した変換行列の逆で変換した(つまりオブジェクトの空間の)レイの原点
     #[spirv(object_ray_origin)] ray_origin: Vec3,
     // TLASで登録した変換行列の逆で変換したレイの方向
     #[spirv(object_ray_direction)] ray_direction: Vec3,
