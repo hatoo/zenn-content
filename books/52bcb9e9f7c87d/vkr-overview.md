@@ -81,13 +81,13 @@ Any-Hit ShaderとCallable Shaderはこの文章では実装しません。
 
 ```mermaid
 graph TB
-    G[Ray Generation] --> RT{{レイの当たり判定}}
-    RT --> I[Intersection]
-    RT --> Miss
+    G[Ray Generation] --> I[Intersection]
     I --> A[Any-Hit]
-    A --> C[Closest-Hit]
-    C --> G
+    A --> H{"レイ当たった？"}
+    H -->|当たった| CH["Closest-Hit"]
+    H -->|当たってない| Miss
     Miss --> G
+    CH --> G
 ```
 
 ## Ray Generation Shader
