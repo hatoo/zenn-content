@@ -69,7 +69,7 @@ spirv-stdはSPIR-Vターゲットでのstdみたいなものに相当します�
 crate-type = ["lib", "dylib"]
 
 [dependencies]
-spirv-std = { git="https://github.com/EmbarkStudios/rust-gpu.git", features = ["glam"] }
+spirv-std = { git = "https://github.com/EmbarkStudios/rust-gpu.git", features = ["glam"] }
 ```
 
 vertexシェーダーとfragmentシェーダーを書いていきます。
