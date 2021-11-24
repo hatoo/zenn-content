@@ -11,7 +11,7 @@ graph TB
     TLAS -->|変換行列| BLAS
     TLAS -->|変換行列| BLAS
     TLAS -->|変換行列| BLAS
-    TLAS -->|変換行列| BLAS2["BLAS - 三角形"]
+    TLAS -->|"変換行列(とSBTオフセット)"| BLAS2["BLAS - 三角形"]
 ```
 
 今までのraytracing-exampleをコピーしてraytracing-example-plusとして続けていきます。
