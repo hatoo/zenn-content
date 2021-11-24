@@ -862,17 +862,13 @@ fn main() {
             vk::DescriptorSetLayoutBinding::builder()
                 .descriptor_count(1)
                 .descriptor_type(vk::DescriptorType::STORAGE_BUFFER)
-                .stage_flags(
-                    vk::ShaderStageFlags::CLOSEST_HIT_KHR | vk::ShaderStageFlags::ANY_HIT_KHR,
-                )
+                .stage_flags(vk::ShaderStageFlags::CLOSEST_HIT_KHR)
                 .binding(3)
                 .build(),
             vk::DescriptorSetLayoutBinding::builder()
                 .descriptor_count(1)
                 .descriptor_type(vk::DescriptorType::STORAGE_BUFFER)
-                .stage_flags(
-                    vk::ShaderStageFlags::CLOSEST_HIT_KHR | vk::ShaderStageFlags::ANY_HIT_KHR,
-                )
+                .stage_flags(vk::ShaderStageFlags::CLOSEST_HIT_KHR)
                 .binding(4)
                 .build(),
         ];
