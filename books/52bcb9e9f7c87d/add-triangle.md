@@ -309,19 +309,11 @@ Any-Hit Shaderではレイの衝突をなかったことにできます。
 ```rust:shader/src/lib.rs
 #[spirv(any_hit)]
 pub fn triangle_any_hit(
-    #[spirv(hit_attribute)] attribute: &Vec2,
-    #[spirv(storage_buffer, descriptor_set = 0, binding = 3)] vertices: &[Vertex],
-    #[spirv(storage_buffer, descriptor_set = 0, binding = 4)] indices: &[u32],
-    #[spirv(primitive_id)] primitive_id: u32,
+    #[spirv(ray_tmax)] t: f32,
+    #[spirv(object_ray_origin)] object_ray_origin: Vec3,
+    #[spirv(object_ray_direction)] object_ray_direction: Vec3,
 ) {
-    let v0 = vertices[indices[3 * primitive_id as usize + 0] as usize];
-    let v1 = vertices[indices[3 * primitive_id as usize + 1] as usize];
-    let v2 = vertices[indices[3 * primitive_id as usize + 2] as usize];
-
-    let barycentrics = vec3(1.0 - attribute.x - attribute.y, attribute.x, attribute.y);
-
-    let pos =
-        v0.position * barycentrics.x + v1.position * barycentrics.y + v2.position * barycentrics.z;
+    let pos = object_ray_origin + t * object_ray_direction;
 
     // 中心から一定距離の衝突をなかったことにする
     if pos.length_squared() < 0.2 {
