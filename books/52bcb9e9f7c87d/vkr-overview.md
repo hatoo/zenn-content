@@ -77,7 +77,7 @@ VKRでは新たに
 
 のシェーダーが追加されました。
 これらが協調してレイトレーシングをします。
-Any-Hit ShaderとCallable Shaderはこの文章では実装しません。
+Callable Shaderはこの文章では実装しません。
 
 ```mermaid
 graph TB

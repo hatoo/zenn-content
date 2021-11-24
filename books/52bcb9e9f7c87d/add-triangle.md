@@ -299,3 +299,6 @@ fn sample_scene(
 あとはDescriptorにVertexとIndexバッファーを追加して、SBTでHit Record二個分の領域を確保するだけです。
 
 ![plus triangle](/images/plus-triangle.png)
+
+# Any-Hit Shaderを実装してみる
+
