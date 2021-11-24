@@ -331,8 +331,8 @@ pub fn sphere_intersection(
     // レイの終了時間
     #[spirv(ray_tmax)] t_max: f32,
     // ここで値を書くとClosest-Hitから読める
-    // レイの衝突時刻を書き込むことにする
-    #[spirv(hit_attribute)] t: &mut f32,
+    // ここでは使わない
+    // #[spirv(hit_attribute)] ...: &mut ...,
 ) {
     // Ray Tracing in One Weekendの球の当たり判定そのまま
     // レイは変換済みなので常に原点、半径1の球に対する判定をすればよい。
@@ -353,7 +353,6 @@ pub fn sphere_intersection(
 
     if root0 >= t_min && root0 <= t_max {
         // 小さい方の解が当たっている
-        *t = root0;
         unsafe {
             report_intersection(root0, 0);
         }
@@ -362,7 +361,6 @@ pub fn sphere_intersection(
 
     if root1 >= t_min && root1 <= t_max {
         // 大きい方の解が当たっている
-        *t = root1;
         unsafe {
             report_intersection(root1, 0);
         }
@@ -383,8 +381,8 @@ pub struct Affine3 {
 
 #[spirv(closest_hit)]
 pub fn sphere_closest_hit(
-    // Intersectionで入れたレイの衝突時刻
-    #[spirv(hit_attribute)] t: &f32,
+    // レイの衝突時刻
+    #[spirv(ray_tmax)] t: f32,
     // TLASで登録した変換行列
     #[spirv(object_to_world)] object_to_world: Affine3,
     // レイの位置
@@ -397,7 +395,7 @@ pub fn sphere_closest_hit(
     #[spirv(instance_custom_index)] instance_custom_index: u32,
 ) {
     // レイの衝突位置、法線をここで計算する。Intersectionで行わないことで計算を遅延していることに注意、
-    let hit_pos = world_ray_origin + *t * world_ray_direction;
+    let hit_pos = world_ray_origin + t * world_ray_direction;
     // object_to_world.wに変換行列の平行移動の部分が入っている。
     let normal = (hit_pos - object_to_world.w).normalize();
     *out = RayPayload::new(hit_pos, normal, world_ray_direction, instance_custom_index);

@@ -167,7 +167,6 @@ pub fn sphere_intersection(
     #[spirv(object_ray_direction)] ray_direction: Vec3,
     #[spirv(ray_tmin)] t_min: f32,
     #[spirv(ray_tmax)] t_max: f32,
-    #[spirv(hit_attribute)] t: &mut f32,
 ) {
     let oc = ray_origin;
     let a = ray_direction.length_squared();
@@ -185,7 +184,6 @@ pub fn sphere_intersection(
     let root1 = (-half_b + sqrtd) / a;
 
     if root0 >= t_min && root0 <= t_max {
-        *t = root0;
         unsafe {
             report_intersection(root0, 0);
         }
@@ -193,7 +191,6 @@ pub fn sphere_intersection(
     }
 
     if root1 >= t_min && root1 <= t_max {
-        *t = root1;
         unsafe {
             report_intersection(root1, 0);
         }
@@ -212,14 +209,14 @@ pub struct Affine3 {
 
 #[spirv(closest_hit)]
 pub fn sphere_closest_hit(
-    #[spirv(hit_attribute)] t: &f32,
+    #[spirv(ray_tmax)] t: f32,
     #[spirv(object_to_world)] object_to_world: Affine3,
     #[spirv(world_ray_origin)] world_ray_origin: Vec3,
     #[spirv(world_ray_direction)] world_ray_direction: Vec3,
     #[spirv(incoming_ray_payload)] out: &mut RayPayload,
     #[spirv(instance_custom_index)] instance_custom_index: u32,
 ) {
-    let hit_pos = world_ray_origin + *t * world_ray_direction;
+    let hit_pos = world_ray_origin + t * world_ray_direction;
     let normal = (hit_pos - object_to_world.w).normalize();
     *out = RayPayload::new_hit(hit_pos, normal, world_ray_direction, instance_custom_index);
 }
