@@ -526,7 +526,6 @@ fn main() {
                     .index_type(vk::IndexType::UINT32)
                     .build(),
             })
-            .flags(vk::GeometryFlagsKHR::OPAQUE)
             .build();
 
         let build_range_info = vk::AccelerationStructureBuildRangeInfoKHR::builder()
@@ -863,13 +862,17 @@ fn main() {
             vk::DescriptorSetLayoutBinding::builder()
                 .descriptor_count(1)
                 .descriptor_type(vk::DescriptorType::STORAGE_BUFFER)
-                .stage_flags(vk::ShaderStageFlags::CLOSEST_HIT_KHR)
+                .stage_flags(
+                    vk::ShaderStageFlags::CLOSEST_HIT_KHR | vk::ShaderStageFlags::ANY_HIT_KHR,
+                )
                 .binding(3)
                 .build(),
             vk::DescriptorSetLayoutBinding::builder()
                 .descriptor_count(1)
                 .descriptor_type(vk::DescriptorType::STORAGE_BUFFER)
-                .stage_flags(vk::ShaderStageFlags::CLOSEST_HIT_KHR)
+                .stage_flags(
+                    vk::ShaderStageFlags::CLOSEST_HIT_KHR | vk::ShaderStageFlags::ANY_HIT_KHR,
+                )
                 .binding(4)
                 .build(),
         ];
@@ -934,7 +937,7 @@ fn main() {
                 .ty(vk::RayTracingShaderGroupTypeKHR::TRIANGLES_HIT_GROUP)
                 .general_shader(vk::SHADER_UNUSED_KHR)
                 .closest_hit_shader(4)
-                .any_hit_shader(vk::SHADER_UNUSED_KHR)
+                .any_hit_shader(5)
                 .intersection_shader(vk::SHADER_UNUSED_KHR)
                 .build(),
         ];
@@ -964,6 +967,11 @@ fn main() {
                 .stage(vk::ShaderStageFlags::CLOSEST_HIT_KHR)
                 .module(shader_module)
                 .name(std::ffi::CStr::from_bytes_with_nul(b"triangle_closest_hit\0").unwrap())
+                .build(),
+            vk::PipelineShaderStageCreateInfo::builder()
+                .stage(vk::ShaderStageFlags::ANY_HIT_KHR)
+                .module(shader_module)
+                .name(std::ffi::CStr::from_bytes_with_nul(b"triangle_any_hit\0").unwrap())
                 .build(),
         ];
 
@@ -1988,11 +1996,7 @@ fn sample_scene(
             },
             instance_custom_index_and_mask: 0xff << 24,
             instance_shader_binding_table_record_offset_and_flags:
-                (vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE
-                    | vk::GeometryInstanceFlagsKHR::TRIANGLE_FACING_CULL_DISABLE)
-                    .as_raw()
-                    << 24
-                    | 1,
+                (vk::GeometryInstanceFlagsKHR::TRIANGLE_FACING_CULL_DISABLE).as_raw() << 24 | 1,
             acceleration_structure_reference: vk::AccelerationStructureReferenceKHR {
                 device_handle: triangle_accel_handle,
             },

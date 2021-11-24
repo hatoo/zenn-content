@@ -14,6 +14,7 @@ use spirv_std::macros::spirv;
 #[allow(unused_imports)]
 use spirv_std::num_traits::Float;
 use spirv_std::{
+    arch::ignore_intersection,
     arch::report_intersection,
     glam::{uvec2, vec3, UVec3, Vec2, Vec3, Vec4},
     image::Image,
@@ -125,7 +126,7 @@ pub fn main_ray_generation(
         *payload = RayPayload::default();
         unsafe {
             top_level_as.trace_ray(
-                RayFlags::OPAQUE,
+                RayFlags::empty(),
                 cull_mask,
                 0,
                 0,
@@ -265,4 +266,25 @@ pub fn triangle_closest_hit(
     .normalize();
 
     *out = RayPayload::new_hit(hit_pos, normal, world_ray_direction, instance_custom_index);
+}
+
+#[spirv(any_hit)]
+pub fn triangle_any_hit(
+    #[spirv(hit_attribute)] attribute: &Vec2,
+    #[spirv(storage_buffer, descriptor_set = 0, binding = 3)] vertices: &[Vertex],
+    #[spirv(storage_buffer, descriptor_set = 0, binding = 4)] indices: &[u32],
+    #[spirv(primitive_id)] primitive_id: u32,
+) {
+    let v0 = vertices[indices[3 * primitive_id as usize + 0] as usize];
+    let v1 = vertices[indices[3 * primitive_id as usize + 1] as usize];
+    let v2 = vertices[indices[3 * primitive_id as usize + 2] as usize];
+
+    let barycentrics = vec3(1.0 - attribute.x - attribute.y, attribute.x, attribute.y);
+
+    let pos =
+        v0.position * barycentrics.x + v1.position * barycentrics.y + v2.position * barycentrics.z;
+
+    if pos.length_squared() < 0.2 {
+        unsafe { ignore_intersection() };
+    }
 }
