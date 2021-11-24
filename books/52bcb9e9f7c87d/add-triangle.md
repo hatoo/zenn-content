@@ -332,6 +332,6 @@ pub fn triangle_any_hit(
 
 ## 動かす
 
-三角形のヒットグループにAny-Hit Shaderを設定するだけです。また、所々で設定した`OPAQUE`設定をなくしましょう。
+三角形のHit GroupにAny-Hit Shaderを設定するだけです。また、所々で設定した`OPAQUE`設定をなくしましょう。
 
 ![any hit](/images/any-hit.png)
