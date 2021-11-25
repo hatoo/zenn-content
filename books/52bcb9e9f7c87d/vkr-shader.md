@@ -442,14 +442,17 @@ pub struct Scatter {
     pub ray: Ray,
 }
 
+#[repr(transparent)]
 struct Lambertian<'a> {
     data: &'a EnumMaterialData,
 }
 
+#[repr(transparent)]
 struct Metal<'a> {
     data: &'a EnumMaterialData,
 }
 
+#[repr(transparent)]
 struct Dielectric<'a> {
     data: &'a EnumMaterialData,
 }
