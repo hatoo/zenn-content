@@ -137,8 +137,9 @@ $$ HG_{index} = \mathbb{I}_{offset} + R_{offset} + R_{stride} \times \mathbb{G}_
 $$ HG = addByteOffset(\& HG[0], HG_{stride} \times HG_{index}) $$
 
 $HG_{stride}$は各Hit Group Recordが占めるバイト数です。これはあらかじめ指定します。
-$\mathbb{I}_{offset}$と$\mathbb{G}_{ID}$はAS構築時に入力するのに対し、$R_{offset}$と$R_{stride}$はRay Generation Shaderで指定します。
+$\mathbb{I}_{offset}$(TLASのインスタンスで設定されるオフセット値)と$\mathbb{G}_{ID}$(TLASのジオメトリのID)はTLAS構築時に入力するのに対し、$R_{offset}$と$R_{stride}$はRay Generation Shaderで指定します。
 この文章の途中までは１つのHit Groupしか使わないため全部0です。
+また、$R_{stride} \times \mathbb{G}_{ID}$の項は最後まで使いません。
 
 ## Miss Groupの場合
 
