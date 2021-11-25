@@ -137,9 +137,8 @@ $$ HG_{index} = \mathbb{I}_{offset} + R_{offset} + R_{stride} \times \mathbb{G}_
 $$ HG = addByteOffset(\& HG[0], HG_{stride} \times HG_{index}) $$
 
 $HG_{stride}$は各Hit Group Recordが占めるバイト数です。これはあらかじめ指定します。
-$\mathbb{I}_{offset}$と$\mathbb{G}_{ID}$はBLAS構築時に入力するのに対し、$R_{offset}$と$R_{stride}$はRay Generation Shaderで指定します。
-$\mathbb{G}_{ID}$ はBLASに入っている各子供のIDのため、大きくなることがあり$R_{stride} \times \mathbb{G}_{ID}$の項はあまり使わない気がします(初心者の想像)。
-この文章では１つのHit Groupしか使わないため全部0です。
+$\mathbb{I}_{offset}$と$\mathbb{G}_{ID}$はAS構築時に入力するのに対し、$R_{offset}$と$R_{stride}$はRay Generation Shaderで指定します。
+この文章の途中までは１つのHit Groupしか使わないため全部0です。
 
 ## Miss Groupの場合
 
@@ -148,7 +147,7 @@ $\mathbb{G}_{ID}$ はBLASに入っている各子供のIDのため、大きく�
 
  Miss RecordはRay Generation Shaderから$R_{miss}$を指定するだけです。Closest-Hit Shaderと同じ型を返すMiss Shaderを指定しましょう。
 
- ## Ray Generationの場合
+## Ray Generationの場合
 
  一回の描画で使われるRay Generation Shaderは一種類だけです。VKRのAPIコール時にどのRay Generation Shaderを使うか指定するだけです。
 
