@@ -1114,7 +1114,7 @@ fn aligned_size(value: u32, alignment: u32) -> u32 {
                         &rng.next_u32().to_le_bytes(),
                     );
 
-                    // レイトレース実行
+                    // レイトレース実行 WIDTH * HEIGHTの並列実行
                     rt_pipeline.cmd_trace_rays(
                         command_buffer,
                         &sbt_raygen_region,
