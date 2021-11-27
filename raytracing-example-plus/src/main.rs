@@ -915,7 +915,7 @@ fn main() {
                 .any_hit_shader(vk::SHADER_UNUSED_KHR)
                 .intersection_shader(2)
                 .build(),
-            // group3 = [ triangle chit ]
+            // group3 = [ triangle chit & anyhit ]
             vk::RayTracingShaderGroupCreateInfoKHR::builder()
                 .ty(vk::RayTracingShaderGroupTypeKHR::TRIANGLES_HIT_GROUP)
                 .general_shader(vk::SHADER_UNUSED_KHR)
