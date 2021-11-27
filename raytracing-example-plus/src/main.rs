@@ -828,18 +828,6 @@ fn main() {
     };
 
     let (descriptor_set_layout, graphics_pipeline, pipeline_layout, shader_groups_len) = {
-        let binding_flags_inner = [
-            vk::DescriptorBindingFlagsEXT::empty(),
-            vk::DescriptorBindingFlagsEXT::empty(),
-            vk::DescriptorBindingFlagsEXT::empty(),
-            vk::DescriptorBindingFlagsEXT::empty(),
-            vk::DescriptorBindingFlagsEXT::empty(),
-        ];
-
-        let mut binding_flags = vk::DescriptorSetLayoutBindingFlagsCreateInfoEXT::builder()
-            .binding_flags(&binding_flags_inner)
-            .build();
-
         let bindings = [
             vk::DescriptorSetLayoutBinding::builder()
                 .descriptor_count(1)
@@ -877,7 +865,6 @@ fn main() {
             device.create_descriptor_set_layout(
                 &vk::DescriptorSetLayoutCreateInfo::builder()
                     .bindings(&bindings)
-                    .push_next(&mut binding_flags)
                     .build(),
                 None,
             )
