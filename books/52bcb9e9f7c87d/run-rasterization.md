@@ -13,7 +13,7 @@ ashはRustのためのVulkanラッパーです。この例だけなら[wgpu](htt
 # ashの使い方
 
 基本的にashはVulkanの薄いラッパーなのでVulkanを触ったことをあればすぐにわかると思います。
-コンパイルするにはVulkan SDKが必要なのでインストールしておきましょう。
+コンパイルするには[Vulkan SDK](https://vulkan.lunarg.com/)が必要なのでインストールしておきましょう。
 
 ashのstructはBuilderパターンに対応しているので構築が少し楽になります。Builderパターンを使うとVulkanの構造体でよくある`p***`と`***Count`もスライスで入力できます。またpNextでstructを拡張するのも`push_next`という名前のメソッドに`&mut`を渡せばいい感じにしてくれます。
 
