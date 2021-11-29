@@ -46,9 +46,15 @@ pub fn triangle_closest_hit(
     #[spirv(instance_custom_index)] instance_custom_index: u32,
 ) {
     // 各頂点の座標
-    let v0 = vertices[indices[3 * primitive_id as usize + 0] as usize];
-    let v1 = vertices[indices[3 * primitive_id as usize + 1] as usize];
-    let v2 = vertices[indices[3 * primitive_id as usize + 2] as usize];
+    let v0 = *unsafe {
+        vertices.index_unchecked(*indices.index_unchecked(3 * primitive_id as usize + 0) as usize)
+    };
+    let v1 = *unsafe {
+        vertices.index_unchecked(*indices.index_unchecked(3 * primitive_id as usize + 1) as usize)
+    };
+    let v2 = *unsafe {
+        vertices.index_unchecked(*indices.index_unchecked(3 * primitive_id as usize + 2) as usize)
+    };
 
     let barycentrics = vec3(1.0 - attribute.x - attribute.y, attribute.x, attribute.y);
 

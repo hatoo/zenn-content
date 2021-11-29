@@ -14,8 +14,7 @@ use spirv_std::macros::spirv;
 #[allow(unused_imports)]
 use spirv_std::num_traits::Float;
 use spirv_std::{
-    arch::ignore_intersection,
-    arch::report_intersection,
+    arch::{ignore_intersection, report_intersection, IndexUnchecked},
     glam::{uvec2, vec3, UVec3, Vec2, Vec3, Vec4},
     image::Image,
     ray_tracing::{AccelerationStructure, RayFlags},
@@ -144,7 +143,12 @@ pub fn main_ray_generation(
             break;
         } else {
             let mut scatter = Scatter::default();
-            if materials[payload.material as usize].scatter(&ray, payload, &mut rng, &mut scatter) {
+            if unsafe { materials.index_unchecked(payload.material as usize) }.scatter(
+                &ray,
+                payload,
+                &mut rng,
+                &mut scatter,
+            ) {
                 color *= scatter.color;
                 ray = scatter.ray;
             } else {
@@ -238,9 +242,15 @@ pub fn triangle_closest_hit(
     #[spirv(primitive_id)] primitive_id: u32,
     #[spirv(instance_custom_index)] instance_custom_index: u32,
 ) {
-    let v0 = vertices[indices[3 * primitive_id as usize + 0] as usize];
-    let v1 = vertices[indices[3 * primitive_id as usize + 1] as usize];
-    let v2 = vertices[indices[3 * primitive_id as usize + 2] as usize];
+    let v0 = *unsafe {
+        vertices.index_unchecked(*indices.index_unchecked(3 * primitive_id as usize + 0) as usize)
+    };
+    let v1 = *unsafe {
+        vertices.index_unchecked(*indices.index_unchecked(3 * primitive_id as usize + 1) as usize)
+    };
+    let v2 = *unsafe {
+        vertices.index_unchecked(*indices.index_unchecked(3 * primitive_id as usize + 2) as usize)
+    };
 
     let barycentrics = vec3(1.0 - attribute.x - attribute.y, attribute.x, attribute.y);
 

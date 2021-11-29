@@ -9,6 +9,7 @@ use std::{
 use ash::{prelude::VkResult, vk};
 
 fn main() {
+    dbg!(env!("shader.spv"));
     const ENABLE_VALIDATION_LAYER: bool = true;
     const WIDTH: u32 = 800;
     const HEIGHT: u32 = 600;

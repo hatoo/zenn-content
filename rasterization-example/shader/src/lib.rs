@@ -8,6 +8,8 @@
 #[cfg(not(target_arch = "spirv"))]
 use spirv_std::macros::spirv;
 
+use spirv_std::arch::IndexUnchecked;
+
 use spirv_std::glam::{vec3, vec4, Vec3, Vec4};
 
 // vert_id < 3
@@ -17,17 +19,23 @@ pub fn main_vs(
     #[spirv(position)] out_pos: &mut Vec4,
     color: &mut Vec3,
 ) {
-    *out_pos = [
-        vec4(1.0, 1.0, 0.0, 1.0),
-        vec4(0.0, -1.0, 0.0, 1.0),
-        vec4(-1.0, 1.0, 0.0, 1.0),
-    ][vert_id as usize];
+    *out_pos = *unsafe {
+        [
+            vec4(1.0, 1.0, 0.0, 1.0),
+            vec4(0.0, -1.0, 0.0, 1.0),
+            vec4(-1.0, 1.0, 0.0, 1.0),
+        ]
+        .index_unchecked(vert_id as usize)
+    };
 
-    *color = [
-        vec3(1.0, 0.0, 0.0),
-        vec3(0.0, 1.0, 0.0),
-        vec3(0.0, 0.0, 1.0),
-    ][vert_id as usize];
+    *color = *unsafe {
+        [
+            vec3(1.0, 0.0, 0.0),
+            vec3(0.0, 1.0, 0.0),
+            vec3(0.0, 0.0, 1.0),
+        ]
+        .index_unchecked(vert_id as usize)
+    };
 }
 
 #[spirv(fragment)]

@@ -88,6 +88,8 @@ vertexシェーダーで大きな三角形を描き、fragment シェーダー�
 #[cfg(not(target_arch = "spirv"))]
 use spirv_std::macros::spirv;
 
+use spirv_std::arch::IndexUnchecked;
+
 // features = ["glam"]を指定したのでglamの型をベクトルとして使える
 use spirv_std::glam::{vec3, vec4, Vec3, Vec4};
 
@@ -102,17 +104,24 @@ pub fn main_vs(
     // 何も指定せずに &mut したのでlayout(location = 0) outだと解釈される
     color: &mut Vec3,
 ) {
-    *out_pos = [
-        vec4(1.0, 1.0, 0.0, 1.0),
-        vec4(0.0, -1.0, 0.0, 1.0),
-        vec4(-1.0, 1.0, 0.0, 1.0),
-    ][vert_id as usize];
+    // https://embarkstudios.github.io/rust-gpu/api/spirv_std/arch/trait.IndexUnchecked.html
+    *out_pos = *unsafe {
+        [
+            vec4(1.0, 1.0, 0.0, 1.0),
+            vec4(0.0, -1.0, 0.0, 1.0),
+            vec4(-1.0, 1.0, 0.0, 1.0),
+        ]
+        .index_unchecked(vert_id as usize)
+    };
 
-    *color = [
-        vec3(1.0, 0.0, 0.0),
-        vec3(0.0, 1.0, 0.0),
-        vec3(0.0, 0.0, 1.0),
-    ][vert_id as usize];
+    *color = *unsafe {
+        [
+            vec3(1.0, 0.0, 0.0),
+            vec3(0.0, 1.0, 0.0),
+            vec3(0.0, 0.0, 1.0),
+        ]
+        .index_unchecked(vert_id as usize)
+    };
 }
 
 #[spirv(fragment)]
@@ -156,7 +165,7 @@ fn main() {
 ; SPIR-V
 ; Version: 1.5
 ; Generator: Embark Studios Rust GPU Compiler Backend; 0
-; Bound: 97
+; Bound: 72
 ; Schema: 0
                OpCapability Shader
                OpCapability VulkanMemoryModel
@@ -164,103 +173,82 @@ fn main() {
                OpEntryPoint Vertex %1 "main_vs" %gl_VertexIndex %gl_Position %4
                OpEntryPoint Fragment %5 "main_fs" %6 %7
                OpExecutionMode %5 OriginUpperLeft
+               OpDecorate %_arr_v3float_uint_3 ArrayStride 16
+               OpDecorate %_arr_v4float_uint_3 ArrayStride 16
                OpDecorate %gl_VertexIndex BuiltIn VertexIndex
                OpDecorate %gl_Position BuiltIn Position
                OpDecorate %4 Location 0
                OpDecorate %6 Location 0
                OpDecorate %7 Location 0
-               OpDecorate %_arr_v4float_uint_3 ArrayStride 16
-               OpDecorate %_arr_v3float_uint_3 ArrayStride 16
       %float = OpTypeFloat 32
     %v3float = OpTypeVector %float 3
-    %v4float = OpTypeVector %float 4
 %_ptr_Input_v3float = OpTypePointer Input %v3float
 %_ptr_Output_v3float = OpTypePointer Output %v3float
 %_ptr_Function_v3float = OpTypePointer Function %v3float
-       %void = OpTypeVoid
-        %int = OpTypeInt 32 1
+       %uint = OpTypeInt 32 0
+     %uint_3 = OpConstant %uint 3
+%_arr_v3float_uint_3 = OpTypeArray %v3float %uint_3
+%_ptr_Function__arr_v3float_uint_3 = OpTypePointer Function %_arr_v3float_uint_3
+    %v4float = OpTypeVector %float 4
 %_ptr_Output_v4float = OpTypePointer Output %v4float
 %_ptr_Function_v4float = OpTypePointer Function %v4float
-         %24 = OpTypeFunction %void
+%_arr_v4float_uint_3 = OpTypeArray %v4float %uint_3
+%_ptr_Function__arr_v4float_uint_3 = OpTypePointer Function %_arr_v4float_uint_3
+       %void = OpTypeVoid
+        %int = OpTypeInt 32 1
+         %30 = OpTypeFunction %void
 %_ptr_Input_int = OpTypePointer Input %int
 %gl_VertexIndex = OpVariable %_ptr_Input_int Input
 %gl_Position = OpVariable %_ptr_Output_v4float Output
           %4 = OpVariable %_ptr_Output_v3float Output
           %6 = OpVariable %_ptr_Output_v4float Output
           %7 = OpVariable %_ptr_Input_v3float Input
-       %uint = OpTypeInt 32 0
      %uint_0 = OpConstant %uint 0
      %uint_1 = OpConstant %uint 1
      %uint_2 = OpConstant %uint 2
-     %uint_3 = OpConstant %uint 3
-%_arr_v4float_uint_3 = OpTypeArray %v4float %uint_3
-%_ptr_Function__arr_v4float_uint_3 = OpTypePointer Function %_arr_v4float_uint_3
-%_arr_v3float_uint_3 = OpTypeArray %v3float %uint_3
-%_ptr_Function__arr_v3float_uint_3 = OpTypePointer Function %_arr_v3float_uint_3
     %float_1 = OpConstant %float 1
     %float_0 = OpConstant %float 0
    %float_n1 = OpConstant %float -1
-       %bool = OpTypeBool
-         %91 = OpConstantComposite %v4float %float_1 %float_1 %float_0 %float_1
-         %92 = OpConstantComposite %v4float %float_0 %float_n1 %float_0 %float_1
-         %93 = OpConstantComposite %v4float %float_n1 %float_1 %float_0 %float_1
-         %94 = OpConstantComposite %v3float %float_1 %float_0 %float_0
-         %95 = OpConstantComposite %v3float %float_0 %float_1 %float_0
-         %96 = OpConstantComposite %v3float %float_0 %float_0 %float_1
-          %1 = OpFunction %void None %24
+         %66 = OpConstantComposite %v4float %float_1 %float_1 %float_0 %float_1
+         %67 = OpConstantComposite %v4float %float_0 %float_n1 %float_0 %float_1
+         %68 = OpConstantComposite %v4float %float_n1 %float_1 %float_0 %float_1
+         %69 = OpConstantComposite %v3float %float_1 %float_0 %float_0
+         %70 = OpConstantComposite %v3float %float_0 %float_1 %float_0
+         %71 = OpConstantComposite %v3float %float_0 %float_0 %float_1
+          %1 = OpFunction %void None %30
          %38 = OpLabel
          %39 = OpVariable %_ptr_Function__arr_v4float_uint_3 Function
          %40 = OpVariable %_ptr_Function__arr_v3float_uint_3 Function
-               OpSelectionMerge %86 None
-               OpSwitch %uint_0 %87
-         %87 = OpLabel
          %41 = OpLoad %int %gl_VertexIndex
          %45 = OpAccessChain %_ptr_Function_v4float %39 %uint_0
-               OpStore %45 %91
+               OpStore %45 %66
          %46 = OpAccessChain %_ptr_Function_v4float %39 %uint_1
-               OpStore %46 %92
+               OpStore %46 %67
          %47 = OpAccessChain %_ptr_Function_v4float %39 %uint_2
-               OpStore %47 %93
+               OpStore %47 %68
          %48 = OpBitcast %uint %41
-         %49 = OpULessThan %bool %48 %uint_3
-               OpSelectionMerge %50 None
-               OpBranchConditional %49 %51 %52
-         %52 = OpLabel
-               OpBranch %86
-         %51 = OpLabel
-         %53 = OpInBoundsAccessChain %_ptr_Function_v4float %39 %48
-         %54 = OpLoad %v4float %53
-               OpStore %gl_Position %54
-         %58 = OpAccessChain %_ptr_Function_v3float %40 %uint_0
-               OpStore %58 %94
-         %59 = OpAccessChain %_ptr_Function_v3float %40 %uint_1
-               OpStore %59 %95
-         %60 = OpAccessChain %_ptr_Function_v3float %40 %uint_2
-               OpStore %60 %96
-               OpSelectionMerge %63 None
-               OpBranchConditional %49 %64 %65
-         %65 = OpLabel
-               OpBranch %86
-         %64 = OpLabel
-         %66 = OpInBoundsAccessChain %_ptr_Function_v3float %40 %48
-         %67 = OpLoad %v3float %66
-               OpStore %4 %67
-               OpBranch %86
-         %63 = OpLabel
-               OpUnreachable
-         %50 = OpLabel
-               OpUnreachable
-         %86 = OpLabel
+         %49 = OpAccessChain %_ptr_Function_v4float %39 %48
+         %50 = OpLoad %v4float %49
+               OpStore %gl_Position %50
+         %54 = OpAccessChain %_ptr_Function_v3float %40 %uint_0
+               OpStore %54 %69
+         %55 = OpAccessChain %_ptr_Function_v3float %40 %uint_1
+               OpStore %55 %70
+         %56 = OpAccessChain %_ptr_Function_v3float %40 %uint_2
+               OpStore %56 %71
+         %58 = OpAccessChain %_ptr_Function_v3float %40 %48
+         %59 = OpLoad %v3float %58
+               OpStore %4 %59
                OpReturn
                OpFunctionEnd
-          %5 = OpFunction %void None %24
-         %80 = OpLabel
-         %81 = OpLoad %v3float %7
-         %82 = OpCompositeExtract %float %81 0
-         %83 = OpCompositeExtract %float %81 1
-         %84 = OpCompositeExtract %float %81 2
-         %85 = OpCompositeConstruct %v4float %82 %83 %84 %float_1
-               OpStore %6 %85
+          %5 = OpFunction %void None %30
+         %60 = OpLabel
+         %61 = OpLoad %v3float %7
+         %62 = OpCompositeExtract %float %61 0
+         %63 = OpCompositeExtract %float %61 1
+         %64 = OpCompositeExtract %float %61 2
+         %65 = OpCompositeConstruct %v4float %62 %63 %64 %float_1
+               OpStore %6 %65
                OpReturn
                OpFunctionEnd
 ```
@@ -277,36 +265,17 @@ layout(location = 0) out vec3 _4;
 
 void main()
 {
-    do
-    {
-        vec4 _39[3];
-        _39[0u] = vec4(1.0, 1.0, 0.0, 1.0);
-        _39[1u] = vec4(0.0, -1.0, 0.0, 1.0);
-        _39[2u] = vec4(-1.0, 1.0, 0.0, 1.0);
-        uint _48 = uint(gl_VertexID);
-        bool _49 = _48 < 3u;
-        if (_49)
-        {
-            gl_Position = _39[_48];
-            vec3 _40[3];
-            _40[0u] = vec3(1.0, 0.0, 0.0);
-            _40[1u] = vec3(0.0, 1.0, 0.0);
-            _40[2u] = vec3(0.0, 0.0, 1.0);
-            if (_49)
-            {
-                _4 = _40[_48];
-                break;
-            }
-            else
-            {
-                break;
-            }
-        }
-        else
-        {
-            break;
-        }
-    } while(false);
+    vec4 _39[3];
+    _39[0u] = vec4(1.0, 1.0, 0.0, 1.0);
+    _39[1u] = vec4(0.0, -1.0, 0.0, 1.0);
+    _39[2u] = vec4(-1.0, 1.0, 0.0, 1.0);
+    uint _48 = uint(gl_VertexID);
+    gl_Position = _39[_48];
+    vec3 _40[3];
+    _40[0u] = vec3(1.0, 0.0, 0.0);
+    _40[1u] = vec3(0.0, 1.0, 0.0);
+    _40[2u] = vec3(0.0, 0.0, 1.0);
+    _4 = _40[_48];
 }
 
 > spirv-cross "C:\\Users\\hato2\\Desktop\\zenn-content\\rasterization-example\\target\\spirv-builder\\spirv-unknown-vulkan1.2\\release\\deps\\shader.spv.dir\\module" --entry main_fs

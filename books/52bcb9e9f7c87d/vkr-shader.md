@@ -595,7 +595,12 @@ pub fn main_ray_generation(
             break;
         } else {
             let mut scatter = Scatter::default();
-            if materials[payload.material as usize].scatter(&ray, payload, &mut rng, &mut scatter) {
+            if unsafe { materials.index_unchecked(payload.material as usize) }.scatter(
+                &ray,
+                payload,
+                &mut rng,
+                &mut scatter,
+            ) {
                 color *= scatter.color;
                 ray = scatter.ray;
             } else {

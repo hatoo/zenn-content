@@ -14,7 +14,7 @@ use spirv_std::macros::spirv;
 #[allow(unused_imports)]
 use spirv_std::num_traits::Float;
 use spirv_std::{
-    arch::report_intersection,
+    arch::{report_intersection, IndexUnchecked},
     glam::{uvec2, vec3, UVec3, Vec3, Vec4},
     image::Image,
     ray_tracing::{AccelerationStructure, RayFlags},
@@ -143,7 +143,12 @@ pub fn main_ray_generation(
             break;
         } else {
             let mut scatter = Scatter::default();
-            if materials[payload.material as usize].scatter(&ray, payload, &mut rng, &mut scatter) {
+            if unsafe { materials.index_unchecked(payload.material as usize) }.scatter(
+                &ray,
+                payload,
+                &mut rng,
+                &mut scatter,
+            ) {
                 color *= scatter.color;
                 ray = scatter.ray;
             } else {
