@@ -32,17 +32,17 @@ pub struct Ray {
 }
 #[derive(Clone, Default)]
 pub struct RayPayload {
-    pub is_miss: bool,
+    pub is_miss: u32,
     pub position: Vec3,
     pub normal: Vec3,
     pub material: u32,
-    pub front_face: bool,
+    pub front_face: u32,
 }
 
 impl RayPayload {
     pub fn new_miss(color: Vec3) -> Self {
         Self {
-            is_miss: true,
+            is_miss: 1,
             position: color,
             ..Default::default()
         }
@@ -62,11 +62,11 @@ impl RayPayload {
         };
 
         Self {
-            is_miss: false,
+            is_miss: 0,
             position,
             normal,
             material,
-            front_face,
+            front_face: if front_face { 1 } else { 0 },
         }
     }
 }
@@ -138,7 +138,7 @@ pub fn main_ray_generation(
             );
         }
 
-        if payload.is_miss {
+        if payload.is_miss != 0 {
             color *= payload.position;
             break;
         } else {

@@ -8,7 +8,6 @@ title: "VKRのシェーダーを書く"
 
 まず、2章と同じセットアップをしてください^[といってもこの文章に書かれたコードを自力でコピペするのはおすすめしません。大体把握出来たらリポジトリを見てください。]。
 rust-gpuでレイトレーシング拡張を有効にするために`build.rs`を変更します。
-`bool`型はrust-gpuでは現状8ビット整数なので`Int8`も有効にします。
 
 ```rust:build.rs
 use std::error::Error;
@@ -18,7 +17,6 @@ use spirv_builder::{Capability, MetadataPrintout, SpirvBuilder};
 fn main() -> Result<(), Box<dyn Error>> {
     SpirvBuilder::new("./shader", "spirv-unknown-spv1.3")
         .capability(Capability::RayTracingKHR)
-        .capability(Capability::Int8)
         .extension("SPV_KHR_ray_tracing")
         .print_metadata(MetadataPrintout::Full)
         .build()?;
@@ -238,11 +236,12 @@ Rustの`enum`は、各バリアントに対してそれにマッチしてデー�
 [#78](https://github.com/EmbarkStudios/rust-gpu/issues/78), [#234](https://github.com/EmbarkStudios/rust-gpu/issues/234)
 
 しょうがないので`struct`で表現し、内部の値によって使うメンバを変えることにします。
+また、Bool型は[シェーダーの入力としては使えないので](https://www.khronos.org/registry/SPIR-V/specs/1.0/SPIRV.html#OpTypeBool)u32で表現します(`true` => 1, `false` => 0)。
 ```rust:shader/src/lib.rs
 #[derive(Clone, Default)]
 pub struct RayPayload {
     // レイは当たったのか?
-    pub is_miss: bool,
+    pub is_miss: u32,
     // Missの場合その色。Closest-Hitの場合その位置
     pub position: Vec3,
     // 法線
@@ -250,7 +249,7 @@ pub struct RayPayload {
     // マテリアルの番号
     pub material: u32,
     // 表からレイが当たったのかどうか　
-    pub front_face: bool,
+    pub front_face: u32,
 }
 ```
 
@@ -262,7 +261,7 @@ pub struct RayPayload {
 impl RayPayload {
     pub fn new_miss(color: Vec3) -> Self {
         Self {
-            is_miss: true,
+            is_miss: 1,
             position: color,
             ..Default::default()
         }
@@ -316,7 +315,7 @@ impl RayPayload {
             position,
             normal,
             material,
-            front_face,
+            front_face: if front_face { 1 } else { 0 },
         }
     }
 }
@@ -588,7 +587,7 @@ pub fn main_ray_generation(
             );
         }
 
-        if payload.is_miss {
+        if payload.is_miss != 0 {
             // レイが何にも当たらなかった
             // 終わり
             color *= payload.position;

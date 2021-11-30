@@ -152,7 +152,7 @@ impl<'a> Material for Dielectric<'a> {
         rng: &mut DefaultRng,
         scatter: &mut Scatter,
     ) -> bool {
-        let refraction_ratio = if ray_payload.front_face {
+        let refraction_ratio = if ray_payload.front_face != 0 {
             1.0 / self.ir()
         } else {
             self.ir()
