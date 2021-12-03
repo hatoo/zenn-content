@@ -43,7 +43,7 @@ pub struct PushConstants {
 pub fn main_ray_generation(
     // 並列実行された呼び出しのID。画像のサイズだけ並列実行することにし、この値を出力のピクセルの座標としている
     #[spirv(launch_id)] launch_id: UVec3,
-    // サイズ
+    // 全体のサイズ
     #[spirv(launch_size)] launch_size: UVec3,
     // Push Constants
     #[spirv(push_constant)] constants: &PushConstants,
