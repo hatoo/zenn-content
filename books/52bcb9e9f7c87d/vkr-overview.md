@@ -121,13 +121,7 @@ Interssection Shader, Any-Hit Shader, Closest-Hitは(それぞれ省略される
 Interssection Shaderで独自の形状の当たり判定を行うと書きましたが、独自の形状と一口に言っても同じシーンに球や直方体などの別の形状があるかもしれませんし、レイを飛ばすにしてもそれが通常のレイの場合もありますしシャドウレイを飛ばしたいだけの場合もあります。
 つまり、使うシェーダーを動的に変化させる必要があるわけです。
 それを実現するのがShader Binding Table(以下SBT)です。
-
-:::message
-この文章で登場する形状はすべて球なのでSBTの機能はほとんど使いません。
-詳細を知りたい方は[Ray Tracing Gems II](https://www.realtimerendering.com/raytracinggems/rtg2/index.html)がおすすめです。
-:::
-
-シェーダーはすべて一次元配列に配置されていて、そのオフセットを動的に決めるというのがSBTです。
+各SBTにレコードが一次元配列に配置されていて、そのオフセットを動的に決めます。
 
 ## Hit Groupの場合
 
