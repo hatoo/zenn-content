@@ -293,6 +293,7 @@ fn create_sphere_instance(
     vk::AccelerationStructureInstanceKHR {
         transform: vk::TransformMatrixKHR {
             // 変換行列3x4
+            // 一般的な4x4行列の上から12要素
             matrix: [
                 size, 0.0, 0.0, pos.x, 0.0, size, 0.0, pos.y, 0.0, 0.0, size, pos.z,
             ],
