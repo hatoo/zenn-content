@@ -15,7 +15,7 @@ use spirv_std::macros::spirv;
 use spirv_std::num_traits::Float;
 use spirv_std::{
     arch::{ignore_intersection, report_intersection, IndexUnchecked},
-    glam::{uvec2, vec3, UVec3, Vec2, Vec3, Vec4},
+    glam::{uvec2, vec3a, UVec3, Vec2, Vec3A, Vec4},
     image::Image,
     ray_tracing::{AccelerationStructure, RayFlags},
 };
@@ -27,20 +27,20 @@ pub mod rand;
 
 #[derive(Clone, Copy, Default)]
 pub struct Ray {
-    pub origin: Vec3,
-    pub direction: Vec3,
+    pub origin: Vec3A,
+    pub direction: Vec3A,
 }
 #[derive(Clone, Default)]
 pub struct RayPayload {
     pub is_miss: u32,
-    pub position: Vec3,
-    pub normal: Vec3,
+    pub position: Vec3A,
+    pub normal: Vec3A,
     pub material: u32,
     pub front_face: u32,
 }
 
 impl RayPayload {
-    pub fn new_miss(color: Vec3) -> Self {
+    pub fn new_miss(color: Vec3A) -> Self {
         Self {
             is_miss: 1,
             position: color,
@@ -49,9 +49,9 @@ impl RayPayload {
     }
 
     pub fn new_hit(
-        position: Vec3,
-        outward_normal: Vec3,
-        ray_direction: Vec3,
+        position: Vec3A,
+        outward_normal: Vec3A,
+        ray_direction: Vec3A,
         material: u32,
     ) -> Self {
         let front_face = ray_direction.dot(outward_normal) < 0.0;
@@ -77,12 +77,12 @@ pub struct PushConstants {
 
 #[spirv(miss)]
 pub fn main_miss(
-    #[spirv(world_ray_direction)] world_ray_direction: Vec3,
+    #[spirv(world_ray_direction)] world_ray_direction: Vec3A,
     #[spirv(incoming_ray_payload)] out: &mut RayPayload,
 ) {
     let unit_direction = world_ray_direction.normalize();
     let t = 0.5 * (unit_direction.y + 1.0);
-    let color = vec3(1.0, 1.0, 1.0).lerp(vec3(0.5, 0.7, 1.0), t);
+    let color = vec3a(1.0, 1.0, 1.0).lerp(vec3a(0.5, 0.7, 1.0), t);
 
     *out = RayPayload::new_miss(color);
 }
@@ -101,9 +101,9 @@ pub fn main_ray_generation(
     let mut rng = DefaultRng::new(rand_seed);
 
     let camera = Camera::new(
-        vec3(13.0, 2.0, 3.0),
-        vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 1.0, 0.0),
+        vec3a(13.0, 2.0, 3.0),
+        vec3a(0.0, 0.0, 0.0),
+        vec3a(0.0, 1.0, 0.0),
         20.0 / 180.0 * core::f32::consts::PI,
         launch_size.x as f32 / launch_size.y as f32,
         0.1,
@@ -117,7 +117,7 @@ pub fn main_ray_generation(
     let tmin = 0.001;
     let tmax = 100000.0;
 
-    let mut color = vec3(1.0, 1.0, 1.0);
+    let mut color = vec3a(1.0, 1.0, 1.0);
 
     let mut ray = camera.get_ray(u, v, &mut rng);
 
@@ -167,8 +167,8 @@ pub fn main_ray_generation(
 
 #[spirv(intersection)]
 pub fn sphere_intersection(
-    #[spirv(object_ray_origin)] ray_origin: Vec3,
-    #[spirv(object_ray_direction)] ray_direction: Vec3,
+    #[spirv(object_ray_origin)] ray_origin: Vec3A,
+    #[spirv(object_ray_direction)] ray_direction: Vec3A,
     #[spirv(ray_tmin)] t_min: f32,
     #[spirv(ray_tmax)] t_max: f32,
 ) {
@@ -205,18 +205,18 @@ pub fn sphere_intersection(
 #[spirv(matrix)]
 #[repr(C)]
 pub struct Affine3 {
-    pub x: Vec3,
-    pub y: Vec3,
-    pub z: Vec3,
-    pub w: Vec3,
+    pub x: Vec3A,
+    pub y: Vec3A,
+    pub z: Vec3A,
+    pub w: Vec3A,
 }
 
 #[spirv(closest_hit)]
 pub fn sphere_closest_hit(
     #[spirv(ray_tmax)] t: f32,
     #[spirv(object_to_world)] object_to_world: Affine3,
-    #[spirv(world_ray_origin)] world_ray_origin: Vec3,
-    #[spirv(world_ray_direction)] world_ray_direction: Vec3,
+    #[spirv(world_ray_origin)] world_ray_origin: Vec3A,
+    #[spirv(world_ray_direction)] world_ray_direction: Vec3A,
     #[spirv(incoming_ray_payload)] out: &mut RayPayload,
     #[spirv(instance_custom_index)] instance_custom_index: u32,
 ) {
@@ -227,15 +227,15 @@ pub fn sphere_closest_hit(
 
 #[derive(Copy, Clone)]
 pub struct Vertex {
-    pub position: Vec3,
-    pub normal: Vec3,
+    pub position: Vec3A,
+    pub normal: Vec3A,
 }
 
 #[spirv(closest_hit)]
 pub fn triangle_closest_hit(
     #[spirv(hit_attribute)] attribute: &Vec2,
     #[spirv(object_to_world)] object_to_world: Affine3,
-    #[spirv(world_ray_direction)] world_ray_direction: Vec3,
+    #[spirv(world_ray_direction)] world_ray_direction: Vec3A,
     #[spirv(storage_buffer, descriptor_set = 0, binding = 3)] vertices: &[Vertex],
     #[spirv(storage_buffer, descriptor_set = 0, binding = 4)] indices: &[u32],
     #[spirv(incoming_ray_payload)] out: &mut RayPayload,
@@ -252,20 +252,20 @@ pub fn triangle_closest_hit(
         vertices.index_unchecked(*indices.index_unchecked(3 * primitive_id as usize + 2) as usize)
     };
 
-    let barycentrics = vec3(1.0 - attribute.x - attribute.y, attribute.x, attribute.y);
+    let barycentrics = vec3a(1.0 - attribute.x - attribute.y, attribute.x, attribute.y);
 
     let pos =
         v0.position * barycentrics.x + v1.position * barycentrics.y + v2.position * barycentrics.z;
 
     let nrm = v0.normal * barycentrics.x + v1.normal * barycentrics.y + v2.normal * barycentrics.z;
 
-    let hit_pos = vec3(
+    let hit_pos = vec3a(
         object_to_world.x.dot(pos),
         object_to_world.y.dot(pos),
         object_to_world.z.dot(pos),
     ) + object_to_world.w;
 
-    let normal = vec3(
+    let normal = vec3a(
         object_to_world.x.dot(nrm),
         object_to_world.y.dot(nrm),
         object_to_world.z.dot(nrm),
@@ -278,8 +278,8 @@ pub fn triangle_closest_hit(
 #[spirv(any_hit)]
 pub fn triangle_any_hit(
     #[spirv(ray_tmax)] t: f32,
-    #[spirv(object_ray_origin)] object_ray_origin: Vec3,
-    #[spirv(object_ray_direction)] object_ray_direction: Vec3,
+    #[spirv(object_ray_origin)] object_ray_origin: Vec3A,
+    #[spirv(object_ray_direction)] object_ray_direction: Vec3A,
 ) {
     let pos = object_ray_origin + t * object_ray_direction;
 
