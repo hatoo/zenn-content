@@ -91,7 +91,7 @@ use spirv_std::macros::spirv;
 use spirv_std::arch::IndexUnchecked;
 
 // features = ["glam"]を指定したのでglamの型をベクトルとして使える
-use spirv_std::glam::{vec3, vec4, Vec3, Vec4};
+use spirv_std::glam::{vec3a, vec4, Vec3A, Vec4};
 
 // vert_id < 3
 // vertex shaderであることを指定
@@ -102,7 +102,7 @@ pub fn main_vs(
     // gl_Position相当の変数
     #[spirv(position)] out_pos: &mut Vec4,
     // 何も指定せずに &mut したのでlayout(location = 0) outだと解釈される
-    color: &mut Vec3,
+    color: &mut Vec3A,
 ) {
     // https://embarkstudios.github.io/rust-gpu/api/spirv_std/arch/trait.IndexUnchecked.html
     *out_pos = *unsafe {
@@ -116,9 +116,9 @@ pub fn main_vs(
 
     *color = *unsafe {
         [
-            vec3(1.0, 0.0, 0.0),
-            vec3(0.0, 1.0, 0.0),
-            vec3(0.0, 0.0, 1.0),
+            vec3a(1.0, 0.0, 0.0),
+            vec3a(0.0, 1.0, 0.0),
+            vec3a(0.0, 0.0, 1.0),
         ]
         .index_unchecked(vert_id as usize)
     };
@@ -129,7 +129,7 @@ pub fn main_fs(
     // layout(location = 0) out
     output: &mut Vec4, 
     // layout(location = 0) in
-    color: Vec3) {
+    color: Vec3A) {
     *output = color.extend(1.0);
 }
 

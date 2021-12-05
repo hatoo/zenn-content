@@ -286,7 +286,7 @@ graph TB
 ```rust:src/main.rs
 // 球一つ分のTLASのインスタンスを作る
 fn create_sphere_instance(
-    pos: glam::Vec3,
+    pos: glam::Vec3A,
     size: f32,
     sphere_accel_handle: u64,
 ) -> vk::AccelerationStructureInstanceKHR {
@@ -323,13 +323,13 @@ fn sample_scene(
     let mut world = Vec::new();
 
     world.push((
-        create_sphere_instance(vec3(0.0, -1000.0, 0.0), 1000.0, sphere_accel_handle),
-        EnumMaterialPod::new_lambertian(vec3(0.5, 0.5, 0.5)),
+        create_sphere_instance(vec3a(0.0, -1000.0, 0.0), 1000.0, sphere_accel_handle),
+        EnumMaterialPod::new_lambertian(vec3a(0.5, 0.5, 0.5)),
     ));
 
     for a in -11..11 {
         for b in -11..11 {
-            let center = vec3(
+            let center = vec3a(
                 a as f32 + 0.9 * rng.gen::<f32>(),
                 0.2,
                 b as f32 + 0.9 * rng.gen::<f32>(),
@@ -337,11 +337,11 @@ fn sample_scene(
 
             let choose_mat: f32 = rng.gen();
 
-            if (center - vec3(4.0, 0.2, 0.0)).length() > 0.9 {
+            if (center - vec3a(4.0, 0.2, 0.0)).length() > 0.9 {
                 match choose_mat {
                     x if x < 0.8 => {
-                        let albedo = vec3(rng.gen(), rng.gen(), rng.gen())
-                            * vec3(rng.gen(), rng.gen(), rng.gen());
+                        let albedo = vec3a(rng.gen(), rng.gen(), rng.gen())
+                            * vec3a(rng.gen(), rng.gen(), rng.gen());
 
                         world.push((
                             create_sphere_instance(center, 0.3, sphere_accel_handle),
@@ -349,7 +349,7 @@ fn sample_scene(
                         ));
                     }
                     x if x < 0.95 => {
-                        let albedo = vec3(
+                        let albedo = vec3a(
                             rng.gen_range(0.5..1.0),
                             rng.gen_range(0.5..1.0),
                             rng.gen_range(0.5..1.0),
@@ -371,18 +371,18 @@ fn sample_scene(
     }
 
     world.push((
-        create_sphere_instance(vec3(0.0, 1.0, 0.0), 1.0, sphere_accel_handle),
+        create_sphere_instance(vec3a(0.0, 1.0, 0.0), 1.0, sphere_accel_handle),
         EnumMaterialPod::new_dielectric(1.5),
     ));
 
     world.push((
-        create_sphere_instance(vec3(-4.0, 1.0, 0.0), 1.0, sphere_accel_handle),
-        EnumMaterialPod::new_lambertian(vec3(0.4, 0.2, 0.1)),
+        create_sphere_instance(vec3a(-4.0, 1.0, 0.0), 1.0, sphere_accel_handle),
+        EnumMaterialPod::new_lambertian(vec3a(0.4, 0.2, 0.1)),
     ));
 
     world.push((
-        create_sphere_instance(vec3(4.0, 1.0, 0.0), 1.0, sphere_accel_handle),
-        EnumMaterialPod::new_metal(vec3(0.7, 0.6, 0.5), 0.0),
+        create_sphere_instance(vec3a(4.0, 1.0, 0.0), 1.0, sphere_accel_handle),
+        EnumMaterialPod::new_metal(vec3a(0.7, 0.6, 0.5), 0.0),
     ));
 
     let mut spheres = Vec::new();

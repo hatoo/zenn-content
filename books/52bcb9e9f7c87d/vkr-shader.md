@@ -123,17 +123,17 @@ pub type DefaultRng = PCG32si;
 ```rust:shader/src/lib.rs
 #[derive(Clone, Copy, Default)]
 pub struct Ray {
-    pub origin: Vec3,
-    pub direction: Vec3,
+    pub origin: Vec3A,
+    pub direction: Vec3A,
 }
 ```
 
 `random_in_unit_disk`などの数学系の関数は`shader/src/math.rs`に実装することにします。
 
 ```rust:shader/src/math.rs
-pub fn random_in_unit_disk(rng: &mut DefaultRng) -> Vec3 {
+pub fn random_in_unit_disk(rng: &mut DefaultRng) -> Vec3A {
     loop {
-        let p = vec3(
+        let p = vec3a(
             rng.next_f32_range(-1.0, 1.0),
             rng.next_f32_range(-1.0, 1.0),
             0.0,
@@ -148,22 +148,22 @@ pub fn random_in_unit_disk(rng: &mut DefaultRng) -> Vec3 {
 ```rust:shader/src/camera.rs
 #[derive(Copy, Clone)]
 pub struct Camera {
-    origin: Vec3,
-    lower_left_corner: Vec3,
-    horizontal: Vec3,
-    vertical: Vec3,
-    u: Vec3,
-    v: Vec3,
-    // w: Vec3,
+    origin: Vec3A,
+    lower_left_corner: Vec3A,
+    horizontal: Vec3A,
+    vertical: Vec3A,
+    u: Vec3A,
+    v: Vec3A,
+    // w: Vec3A,
     lens_radius: f32,
 }
 
 impl Camera {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
-        look_from: Vec3,
-        look_at: Vec3,
-        vup: Vec3,
+        look_from: Vec3A,
+        look_at: Vec3A,
+        vup: Vec3A,
         vfov: f32,
         aspect_ratio: f32,
         aperture: f32,
@@ -243,9 +243,9 @@ pub struct RayPayload {
     // レイは当たったのか?
     pub is_miss: u32,
     // Missの場合その色。Closest-Hitの場合その位置
-    pub position: Vec3,
+    pub position: Vec3A,
     // 法線
-    pub normal: Vec3,
+    pub normal: Vec3A,
     // マテリアルの番号
     pub material: u32,
     // 表からレイが当たったのかどうか　
@@ -259,7 +259,7 @@ pub struct RayPayload {
 
 ```rust:shader/src/lib.rs
 impl RayPayload {
-    pub fn new_miss(color: Vec3) -> Self {
+    pub fn new_miss(color: Vec3A) -> Self {
         Self {
             is_miss: 1,
             position: color,
@@ -272,13 +272,13 @@ impl RayPayload {
 #[spirv(miss)]
 pub fn main_miss(
     // レイの方向
-    #[spirv(world_ray_direction)] world_ray_direction: Vec3,
+    #[spirv(world_ray_direction)] world_ray_direction: Vec3A,
     // RayPayload
     #[spirv(incoming_ray_payload)] out: &mut RayPayload,
 ) {
     let unit_direction = world_ray_direction.normalize();
     let t = 0.5 * (unit_direction.y + 1.0);
-    let color = vec3(1.0, 1.0, 1.0).lerp(vec3(0.5, 0.7, 1.0), t);
+    let color = vec3a(1.0, 1.0, 1.0).lerp(vec3a(0.5, 0.7, 1.0), t);
 
     *out = RayPayload::new_miss(color);
 }
@@ -302,7 +302,7 @@ graph TB
 
 ```rust:shader/src/lib.rs
 impl RayPayload {
-    pub fn new(position: Vec3, outward_normal: Vec3, ray_direction: Vec3, material: u32) -> Self {
+    pub fn new(position: Vec3A, outward_normal: Vec3A, ray_direction: Vec3A, material: u32) -> Self {
         let front_face = ray_direction.dot(outward_normal) < 0.0;
         let normal = if front_face {
             outward_normal
@@ -322,9 +322,9 @@ impl RayPayload {
 #[spirv(intersection)]
 pub fn sphere_intersection(
     // TLASで登録した変換行列の逆で変換した(つまりオブジェクトの空間の)レイの原点
-    #[spirv(object_ray_origin)] ray_origin: Vec3,
+    #[spirv(object_ray_origin)] ray_origin: Vec3A,
     // TLASで登録した変換行列の逆で変換したレイの方向
-    #[spirv(object_ray_direction)] ray_direction: Vec3,
+    #[spirv(object_ray_direction)] ray_direction: Vec3A,
     // レイの開始時間
     #[spirv(ray_tmin)] t_min: f32,
     // レイの終了時間
@@ -372,10 +372,10 @@ pub fn sphere_intersection(
 #[spirv(matrix)]
 #[repr(C)]
 pub struct Affine3 {
-    pub x: Vec3,
-    pub y: Vec3,
-    pub z: Vec3,
-    pub w: Vec3,
+    pub x: Vec3A,
+    pub y: Vec3A,
+    pub z: Vec3A,
+    pub w: Vec3A,
 }
 
 #[spirv(closest_hit)]
@@ -385,9 +385,9 @@ pub fn sphere_closest_hit(
     // TLASで登録した変換行列
     #[spirv(object_to_world)] object_to_world: Affine3,
     // レイの位置
-    #[spirv(world_ray_origin)] world_ray_origin: Vec3,
+    #[spirv(world_ray_origin)] world_ray_origin: Vec3A,
     // レイの方向
-    #[spirv(world_ray_direction)] world_ray_direction: Vec3,
+    #[spirv(world_ray_direction)] world_ray_direction: Vec3A,
     // RayPayload。これがRay Generationに返る
     #[spirv(incoming_ray_payload)] out: &mut RayPayload,
     // TLASで登録した番号。これをマテリアルのindexとする
@@ -437,7 +437,7 @@ pub struct EnumMaterial {
 ```rust:shader/src/material.rs
 #[derive(Clone, Default)]
 pub struct Scatter {
-    pub color: Vec3,
+    pub color: Vec3A,
     pub ray: Ray,
 }
 
@@ -470,7 +470,7 @@ pub trait Material {
 本当は`Option<Scatter>`を返したいのですが、`Option<T>`は使えないので`&mut Scatter`を編集してもらって返り値の`bool`でその`Scatter`が有効かどうか返してもらいます。
 ```rust:shader/src/material.rs
 impl EnumMaterial {
-    pub fn new_lambertian(albedo: Vec3) -> Self {
+    pub fn new_lambertian(albedo: Vec3A) -> Self {
         Self {
             t: 0,
             data: EnumMaterialData {
@@ -479,7 +479,7 @@ impl EnumMaterial {
         }
     }
 
-    pub fn new_metal(albedo: Vec3, fuzz: f32) -> Self {
+    pub fn new_metal(albedo: Vec3A, fuzz: f32) -> Self {
         Self {
             t: 1,
             data: EnumMaterialData {
@@ -517,16 +517,6 @@ impl Material for EnumMaterial {
 
 各マテリアルの実装はソースを見てください。Ray Tracing in One Weekendそのままです。
 
-**注意** ここでは問題になりませんが`Material`はCPUでつくるのでSPIR-VとCPUとのアラインメントの違いでデータの配置が異なってしまわないように気を付けましょう。
-```rust
-fn main() {
-    dbg!(std::mem::align_of::<glam::Vec3>()); // 4. SPIR-Vでは16
-    dbg!(std::mem::align_of::<glam::Vec4>()); // 16
-}
-```
-特に、`Vec3`をCPUで作る場合、CPUでのアラインメントは4ですがSPIR-Vのアラインメントは[16](https://www.w3.org/TR/WGSL/#alignment-and-size)なのでCPUでつくったデータがSPIR-Vから正しく読めないなどの問題が起こらないように注意しましょう。
-今回は`Vec4`を使っているのでアライメントが一致していて問題は起こりません。
-
 # Ray Generation
 
 すべてのパーツがそろったのでRay Generation Shaderを完成させます。
@@ -534,8 +524,8 @@ fn main() {
 ```rust:shader/src/lib.rs
 #[spirv(ray_generation)]
 pub fn main_ray_generation(
-    #[spirv(launch_id)] launch_id: UVec3,
-    #[spirv(launch_size)] launch_size: UVec3,
+    #[spirv(launch_id)] launch_id: UVec3A,
+    #[spirv(launch_size)] launch_size: UVec3A,
     #[spirv(push_constant)] constants: &PushConstants,
     // TLAS
     #[spirv(descriptor_set = 0, binding = 0)] top_level_as: &AccelerationStructure,
@@ -552,9 +542,9 @@ pub fn main_ray_generation(
 
     // カメラの場所などは簡単のために固定値
     let camera = Camera::new(
-        vec3(13.0, 2.0, 3.0),
-        vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 1.0, 0.0),
+        vec3a(13.0, 2.0, 3.0),
+        vec3a(0.0, 0.0, 0.0),
+        vec3a(0.0, 1.0, 0.0),
         20.0 / 180.0 * core::f32::consts::PI,
         launch_size.x as f32 / launch_size.y as f32,
         0.1,
@@ -571,7 +561,7 @@ pub fn main_ray_generation(
     let tmax = 100000.0;
 
     // レイの色
-    let mut color = vec3(1.0, 1.0, 1.0);
+    let mut color = vec3a(1.0, 1.0, 1.0);
 
     // レイの位置と方向
     let mut ray = camera.get_ray(u, v, &mut rng);
@@ -588,7 +578,7 @@ pub fn main_ray_generation(
                 0,
                 0,
                 0,
-                // ここで引数が交互にVec3, f32, Vec3, f32となっているのはアラインメントのためだろう
+                // ここで引数が交互にVec3A, f32, Vec3A, f32となっているのはアラインメントのためだろう
                 ray.origin,
                 tmin,
                 ray.direction,

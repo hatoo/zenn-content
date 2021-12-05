@@ -25,15 +25,15 @@ graph TB
 ```rust:shader/src/lib.rs
 #[derive(Copy, Clone)]
 pub struct Vertex {
-    pub position: Vec3,
-    pub normal: Vec3,
+    pub position: Vec3A,
+    pub normal: Vec3A,
 }
 
 #[spirv(closest_hit)]
 pub fn triangle_closest_hit(
     #[spirv(hit_attribute)] attribute: &Vec2,
     #[spirv(object_to_world)] object_to_world: Affine3,
-    #[spirv(world_ray_direction)] world_ray_direction: Vec3,
+    #[spirv(world_ray_direction)] world_ray_direction: Vec3A,
     // 各頂点の情報
     // あらかじめ用意しておく
     #[spirv(storage_buffer, descriptor_set = 0, binding = 3)] vertices: &[Vertex],
@@ -56,7 +56,7 @@ pub fn triangle_closest_hit(
         vertices.index_unchecked(*indices.index_unchecked(3 * primitive_id as usize + 2) as usize)
     };
 
-    let barycentrics = vec3(1.0 - attribute.x - attribute.y, attribute.x, attribute.y);
+    let barycentrics = vec3a(1.0 - attribute.x - attribute.y, attribute.x, attribute.y);
 
     // 衝突箇所は`hit_attribute`から求められる
     let pos =
@@ -68,13 +68,13 @@ pub fn triangle_closest_hit(
     // 座標変換
     // 行列*ベクトルの演算をする簡単な関数はrust-gpuにはまだない
     // asm!(...)を使えば1命令でできそうだが簡単のために自力で計算している
-    let hit_pos = vec3(
+    let hit_pos = vec3a(
         object_to_world.x.dot(pos),
         object_to_world.y.dot(pos),
         object_to_world.z.dot(pos),
     ) + object_to_world.w;
 
-    let normal = vec3(
+    let normal = vec3a(
         object_to_world.x.dot(nrm),
         object_to_world.y.dot(nrm),
         object_to_world.z.dot(nrm),
@@ -92,7 +92,7 @@ pub fn triangle_closest_hit(
 ```rust:src/main.rs
     let (bottom_as_triangle, bottom_as_triangle_buffer, vertex_buffer, index_buffer) = {
         // 頂点情報
-        // シェーダー上では位置と法線のVec3二つだったが、アラインメントの関係上それぞれ4つのf32で配置する必要があることに注意
+        // シェーダー上では位置と法線のVec3A二つだったが、アラインメントの関係上それぞれ4つのf32で配置する必要があることに注意
         const VERTICES: [[f32; 8]; 3] = [
             [1.0, -1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
             [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
@@ -293,7 +293,7 @@ fn sample_scene(
                 device_handle: triangle_accel_handle,
             },
         },
-        EnumMaterialPod::new_metal(vec3(0.7, 0.6, 0.5), 0.0),
+        EnumMaterialPod::new_metal(vec3a(0.7, 0.6, 0.5), 0.0),
     ));
 
     // ...
@@ -316,8 +316,8 @@ Any-Hit Shaderではレイの衝突をなかったことにできます。
 #[spirv(any_hit)]
 pub fn triangle_any_hit(
     #[spirv(ray_tmax)] t: f32,
-    #[spirv(object_ray_origin)] object_ray_origin: Vec3,
-    #[spirv(object_ray_direction)] object_ray_direction: Vec3,
+    #[spirv(object_ray_origin)] object_ray_origin: Vec3A,
+    #[spirv(object_ray_direction)] object_ray_direction: Vec3A,
 ) {
     let pos = object_ray_origin + t * object_ray_direction;
 
