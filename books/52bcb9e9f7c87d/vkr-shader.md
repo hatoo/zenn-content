@@ -517,6 +517,16 @@ impl Material for EnumMaterial {
 
 各マテリアルの実装はソースを見てください。Ray Tracing in One Weekendそのままです。
 
+**注意** ここでは問題になりませんが`Material`はCPUでつくるのでSPIR-VとCPUとのアラインメントの違いでデータの配置が異なってしまわないように気を付けましょう。
+```rust
+fn main() {
+    dbg!(std::mem::align_of::<glam::Vec3>()); // 4. SPIR-Vでは16
+    dbg!(std::mem::align_of::<glam::Vec4>()); // 16
+}
+```
+特に、`Vec3`をCPUで作る場合、CPUでのアラインメントは4ですがSPIR-Vのアラインメントは[16](https://www.w3.org/TR/WGSL/#alignment-and-size)なのでCPUでつくったデータがSPIR-Vから正しく読めないなどの問題が起こらないように注意しましょう。
+今回は`Vec4`を使っているのでアライメントが一致していて問題は起こりません。
+
 # Ray Generation
 
 すべてのパーツがそろったのでRay Generation Shaderを完成させます。
