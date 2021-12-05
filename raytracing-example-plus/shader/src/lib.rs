@@ -226,6 +226,7 @@ pub fn sphere_closest_hit(
 }
 
 #[derive(Copy, Clone)]
+#[repr(C)]
 pub struct Vertex {
     pub position: Vec3A,
     pub normal: Vec3A,

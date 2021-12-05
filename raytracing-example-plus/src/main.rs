@@ -13,15 +13,9 @@ use ash::{
     vk::{self},
 };
 
-use glam::vec3a;
+use glam::{const_vec3a, vec3a};
 use rand::prelude::*;
-use shader::material::EnumMaterial;
-
-#[repr(C)]
-#[derive(Clone, Debug, Copy)]
-struct Vertex {
-    pos: [f32; 3],
-}
+use shader::{material::EnumMaterial, Vertex};
 
 fn main() {
     const ENABLE_VALIDATION_LAYER: bool = true;
@@ -469,10 +463,19 @@ fn main() {
     };
 
     let (bottom_as_triangle, bottom_as_triangle_buffer, vertex_buffer, index_buffer) = {
-        const VERTICES: [[f32; 8]; 3] = [
-            [1.0, -1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
-            [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
-            [-1.0, -1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
+        const VERTICES: [Vertex; 3] = [
+            Vertex {
+                position: const_vec3a!([1.0, -1.0, 0.0]),
+                normal: const_vec3a!([0.0, 0.0, 1.0]),
+            },
+            Vertex {
+                position: const_vec3a!([0.0, 1.0, 0.0]),
+                normal: const_vec3a!([0.0, 0.0, 1.0]),
+            },
+            Vertex {
+                position: const_vec3a!([-1.0, -1.0, 0.0]),
+                normal: const_vec3a!([0.0, 0.0, 1.0]),
+            },
         ];
 
         const INDICES: [u32; 3] = [0, 1, 2];
