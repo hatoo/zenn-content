@@ -75,6 +75,17 @@ spirv-std = { git = "https://github.com/EmbarkStudios/rust-gpu.git", features = 
 vertexシェーダーとfragmentシェーダーを書いていきます。
 vertexシェーダーで大きな三角形を描き、fragment シェーダーで色を付けます。
 
+`glam::Vec3`のアラインメントはCPUでは4, SPIR-Vでは16と違いがあるので後々問題が起こらないようにこの文章では常に`glam::Vec3A`を使います。
+これはアラインメントがCPUでも16です。
+
+```rust
+fn main() {
+    dbg!(std::mem::align_of::<glam::Vec3>());  // 4
+    dbg!(std::mem::align_of::<glam::Vec3A>()); // 16
+    dbg!(std::mem::align_of::<glam::Vec4>());  // 16
+}
+```
+
 ```rust:shader/src/lib.rs
 // ここら辺はテンプレ
 // 気になる方は一つ一つ調べれば割とすぐに把握できるでしょう

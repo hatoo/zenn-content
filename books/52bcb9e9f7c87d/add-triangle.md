@@ -24,6 +24,7 @@ graph TB
 
 ```rust:shader/src/lib.rs
 #[derive(Copy, Clone)]
+#[repr(C)]
 pub struct Vertex {
     pub position: Vec3A,
     pub normal: Vec3A,
@@ -92,11 +93,19 @@ pub fn triangle_closest_hit(
 ```rust:src/main.rs
     let (bottom_as_triangle, bottom_as_triangle_buffer, vertex_buffer, index_buffer) = {
         // 頂点情報
-        // シェーダー上では位置と法線のVec3A二つだったが、アラインメントの関係上それぞれ4つのf32で配置する必要があることに注意
-        const VERTICES: [[f32; 8]; 3] = [
-            [1.0, -1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
-            [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
-            [-1.0, -1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0],
+        const VERTICES: [Vertex; 3] = [
+            Vertex {
+                position: const_vec3a!([1.0, -1.0, 0.0]),
+                normal: const_vec3a!([0.0, 0.0, 1.0]),
+            },
+            Vertex {
+                position: const_vec3a!([0.0, 1.0, 0.0]),
+                normal: const_vec3a!([0.0, 0.0, 1.0]),
+            },
+            Vertex {
+                position: const_vec3a!([-1.0, -1.0, 0.0]),
+                normal: const_vec3a!([0.0, 0.0, 1.0]),
+            },
         ];
 
         const INDICES: [u32; 3] = [0, 1, 2];
