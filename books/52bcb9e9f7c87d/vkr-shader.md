@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 なので自分で実装していきます。
 
 まず、疑似乱数のシードを得ようと思います。
-今回は、ピクセルの座標とホストでつくった乱数(Push Constantsで渡す)をxorしてシードとします。
+今回は、ピクセルの座標とホストでつくった乱数(Push Constantsで渡す)をxorしてシードとします。([VK_KHR_shader_clock(3)](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_shader_clock.html)を使うのもありかもしれません)
 
 ```rust:shader/src/lib.rs
 pub struct PushConstants {
