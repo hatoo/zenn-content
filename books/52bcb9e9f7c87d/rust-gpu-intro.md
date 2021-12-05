@@ -78,7 +78,14 @@ vertexシェーダーで大きな三角形を描き、fragment シェーダー�
 `glam::Vec3`のアラインメントはCPUでは4, SPIR-Vでは16と違いがあるので後々問題が起こらないようにこの文章では常に`glam::Vec3A`を使います。
 これはアラインメントがCPUでも16です。
 
+SPIR-Vのアラインメントなどの情報はWGSLの仕様を見るとわかりやすいでしょう。
+
+https://www.w3.org/TR/WGSL/#alignment-and-size
+
+WGSLはSPIR-Vと一対一に対応するようにつくられているため参考になります。
+
 ```rust
+// CPU
 fn main() {
     dbg!(std::mem::align_of::<glam::Vec3>());  // 4
     dbg!(std::mem::align_of::<glam::Vec3A>()); // 16
