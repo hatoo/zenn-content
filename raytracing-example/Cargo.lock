@@ -87,9 +87,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "crc32fast"
-version = "1.2.2"
+version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3825b1e8580894917dc4468cb634a1b4e9745fddc854edad72d9c04644c0319f"
+checksum = "738c290dfaea84fc1ca15ad9c168d083b05a714e1efddd8edaab678dc28d2836"
 dependencies = [
  "cfg-if",
 ]
@@ -238,9 +238,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.108"
+version = "0.2.109"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8521a1b57e76b1ec69af7599e75e38e7b7fad6610f037db8c79b127201b5d119"
+checksum = "f98a04dce437184842841303488f70d0188c5f51437d2a834dc097eafa909a01"
 
 [[package]]
 name = "libloading"
@@ -311,9 +311,9 @@ checksum = "ed0cfbc8191465bed66e1718596ee0b0b35d5ee1f41c5df2189d0fe8bde535ba"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.32"
+version = "1.0.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba508cc11742c0dc5c1659771673afbab7a0efab23aa17e854cbab0837ed0b43"
+checksum = "fb37d2df5df740e582f28f8560cf425f52bb267d872fe58358eadb554909f07a"
 dependencies = [
  "unicode-xid",
 ]
@@ -421,7 +421,7 @@ checksum = "7ef03e0a2b150c7a90d01faf6254c9c48a41e95fb2a8c2ac1c6f0d2b9aefc342"
 [[package]]
 name = "rustc_codegen_spirv"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#2e4de94a6651baabe410252152eec05e948e9627"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#2ca5826e55cadd920c7cec37be0dd32edeee8ebd"
 dependencies = [
  "ar",
  "bimap",
@@ -512,7 +512,7 @@ dependencies = [
 [[package]]
 name = "spirv-builder"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#2e4de94a6651baabe410252152eec05e948e9627"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#2ca5826e55cadd920c7cec37be0dd32edeee8ebd"
 dependencies = [
  "memchr",
  "raw-string",
@@ -524,7 +524,7 @@ dependencies = [
 [[package]]
 name = "spirv-std"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#2e4de94a6651baabe410252152eec05e948e9627"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#2ca5826e55cadd920c7cec37be0dd32edeee8ebd"
 dependencies = [
  "bitflags",
  "glam",
@@ -536,7 +536,7 @@ dependencies = [
 [[package]]
 name = "spirv-std-macros"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#2e4de94a6651baabe410252152eec05e948e9627"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#2ca5826e55cadd920c7cec37be0dd32edeee8ebd"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -565,7 +565,7 @@ dependencies = [
 [[package]]
 name = "spirv-types"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#2e4de94a6651baabe410252152eec05e948e9627"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#2ca5826e55cadd920c7cec37be0dd32edeee8ebd"
 
 [[package]]
 name = "syn"
