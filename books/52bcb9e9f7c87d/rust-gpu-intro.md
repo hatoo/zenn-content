@@ -75,7 +75,7 @@ spirv-std = { git = "https://github.com/EmbarkStudios/rust-gpu.git", features = 
 vertexシェーダーとfragmentシェーダーを書いていきます。
 vertexシェーダーで大きな三角形を描き、fragment シェーダーで色を付けます。
 
-[`glam::Vec3`](https://docs.rs/glam/0.20.1/glam/f32/struct.Vec3.html)のアラインメントはCPUでは4, SPIR-Vでは16と違いがあるので後々問題が起こらないようにこの文章では常に[`glam::Vec3A`](https://docs.rs/glam/0.20.1/glam/f32/struct.Vec3A.html)を使います。
+`features = ["glam"]`を指定したので[glam](https://crates.io/crates/glam/)の型をベクトルとして使えますが、[`glam::Vec3`](https://docs.rs/glam/0.20.1/glam/f32/struct.Vec3.html)のアラインメントはCPUでは4, SPIR-Vでは16と違いがあるので後々問題が起こらないようにこの文章では常に[`glam::Vec3A`](https://docs.rs/glam/0.20.1/glam/f32/struct.Vec3A.html)を使います。
 これはアラインメントがCPUでも16です。
 
 SPIR-Vのアラインメントなどの情報はWGSLの仕様を見るとわかりやすいでしょう。
