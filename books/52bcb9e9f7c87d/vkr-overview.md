@@ -48,12 +48,12 @@ VKRだと速い。BVHの最適化を丸投げできるのがとても良い。
 ASはBVHと同じ働きをします。APIを呼ぶことでGPU上で構築したりシェーダーからレイの当たり判定をすることができます。(実際にはASの実装はGPUベンダの裁量によるので中でBVHとは違うすごいアルゴリズムが使われているかもしれませんが)
 またASは、特定の条件を満たした際に低コストで再構築したり、シリアライズして例えば他のGPUで構築したASを他のGPUで使ったりする面白い機能もありますがこの文章では触れません。
 
-一般的にBVHというとAABB(Axis Aligned Bounding Box)のほかにもOBB(Oriented Bounding Boxes)などが使われることもあるようですがVKRではAABBもしくはポリゴン(三角形)のみサポートされています。
+一般的にBVHというとAABB(Axis Aligned Bounding Box)のほかにもOBB(Oriented Bounding Boxes)などが使われることもあるようですがVKRではAABBもしくは三角形のみサポートされています。
 
 ## Top Level Acceleration StructureとBottom Level Acceleration Structure
 
 ASはTop Level Acceleration Structure(以下TLAS)とBottom Level Acceleration Structure(BLAS)の二層構造です。
-シェーダーからはTLASのみが見え、TLASは複数のBLASをその変換行列とともに参照します。BLASは複数のポリゴン(三角形)もしくはAABBを持ちます。ポリゴンは非常によく使われる表現なため、特別にサポートされています。AABBの場合はその内部での当たり判定はIntersection Shaderを定義して計算します。TLASがポリゴン/AABBを参照することもBLASが他のBLASやTLASを持つこともありません。
+シェーダーからはTLASのみが見え、TLASは複数のBLASをその変換行列とともに参照します。BLASは複数の三角形もしくはAABBを持ちます。三角形は非常によく使われる表現なため、特別にサポートされています。AABBの場合はその内部での当たり判定はIntersection Shaderを定義して計算します。TLASが三角形/AABBを参照することもBLASが他のBLASやTLASを持つこともありません。
 
 ```mermaid
 graph TB
@@ -97,7 +97,7 @@ graph TB
 
 ## Intersections Shader
 
-独自の形状に対して当たり判定をするシェーダーです。BLASに登録したAABBにレイが当たっていた場合に呼ばれます。独自の形状を使わずポリゴンを使う場合は省略しても構いません。この文章では球の当たり判定を実装します。
+独自の形状に対して当たり判定をするシェーダーです。BLASに登録したAABBにレイが当たっていた場合に呼ばれます。独自の形状を使わず三角形を使う場合は省略しても構いません。この文章では球の当たり判定を実装します。
 
 ## Any-Hit Shader
 
