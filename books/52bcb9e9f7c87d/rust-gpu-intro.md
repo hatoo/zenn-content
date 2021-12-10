@@ -153,6 +153,8 @@ https://www.w3.org/TR/WGSL/#alignment-and-size
 
 WGSLはSPIR-Vと一対一に対応するようにつくられているため参考になります。
 
+また、配列のインデックスに[IndexUnchecked](https://embarkstudios.github.io/rust-gpu/api/spirv_std/arch/trait.IndexUnchecked.html)を使いました。これを使うと配列のアクセスの境界チェックが行われなくなります。
+
 # シェーダーを確認する
 
 アプリケーション側からビルドされたシェーダーのバイナリのパスをコンパイル時に`env!("<シェーダープロジェクト名>.spv")`で取得できます。
