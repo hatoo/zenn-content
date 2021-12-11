@@ -244,7 +244,7 @@ pub enum V {
 }
 ```
 
-```spirv
+```
 %9 = OpTypeInt 8 0
 %10 = OpTypeFloat 32
 %11 = OpTypeVector %10 3
