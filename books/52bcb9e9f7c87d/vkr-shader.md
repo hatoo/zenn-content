@@ -374,7 +374,6 @@ pub fn sphere_intersection(
         unsafe {
             report_intersection(root0, 0);
         }
-        return;
     }
 
     if root1 >= t_min && root1 <= t_max {
