@@ -223,9 +223,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.109"
+version = "0.2.111"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f98a04dce437184842841303488f70d0188c5f51437d2a834dc097eafa909a01"
+checksum = "8e167738f1866a7ec625567bae89ca0d44477232a4f7c52b1c7f2adc2c98804f"
 
 [[package]]
 name = "libloading"
@@ -356,7 +356,7 @@ checksum = "7ef03e0a2b150c7a90d01faf6254c9c48a41e95fb2a8c2ac1c6f0d2b9aefc342"
 [[package]]
 name = "rustc_codegen_spirv"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#2ca5826e55cadd920c7cec37be0dd32edeee8ebd"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#da7c3ed71f27d67e05c0d2a4d3c839db14daf1f8"
 dependencies = [
  "ar",
  "bimap",
@@ -376,9 +376,9 @@ dependencies = [
 
 [[package]]
 name = "ryu"
-version = "1.0.6"
+version = "1.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c9613b5a66ab9ba26415184cfc41156594925a9cf3a2057e57f31ff145f6568"
+checksum = "b30e4c09749c107e83dd61baf9604198efc4542863c88af39dafcaca89c7c9f9"
 
 [[package]]
 name = "sanitize-filename"
@@ -392,18 +392,18 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.130"
+version = "1.0.131"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f12d06de37cf59146fbdecab66aa99f9fe4f78722e3607577a5375d66bd0c913"
+checksum = "b4ad69dfbd3e45369132cc64e6748c2d65cdfb001a2b1c232d128b4ad60561c1"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.130"
+version = "1.0.131"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7bc1a1ab1961464eae040d96713baa5a724a8152c1222492465b54322ec508b"
+checksum = "b710a83c4e0dff6a3d511946b95274ad9ca9e5d3ae497b63fda866ac955358d2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -440,7 +440,7 @@ dependencies = [
 [[package]]
 name = "spirv-builder"
 version = "0.4.0-alpha.12"
-source = "git+https://github.com/EmbarkStudios/rust-gpu#2ca5826e55cadd920c7cec37be0dd32edeee8ebd"
+source = "git+https://github.com/EmbarkStudios/rust-gpu#da7c3ed71f27d67e05c0d2a4d3c839db14daf1f8"
 dependencies = [
  "memchr",
  "raw-string",
