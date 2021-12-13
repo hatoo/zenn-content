@@ -235,25 +235,6 @@ Vulkanのメモリモデルではポインタは基本的にロジカルポイ�
 普通のRustコンパイラは`enum`を、各バリアントに対してそれにマッチしてデータが欲しいときにデータ部分に対してキャストをします(上記のようにこれはできません!)。つまり現状、rust-gpuでは`Option<T>`も含め`enum`を使うことは現状できません。
 [#78](https://github.com/EmbarkStudios/rust-gpu/issues/78), [#234](https://github.com/EmbarkStudios/rust-gpu/issues/234)
 
-[#819](https://github.com/EmbarkStudios/rust-gpu/pull/819)がマージされれば`enum`が使えるようにありますが、上記のようにキャストは絶対にできないという制限を回避するために余分にデータを確保する場合があります。
-```rust
-pub enum V {
-    V1(glam::Vec3),
-    V2(glam::Vec4),
-    V3(glam::Vec3),
-}
-```
-
-```
-%9 = OpTypeInt 8 0
-%10 = OpTypeFloat 32
-%11 = OpTypeVector %10 3
-%12 = OpTypeVector %10 4
-%5 = OpTypeStruct %9 %11 %12
-```
-
-`glam::Vec3`はまとめられているが`glam:::Vec4`は追加で確保されている。本当は`Vec4`分のサイズだけ確保してそこから`Vec3`をとってきてほしいがそれはできない。
-
 しょうがないので`struct`で表現し、内部の値によって使うメンバを変えることにします。
 また、Bool型は[シェーダーの入力としては使えないので](https://www.khronos.org/registry/SPIR-V/specs/1.0/SPIRV.html#OpTypeBool)`u32`で表現します(`true` => 1, `false` => 0)。
 ```rust:shader/src/lib.rs
