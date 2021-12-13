@@ -69,7 +69,7 @@ graph TB
 VKRでは新たに
 
 - Ray Generation Shader (レイトレーシングのエントリポイント)
-- Intersections Shader (独自の形状に対してレイの当たり判定をする)
+- Intersection Shader (独自の形状に対してレイの当たり判定をする)
 - Any-Hit Shader (レイは当たったけどやっぱりなかったことにすることができる(例えばレイは当たったけどテクスチャを見て透明だと判断したとき))
 - Closest-Hit Shader (一通りレイの当たり判定が終わり一番近い衝突場所が分かったときに呼ばれる)
 - Miss Shader (レイが何にも当たらなかったときに呼ばれる)
@@ -95,14 +95,14 @@ graph TB
 レイトレーシングのエントリポイントです。
 これが出力のピクセルの数だけ呼ばれる(ようにする)のでここからGLSLでいう[TraceRayKHR](https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_tracing.txt)をつかうとCallble Shader以外の他すべてのシェーダーが動き、その結果をみてピクセルを埋めます。
 
-## Intersections Shader
+## Intersection Shader
 
 独自の形状に対して当たり判定をするシェーダーです。BLASに登録したAABBにレイが当たっていた場合に呼ばれます。独自の形状を使わず三角形を使う場合は省略しても構いません。この文章では球の当たり判定を実装します。
 
 ## Any-Hit Shader
 
 ここではレイの衝突をなかったことにできます。ここで衝突が破棄された場合、次に近い衝突場所に行きます。上記のようにレイは当たったけどテクスチャを見て透明だと判断したい時などに使えます。省略した場合は衝突の破棄は行われません。
-Intersections Shaderの時点で処理してしまえばいいかと思うかもしれませんがテクスチャを見るなどの処理を可能な限り遅らせることができるという利点があります(その衝突箇所より前の時点で衝突していた場合、テクスチャを見なくてもその衝突は使わないと判断できる)。
+Intersection Shaderの時点で処理してしまえばいいかと思うかもしれませんがテクスチャを見るなどの処理を可能な限り遅らせることができるという利点があります(その衝突箇所より前の時点で衝突していた場合、テクスチャを見なくてもその衝突は使わないと判断できる)。
 
 ## Closest-Hit Shader
 
@@ -114,11 +114,11 @@ Intersection ShaderとAny-Hit Shaderでいろいろやった後、最終的に�
 
 # Shader Record
 
-Interssection Shader, Any-Hit Shader, Closest-Hitは(それぞれ省略されることがあるものの)必ずセットで使われるため、これらをまとめたものをHit Group Recordと言います。 Ray Generation ShaderはRay Generation Record、Miss ShaderはMiss recordです。
+Intersection Shader, Any-Hit Shader, Closest-Hitは(それぞれ省略されることがあるものの)必ずセットで使われるため、これらをまとめたものをHit Group Recordと言います。 Ray Generation ShaderはRay Generation Record、Miss ShaderはMiss recordです。
 
 # Shader Binding Table
 
-Interssection Shaderで独自の形状の当たり判定を行うと書きましたが、独自の形状と一口に言っても同じシーンに球や直方体などの別の形状があるかもしれませんし、レイを飛ばすにしてもそれが通常のレイの場合もありますしシャドウレイを飛ばしたいだけの場合もあります。
+Intersection Shaderで独自の形状の当たり判定を行うと書きましたが、独自の形状と一口に言っても同じシーンに球や直方体などの別の形状があるかもしれませんし、レイを飛ばすにしてもそれが通常のレイの場合もありますしシャドウレイを飛ばしたいだけの場合もあります。
 つまり、使うシェーダーを動的に変化させる必要があるわけです。
 それを実現するのがShader Binding Table(以下SBT)です。
 各SBTにShader Recordが一次元配列に配置されていて、そのオフセットを動的に決めます。
