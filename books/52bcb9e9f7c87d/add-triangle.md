@@ -108,6 +108,7 @@ pub fn triangle_closest_hit(
             },
         ];
 
+        // インデックス
         const INDICES: [u32; 3] = [0, 1, 2];
 
         let vertex_stride = std::mem::size_of::<f32>() * 8;
