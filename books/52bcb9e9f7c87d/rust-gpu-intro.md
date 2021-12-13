@@ -62,7 +62,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 # シェーダーを書く
 
 ここからシェーダーを書いていきます。
-Cargo.tomlにlibを設定し[spirv-std](https://embarkstudios.github.io/rust-gpu/api/spirv_std/)をdependenciesに加えます。
+`Cargo.toml`にlibを設定し[spirv-std](https://embarkstudios.github.io/rust-gpu/api/spirv_std/)をdependenciesに加えます。
 spirv-stdはSPIR-Vターゲットでのstdみたいなものに相当します。
 
 
@@ -325,7 +325,7 @@ rust-gpuを使っていると`cargo run`してもシェーダーのコードが�
 :::
 
 :::message
-rust-gpuを使っていると`spirv-val`で失敗するというメッセージが出ることがあるかもしれません。`spirv-val`はSPIRV-Toolsに含まれるバリデータで、SPIR-Vが仕様に沿っているかどうか検証します。つまり、rust-gpuはエラーを出さずにSPIR-Vを出力できたがSPIR-Vの仕様に合わなかったということです。`spirv-dis`を使ってディスアセンブルして確認してみると何かわかるかもしれません。
+rust-gpuを使っていると`spirv-val`で失敗するというメッセージが出ることがあるかもしれません。`spirv-val`はSPIRV-Toolsに含まれるバリデータで、SPIR-Vが仕様に沿っているかどうか検証します。rust-gpuは自動でこれを実行します。つまり、rust-gpuはエラーを出さずにSPIR-Vを出力できたがSPIR-Vの仕様に合わなかったということです。`spirv-dis`を使ってディスアセンブルして確認してみると何かわかるかもしれません。
 :::
 
 :::message
