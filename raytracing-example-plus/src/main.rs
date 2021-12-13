@@ -480,7 +480,7 @@ fn main() {
 
         const INDICES: [u32; 3] = [0, 1, 2];
 
-        let vertex_stride = std::mem::size_of::<f32>() * 8;
+        let vertex_stride = std::mem::size_of::<Vertex>();
         let vertex_buffer_size = vertex_stride * VERTICES.len();
 
         let mut vertex_buffer = BufferResource::new(

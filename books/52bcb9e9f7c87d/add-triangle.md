@@ -111,7 +111,7 @@ pub fn triangle_closest_hit(
         // インデックス
         const INDICES: [u32; 3] = [0, 1, 2];
 
-        let vertex_stride = std::mem::size_of::<f32>() * 8;
+        let vertex_stride = std::mem::size_of::<Vertex>();
         let vertex_buffer_size = vertex_stride * VERTICES.len();
 
         // Vertex用のバッファを作成。これはBLASの作成にも使うしシェーダーにも渡す。
