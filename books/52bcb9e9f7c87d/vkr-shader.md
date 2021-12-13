@@ -252,10 +252,10 @@ pub enum V {
 %5 = OpTypeStruct %9 %11 %12
 ```
 
-`glam::Vec3`はまとめられているが`glam:::Vec4`は追加で確保されている。本当はVec4分のサイズだけ確保してそこからVec3をとってきてほしいがそれはできない。
+`glam::Vec3`はまとめられているが`glam:::Vec4`は追加で確保されている。本当は`Vec4`分のサイズだけ確保してそこから`Vec3`をとってきてほしいがそれはできない。
 
 しょうがないので`struct`で表現し、内部の値によって使うメンバを変えることにします。
-また、Bool型は[シェーダーの入力としては使えないので](https://www.khronos.org/registry/SPIR-V/specs/1.0/SPIRV.html#OpTypeBool)u32で表現します(`true` => 1, `false` => 0)。
+また、Bool型は[シェーダーの入力としては使えないので](https://www.khronos.org/registry/SPIR-V/specs/1.0/SPIRV.html#OpTypeBool)`u32`で表現します(`true` => 1, `false` => 0)。
 ```rust:shader/src/lib.rs
 #[derive(Clone, Default)]
 pub struct RayPayload {
