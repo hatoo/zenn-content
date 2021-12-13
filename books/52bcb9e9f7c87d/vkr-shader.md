@@ -584,7 +584,7 @@ pub fn main_ray_generation(
     // レイの位置と方向
     let mut ray = camera.get_ray(u, v, &mut rng);
 
-    // レイトレーシングはよく再帰的なアルゴリズムだといわれるが、SPIR-Vにはスタックがないので再帰は使えない
+    // レイトレーシングはよく再帰的なアルゴリズムだといわれるが、SPIR-Vで再帰はできない。
     for _ in 0..50 /* 最大の反射回数 */ {
         *payload = RayPayload::default();
         unsafe {
