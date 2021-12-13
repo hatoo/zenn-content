@@ -93,7 +93,7 @@ graph TB
 ## Ray Generation Shader
 
 レイトレーシングのエントリポイントです。
-これが出力のピクセルの数だけ呼ばれる(ようにする)のでここからGLSLでいう[TraceRayKHR](https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_tracing.txt)をつかうと他すべてのシェーダーが動き、その結果をみてピクセルを埋めます。
+これが出力のピクセルの数だけ呼ばれる(ようにする)のでここからGLSLでいう[TraceRayKHR](https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_tracing.txt)をつかうとCallble Shader以外の他すべてのシェーダーが動き、その結果をみてピクセルを埋めます。
 
 ## Intersections Shader
 
