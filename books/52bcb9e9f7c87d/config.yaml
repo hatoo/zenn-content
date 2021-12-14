@@ -1,7 +1,7 @@
 title: "Rustで始めるVulkan Raytracing"
 summary: "rust-gpuとashでレイトレーシングします"
 topics: ["Rust", "rustgpu", "Vulkan"]
-published: false
+published: true
 price: 0 # 有料の場合200〜5000
 # 本に含めるチャプターを順番に並べましょう
 chapters:
