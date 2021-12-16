@@ -23,7 +23,7 @@ fn main() {
     const HEIGHT: u32 = 800;
     const COLOR_FORMAT: vk::Format = vk::Format::R32G32B32A32_SFLOAT;
 
-    const N_SAMPLES: u32 = 16;
+    const N_SAMPLES: u32 = 1;
     const N_SAMPLES_ITER: u32 = 100;
 
     let validation_layers: Vec<CString> = if ENABLE_VALIDATION_LAYER {
@@ -1914,7 +1914,7 @@ fn sample_scene(
 
     world.push((
         create_sphere_instance(vec3a(0.0, -1000.0, 0.0), 1000.0, sphere_accel_handle),
-        EnumMaterial::new_lambertian(vec3a(0.5, 0.5, 0.5)),
+        EnumMaterial::new_metal(vec3a(0.5, 0.5, 0.5), 0.0),
     ));
 
     for a in -11..11 {
@@ -1935,7 +1935,7 @@ fn sample_scene(
 
                         world.push((
                             create_sphere_instance(center, 0.3, sphere_accel_handle),
-                            EnumMaterial::new_lambertian(albedo),
+                            EnumMaterial::new_metal(albedo, 0.0),
                         ));
                     }
                     x if x < 0.95 => {
@@ -1944,11 +1944,9 @@ fn sample_scene(
                             rng.gen_range(0.5..1.0),
                             rng.gen_range(0.5..1.0),
                         );
-                        let fuzz = rng.gen_range(0.0..0.5);
-
                         world.push((
                             create_sphere_instance(center, 0.2, sphere_accel_handle),
-                            EnumMaterial::new_metal(albedo, fuzz),
+                            EnumMaterial::new_metal(albedo, 0.0),
                         ));
                     }
                     _ => world.push((
@@ -1967,7 +1965,7 @@ fn sample_scene(
 
     world.push((
         create_sphere_instance(vec3a(-4.0, 1.0, 0.0), 1.0, sphere_accel_handle),
-        EnumMaterial::new_lambertian(vec3a(0.4, 0.2, 0.1)),
+        EnumMaterial::new_metal(vec3a(0.4, 0.2, 0.1), 0.0),
     ));
 
     world.push((

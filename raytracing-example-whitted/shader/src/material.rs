@@ -149,7 +149,7 @@ impl<'a> Material for Dielectric<'a> {
         &self,
         ray: &Ray,
         ray_payload: &RayPayload,
-        rng: &mut DefaultRng,
+        _rng: &mut DefaultRng,
         scatter: &mut Scatter,
     ) -> bool {
         let refraction_ratio = if ray_payload.front_face != 0 {
@@ -163,12 +163,11 @@ impl<'a> Material for Dielectric<'a> {
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
         let cannot_refract = refraction_ratio * sin_theta > 1.0;
 
-        let direction =
-            if cannot_refract || reflectance(cos_theta, refraction_ratio) > rng.next_f32() {
-                reflect(unit_direction, ray_payload.normal)
-            } else {
-                refract(unit_direction, ray_payload.normal, refraction_ratio)
-            };
+        let direction = if cannot_refract || reflectance(cos_theta, refraction_ratio) > 0.5 {
+            reflect(unit_direction, ray_payload.normal)
+        } else {
+            refract(unit_direction, ray_payload.normal, refraction_ratio)
+        };
 
         *scatter = Scatter {
             color: vec3a(1.0, 1.0, 1.0),

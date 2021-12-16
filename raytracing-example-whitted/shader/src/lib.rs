@@ -77,7 +77,7 @@ pub struct PushConstants {
 
 #[spirv(miss)]
 pub fn main_miss(#[spirv(incoming_ray_payload)] out: &mut RayPayload) {
-    let color = vec3a(0.0, 0.0, 0.0);
+    let color = vec3a(0.05, 0.05, 0.05);
 
     *out = RayPayload::new_miss(color);
 }
@@ -105,14 +105,14 @@ pub fn main_ray_generation(
         10.0,
     );
 
-    const LIGHT_POS: Vec3A = const_vec3a!([0.0, 20.0, 0.0]);
-    const LIGHT_COLOR: Vec3A = const_vec3a!([4.0, 4.0, 4.0]);
+    const LIGHT_POS: Vec3A = const_vec3a!([0.0, 10.0, 0.0]);
+    const LIGHT_COLOR: Vec3A = const_vec3a!([1.5, 1.5, 1.5]);
 
-    let u = (launch_id.x as f32 + rng.next_f32()) / (launch_size.x - 1) as f32;
-    let v = (launch_id.y as f32 + rng.next_f32()) / (launch_size.y - 1) as f32;
+    let u = (launch_id.x as f32/* + rng.next_f32() */) / (launch_size.x - 1) as f32;
+    let v = (launch_id.y as f32/* + rng.next_f32() */) / (launch_size.y - 1) as f32;
 
     let cull_mask = 0xff;
-    let tmin = 0.001;
+    let tmin = 0.01;
     let tmax = 100000.0;
 
     let mut color = vec3a(1.0, 1.0, 1.0);
