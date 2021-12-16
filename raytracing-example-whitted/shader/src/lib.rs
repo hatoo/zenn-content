@@ -112,7 +112,7 @@ pub fn main_ray_generation(
     let v = (launch_id.y as f32/* + rng.next_f32() */) / (launch_size.y - 1) as f32;
 
     let cull_mask = 0xff;
-    let tmin = 0.01;
+    let tmin = 0.005;
     let tmax = 100000.0;
 
     let mut color = vec3a(1.0, 1.0, 1.0);
