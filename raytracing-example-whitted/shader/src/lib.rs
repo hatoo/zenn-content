@@ -15,7 +15,7 @@ use spirv_std::macros::spirv;
 use spirv_std::num_traits::Float;
 use spirv_std::{
     arch::{ignore_intersection, report_intersection, IndexUnchecked},
-    glam::{uvec2, vec3a, UVec3, Vec2, Vec3A, Vec4},
+    glam::{const_vec3a, uvec2, vec3a, UVec3, Vec2, Vec3A, Vec4},
     image::Image,
     ray_tracing::{AccelerationStructure, RayFlags},
 };
@@ -76,13 +76,8 @@ pub struct PushConstants {
 }
 
 #[spirv(miss)]
-pub fn main_miss(
-    #[spirv(world_ray_direction)] world_ray_direction: Vec3A,
-    #[spirv(incoming_ray_payload)] out: &mut RayPayload,
-) {
-    let unit_direction = world_ray_direction.normalize();
-    let t = 0.5 * (unit_direction.y + 1.0);
-    let color = vec3a(1.0, 1.0, 1.0).lerp(vec3a(0.5, 0.7, 1.0), t);
+pub fn main_miss(#[spirv(incoming_ray_payload)] out: &mut RayPayload) {
+    let color = vec3a(0.0, 0.0, 0.0);
 
     *out = RayPayload::new_miss(color);
 }
@@ -106,9 +101,12 @@ pub fn main_ray_generation(
         vec3a(0.0, 1.0, 0.0),
         20.0 / 180.0 * core::f32::consts::PI,
         launch_size.x as f32 / launch_size.y as f32,
-        0.1,
+        0.0,
         10.0,
     );
+
+    const LIGHT_POS: Vec3A = const_vec3a!([0.0, 20.0, 0.0]);
+    const LIGHT_COLOR: Vec3A = const_vec3a!([4.0, 4.0, 4.0]);
 
     let u = (launch_id.x as f32 + rng.next_f32()) / (launch_size.x - 1) as f32;
     let v = (launch_id.y as f32 + rng.next_f32()) / (launch_size.y - 1) as f32;
@@ -118,6 +116,7 @@ pub fn main_ray_generation(
     let tmax = 100000.0;
 
     let mut color = vec3a(1.0, 1.0, 1.0);
+    let mut color_sum = vec3a(0.0, 0.0, 0.0);
 
     let mut ray = camera.get_ray(u, v, &mut rng);
 
@@ -139,9 +138,11 @@ pub fn main_ray_generation(
         }
 
         if payload.is_miss != 0 {
-            color *= payload.position;
+            color_sum += color * payload.position;
             break;
         } else {
+            let wo = -ray.direction.normalize();
+
             let mut scatter = Scatter::default();
             if unsafe { materials.index_unchecked(payload.material as usize) }.scatter(
                 &ray,
@@ -154,6 +155,36 @@ pub fn main_ray_generation(
             } else {
                 break;
             }
+
+            let light_ray = Ray {
+                origin: payload.position,
+                direction: LIGHT_POS - payload.position,
+            };
+
+            let normal = payload.normal;
+
+            *payload = RayPayload::default();
+            unsafe {
+                top_level_as.trace_ray(
+                    RayFlags::empty(),
+                    cull_mask,
+                    0,
+                    0,
+                    0,
+                    light_ray.origin,
+                    tmin,
+                    light_ray.direction,
+                    1.0,
+                    payload,
+                );
+            }
+
+            if payload.is_miss != 0 {
+                color_sum += normal.dot(wo).abs()
+                    / (payload.position - light_ray.origin).length_squared()
+                    * color
+                    * LIGHT_COLOR;
+            }
         }
     }
 
@@ -161,7 +192,7 @@ pub fn main_ray_generation(
     let prev: Vec4 = image.read(pos);
 
     unsafe {
-        image.write(pos, prev + color.extend(1.0));
+        image.write(pos, prev + color_sum.extend(1.0));
     }
 }
 

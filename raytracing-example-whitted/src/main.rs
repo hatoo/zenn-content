@@ -23,7 +23,7 @@ fn main() {
     const HEIGHT: u32 = 800;
     const COLOR_FORMAT: vk::Format = vk::Format::R32G32B32A32_SFLOAT;
 
-    const N_SAMPLES: u32 = 5000;
+    const N_SAMPLES: u32 = 16;
     const N_SAMPLES_ITER: u32 = 100;
 
     let validation_layers: Vec<CString> = if ENABLE_VALIDATION_LAYER {
