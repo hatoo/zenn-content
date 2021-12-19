@@ -34,6 +34,7 @@ pub struct Vertex {
 pub fn triangle_closest_hit(
     #[spirv(hit_attribute)] attribute: &Vec2,
     #[spirv(object_to_world)] object_to_world: Affine3,
+    #[spirv(world_to_object)] world_to_object: Affine3,
     #[spirv(world_ray_direction)] world_ray_direction: Vec3A,
     // 各頂点の情報
     // あらかじめ用意しておく
@@ -76,9 +77,9 @@ pub fn triangle_closest_hit(
     ) + object_to_world.w;
 
     let normal = vec3a(
-        object_to_world.x.dot(nrm),
-        object_to_world.y.dot(nrm),
-        object_to_world.z.dot(nrm),
+        world_to_object.x.dot(nrm),
+        world_to_object.y.dot(nrm),
+        world_to_object.z.dot(nrm),
     )
     .normalize();
 
