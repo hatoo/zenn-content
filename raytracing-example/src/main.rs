@@ -42,7 +42,7 @@ fn main() {
         .map(|c_str| c_str.as_ptr())
         .collect();
 
-    let entry = unsafe { ash::Entry::new() }.unwrap();
+    let entry = ash::Entry::new();
 
     assert_eq!(
         check_validation_layer_support(
@@ -1639,9 +1639,11 @@ fn create_sphere_instance(
                 size, 0.0, 0.0, pos.x, 0.0, size, 0.0, pos.y, 0.0, 0.0, size, pos.z,
             ],
         },
-        instance_custom_index_and_mask: 0xff << 24,
-        instance_shader_binding_table_record_offset_and_flags:
-            vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE.as_raw() << 24 | 0,
+        instance_custom_index_and_mask: vk::Packed24_8::new(0, 0xff),
+        instance_shader_binding_table_record_offset_and_flags: vk::Packed24_8::new(
+            0,
+            vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE.as_raw() as u8,
+        ),
         acceleration_structure_reference: vk::AccelerationStructureReferenceKHR {
             device_handle: sphere_accel_handle,
         },
@@ -1721,7 +1723,8 @@ fn sample_scene(
     let mut materials = Vec::new();
 
     for (i, (mut sphere, material)) in world.into_iter().enumerate() {
-        sphere.instance_custom_index_and_mask |= i as u32;
+        sphere.instance_custom_index_and_mask =
+            vk::Packed24_8::new(i as u32, sphere.instance_custom_index_and_mask.high_8());
         spheres.push(sphere);
         materials.push(material);
     }

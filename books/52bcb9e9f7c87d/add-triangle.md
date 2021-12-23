@@ -293,13 +293,11 @@ fn sample_scene(
                 matrix: [4.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.2],
             },
             instance_custom_index_and_mask: 0xff << 24,
-            instance_shader_binding_table_record_offset_and_flags:
                 // 球とは違うシェーダーが動いてほしいのでオフセットを設定している
-                (vk::GeometryInstanceFlagsKHR::FORCE_OPAQUE
-                    | vk::GeometryInstanceFlagsKHR::TRIANGLE_FACING_CULL_DISABLE)
-                    .as_raw()
-                    << 24
-                    | 1,
+            instance_shader_binding_table_record_offset_and_flags: vk::Packed24_8::new(
+                1,
+                vk::GeometryInstanceFlagsKHR::TRIANGLE_FACING_CULL_DISABLE.as_raw() as u8,
+            ),
             acceleration_structure_reference: vk::AccelerationStructureReferenceKHR {
                 device_handle: triangle_accel_handle,
             },
