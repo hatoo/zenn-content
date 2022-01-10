@@ -70,6 +70,8 @@ pub fn triangle_closest_hit(
     // 座標変換
     // 行列*ベクトルの演算をする簡単な関数はrust-gpuにはまだない
     // asm!(...)を使えば1命令でできそうだが簡単のために自力で計算している
+    // とはいえGPUの個々のコアはSIMD演算をサポートしていないので仮にSPIR-Vの1命令で表現したとしても速度の向上は期待できない
+    // SPIR-Vのサイズが減るだけ
     let hit_pos = vec3a(
         object_to_world.x.dot(pos),
         object_to_world.y.dot(pos),
