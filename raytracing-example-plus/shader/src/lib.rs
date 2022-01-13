@@ -260,11 +260,10 @@ pub fn triangle_closest_hit(
 
     let nrm = v0.normal * barycentrics.x + v1.normal * barycentrics.y + v2.normal * barycentrics.z;
 
-    let hit_pos = vec3a(
-        object_to_world.x.dot(pos),
-        object_to_world.y.dot(pos),
-        object_to_world.z.dot(pos),
-    ) + object_to_world.w;
+    let hit_pos = pos.x * object_to_world.x
+        + pos.y * object_to_world.y
+        + pos.z * object_to_world.z
+        + object_to_world.w;
 
     let normal = vec3a(
         world_to_object.x.dot(nrm),

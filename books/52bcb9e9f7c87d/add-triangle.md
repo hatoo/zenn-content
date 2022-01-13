@@ -68,15 +68,15 @@ pub fn triangle_closest_hit(
     let nrm = v0.normal * barycentrics.x + v1.normal * barycentrics.y + v2.normal * barycentrics.z;
 
     // 座標変換
+    // 参考 https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__simple/shaders/raytrace.rchit#L69-L75
     // 行列*ベクトルの演算をする簡単な関数はrust-gpuにはまだない
     // asm!(...)を使えば1命令でできそうだが簡単のために自力で計算している
     // とはいえGPUの個々のコアはSIMD演算をサポートしていないので仮にSPIR-Vの1命令で表現したとしても速度の向上は期待できない
     // SPIR-Vのサイズが減るだけ
-    let hit_pos = vec3a(
-        object_to_world.x.dot(pos),
-        object_to_world.y.dot(pos),
-        object_to_world.z.dot(pos),
-    ) + object_to_world.w;
+    let hit_pos = pos.x * object_to_world.x
+        + pos.y * object_to_world.y
+        + pos.z * object_to_world.z
+        + object_to_world.w;
 
     let normal = vec3a(
         world_to_object.x.dot(nrm),
