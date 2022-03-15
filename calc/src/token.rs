@@ -1,9 +1,6 @@
 use chumsky::prelude::*;
 use std::ops::Range;
 
-pub type Span = Range<usize>;
-pub type Error = Simple<char>;
-
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Token {
     With,
@@ -20,7 +17,7 @@ pub enum Token {
     Error(char),
 }
 
-pub fn lexer() -> impl Parser<char, Vec<(Token, Span)>, Error = Error> {
+pub fn lexer() -> impl Parser<char, Vec<(Token, Range<usize>)>, Error = Simple<char>> {
     let with = just("with").to(Token::With);
     let ident = filter(|c: &char| (*c >= 'a' && *c <= 'z') || (*c >= 'A' && *c <= 'Z'))
         .repeated()
