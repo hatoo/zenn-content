@@ -41,7 +41,7 @@ fn test_yyyy_mm_dd() {
 }
 
 fn main() {
-    for src in ["20221/03/19", "2021/june/10", "2022@10@10"] {
+    for src in ["20221/03/19", "2021/june/10", "2022@10@10", "2022/"] {
         let (_, errs) = yyyy_mm_dd().parse_recovery(src);
 
         for e in errs {
@@ -61,7 +61,7 @@ fn main() {
                             " something else".to_string()
                         },
                         if e.expected().count() == 0 {
-                            " somemething else".to_string()
+                            "somemething else".to_string()
                         } else {
                             e.expected()
                                 .map(|expected| match expected {
