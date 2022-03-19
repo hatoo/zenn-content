@@ -22,9 +22,9 @@ fn yyyy_mm_dd() -> impl Parser<char, (u32, u32, u32), Error = Simple<char>> {
 
     number(4)
         .labelled("yyyy")
-        .then_ignore(just('/').labelled("between yyyy and mm"))
+        .then_ignore(just('/').labelled("slash between yyyy and mm"))
         .then(number(2).labelled("mm"))
-        .then_ignore(just('/').labelled("betweel mm and dd"))
+        .then_ignore(just('/').labelled("slash between mm and dd"))
         .then(number(2).labelled("dd"))
         .map(|((y, m), d)| (y, m, d))
 }
