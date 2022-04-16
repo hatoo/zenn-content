@@ -114,11 +114,7 @@ fn main() {
             .build();
 
         let mut features2 = vk::PhysicalDeviceFeatures2::default();
-        unsafe {
-            instance
-                .fp_v1_1()
-                .get_physical_device_features2(physical_device, &mut features2)
-        };
+        unsafe { instance.get_physical_device_features2(physical_device, &mut features2) };
 
         let mut features12 = vk::PhysicalDeviceVulkan12Features::builder()
             .shader_int8(true)
