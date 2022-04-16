@@ -8,6 +8,7 @@ title: "レイトレーシングのシェーダーを実行する"
 # GPUバッファ用の便利structをつくる
 
 この章ではGPUのメモリ確保を多く扱うためそれ用の便利structを作ります
+今回は使わないが、しっかりやりたい場合は[gpu-allocator](https://github.com/Traverse-Research/gpu-allocator)を使うとよい。
 
 ```rust:src/main.rs
 #[derive(Clone)]
