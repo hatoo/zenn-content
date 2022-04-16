@@ -30,7 +30,7 @@ rust-gpuは特定のRustのバージョンで動くため、rust-toolchainを[�
 # to the user in the error, instead of "error: invalid channel name '[toolchain]'".
 
 [toolchain]
-channel = "nightly-2022-01-13"
+channel = "nightly-2022-04-11"
 components = ["rust-src", "rustc-dev", "llvm-tools-preview"]
 ```
 
