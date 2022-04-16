@@ -302,7 +302,7 @@ graph TB
 
 ```rust:shader/src/lib.rs
 impl RayPayload {
-    pub fn new(position: Vec3A, outward_normal: Vec3A, ray_direction: Vec3A, material: u32) -> Self {
+    pub fn new_hit(position: Vec3A, outward_normal: Vec3A, ray_direction: Vec3A, material: u32) -> Self {
         let front_face = ray_direction.dot(outward_normal) < 0.0;
         let normal = if front_face {
             outward_normal
@@ -311,7 +311,7 @@ impl RayPayload {
         };
 
         Self {
-            is_miss: false,
+            is_miss: 0,
             position,
             normal,
             material,
@@ -397,7 +397,7 @@ pub fn sphere_closest_hit(
     // object_to_world.wに変換行列の平行移動の部分が入っている。
     // 球のスケールがすべての軸で等倍ではない場合この計算は間違っているが、今のところそのような球を扱う予定はないためこのままにしておく。
     let normal = (hit_pos - object_to_world.w).normalize();
-    *out = RayPayload::new(hit_pos, normal, world_ray_direction, instance_custom_index);
+    *out = RayPayload::new_hit(hit_pos, normal, world_ray_direction, instance_custom_index);
 }
 ```
 
