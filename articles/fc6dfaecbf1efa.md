@@ -22,7 +22,7 @@ published: false
 https://github.com/rustls/tokio-rustls/blob/66fb0ae98fbc9e71d5aa855d45e88ca8d53f95f3/src/common/mod.rs#L330-L334
 
 ここではshutdownの際にwhileループでなにやら今まで書ききれてなかったデータを書き込もうとしています。
-しかし、`tokio-rustls`が`hyper`のあるストリームをラップしていた場合、この段階でこの`write`に対して`Ok(0)`を返すので`self.session.wants_write()`が一生`true`のままになり無限ループに陥ってしまいます。
+しかし、`tokio-rustls`が`hyper`のストリームをラップしていた場合、この段階でこの`write`に対して常に`Ok(0)`を返すので`self.session.wants_write()`が一生`true`のままになり無限ループに陥ってしまいます。
 
 結局、https://doc.rust-lang.org/std/io/trait.Write.html#tymethod.write には
 
