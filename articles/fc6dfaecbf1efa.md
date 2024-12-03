@@ -1,6 +1,6 @@
 ---
 title: "[Rust] `std::io::Write::write`が`Ok(0)`を返すことについて"
-emoji: "🗂"
+emoji: "🦀"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["rust"]
 published: false
