@@ -8,7 +8,7 @@ published: false
 
 # はじめに
 
-先日、[`hyper`](https://github.com/hyperium/hyper)のストリーム^[具体的にはHTTP/2からUpgradeされたストリーム]を[`tokio-rustls`](https://github.com/rustls/tokio-rustls)でラップした際に、`std::io::Write::write`が返す`Ok(0)`の解釈の違いによって問題が出たので、そのときに調べたことをまとめます。
+先日、[`hyper`](https://github.com/hyperium/hyper)のストリーム^[具体的には`hyper`のHTTP/2サーバーでUpgradeされたストリーム]を[`tokio-rustls`](https://github.com/rustls/tokio-rustls)でラップした際に、`std::io::Write::write`が返す`Ok(0)`の解釈の違いによって問題が出たので、そのときに調べたことをまとめます。
 
 そのときのissue
 - https://github.com/rustls/tokio-rustls/issues/92
