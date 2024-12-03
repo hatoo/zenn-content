@@ -61,6 +61,6 @@ So in that sense, treating Ok(0) as an error condition is acceptable, because it
 
 - `std::io::Write::write`に対して`Ok(0)`が帰ってきた場合、受け取った側はそれをエラーとして扱うべき
 - だからといって`std::io::Write::write`実装側が`もうこれ以上書き込めないよ`というときに`Ok(0)`を返すのは良くない。普通に`std::io::Error`を返すべき
-- `Result<std::num::NonZeroUsize>`返せよ。Breaking Changeなのを差し引いてもさすがにこれはオタクすぎるか
+- そもそも`Result<std::num::NonZeroUsize>`返せよ。Breaking Changeなのを差し引いてもさすがにこれはオタクすぎるか
 - `std::io::Write::write_all`は`Ok(0)`をエラーとして扱う。無限ループするわけにはいかないので^[関連するLibs-API Meeting https://hackmd.io/@rust-libs/SJUBKd-lK]これは正しい
 - `std::io::Write::write_all`がそういう挙動をしている以上 https://doc.rust-lang.org/std/io/trait.Write.html#tymethod.write に *A return value of Ok(0) typically means that the underlying object is no longer able to accept bytes and will likely not be able to in the future as well, or that the buffer provided is empty.* と書くのは妥当
