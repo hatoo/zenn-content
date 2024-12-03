@@ -1,5 +1,5 @@
 ---
-title: "[Rust] `std::io::Write::write`が`Ok(0)`を返すことについて"
+title: "Rustの`std::io::Write::write`が`Ok(0)`を返すことについて"
 emoji: "🦀"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["rust"]
@@ -33,6 +33,7 @@ https://github.com/rustls/tokio-rustls/blob/66fb0ae98fbc9e71d5aa855d45e88ca8d53f
 # `std::io::Write::write`が`Ok(0)`を返すことについての第一印象
 
 しかし https://github.com/rustls/tokio-rustls/issues/92#issuecomment-2507878251 のコメントの通り、ストリームが`もうこれ以上書き込めないよ`ということを表明するために`Ok(0)`を返すのはあんまりなデザインだと思わざるを得ません。
+POSIXの`write(2)`にもそのような話はないっぽい
 普通に考えて、仮に[`std::io::Write::write_all`](https://doc.rust-lang.org/std/io/trait.Write.html#method.write_all)を自分で実装するとしたら、自分も上記の`tokio-rustls`のコードみたいに書く自信があります
 
 できれば`もうこれ以上書き込めないよ`というときには https://doc.rust-lang.org/std/io/enum.ErrorKind.html から`WriteZero`とかそれっぽいやつを選んで返してほしいものです
