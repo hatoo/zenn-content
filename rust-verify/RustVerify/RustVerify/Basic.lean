@@ -3,9 +3,7 @@ import RustVerify.Sandbox
 
 open Aeneas.Std Result Error
 
-set_option diagnostics true
-
-theorem add_spec2 {a b : I32} (h₀ : I32.min ≤ ↑a + ↑b) (h₁ : ↑a + ↑b ≤ I32.max) :
+theorem add_spec {a b : I32} (h₀ : I32.min ≤ ↑a + ↑b) (h₁ : ↑a + ↑b ≤ I32.max) :
   ∃ c, sandbox.add a b = ok c ∧ (↑c: ℤ) = ↑a + ↑b := by
   unfold sandbox.add
   apply I32.add_spec h₀ h₁
