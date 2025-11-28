@@ -1,0 +1,14 @@
+name = "RustVerify"
+version = "0.1.0"
+defaultTargets = ["rustverify"]
+
+[[lean_lib]]
+name = "RustVerify"
+
+[[lean_exe]]
+name = "rustverify"
+root = "Main"
+
+[[require]]
+name = "aeneas"
+path = "/home/hatoo/aeneas/backends/lean"
