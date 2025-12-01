@@ -18,13 +18,20 @@ def main : Result Unit :=
 def add (a : I32) (b : I32) : Result I32 :=
   a + b
 
+/- [sandbox::fma]:
+   Source: 'src/main.rs', lines 7:0-9:1 -/
+def fma (a : I32) (b : I32) (c : I32) : Result I32 :=
+  do
+  let i ← a * b
+  i + c
+
 /- [sandbox::Pcg64Si]
-   Source: 'src/main.rs', lines 8:0-10:1 -/
+   Source: 'src/main.rs', lines 12:0-14:1 -/
 structure Pcg64Si where
   state : U64
 
 /- [sandbox::{sandbox::Pcg64Si}::next_u64]:
-   Source: 'src/main.rs', lines 13:4-23:5 -/
+   Source: 'src/main.rs', lines 17:4-27:5 -/
 def Pcg64Si.next_u64 (self : Pcg64Si) : Result (U64 × Pcg64Si) :=
   do
   let i ←

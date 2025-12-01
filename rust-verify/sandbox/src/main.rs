@@ -4,6 +4,10 @@ pub fn add(a: i32, b: i32) -> i32 {
     a + b
 }
 
+pub fn fma(a: i32, b: i32, c: i32) -> i32 {
+    a * b + c
+}
+
 #[repr(transparent)]
 pub struct Pcg64Si {
     state: u64,

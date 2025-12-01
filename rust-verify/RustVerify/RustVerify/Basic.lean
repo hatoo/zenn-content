@@ -8,6 +8,17 @@ theorem add_spec {a b : I32} (h₀ : I32.min ≤ ↑a + ↑b) (h₁ : ↑a + ↑
   unfold sandbox.add
   apply I32.add_spec h₀ h₁
 
+theorem fma_spec {a b c : I32}
+  (h₀ : I32.min ≤ ↑a * ↑b)
+  (h₁ : ↑a * ↑b ≤ I32.max)
+  (h₂ : I32.min ≤ ↑a * ↑b + ↑c)
+  (h₃ : ↑a * ↑b + ↑c ≤ I32.max) :
+  ∃ d, sandbox.fma a b c = ok d ∧ (↑d: ℤ) = ↑a * ↑b + ↑c := by
+  unfold sandbox.fma
+  progress as ⟨x, xh⟩
+  progress as ⟨y, yh⟩
+  rw [yh, xh]
+
 @[progress]
 theorem UScalar.xor_spec {ty} (x y : UScalar ty) :
   ∃ z, toResult (x ^^^ y) = ok z ∧ z.val = (x ^^^ y).val ∧ z.bv = x.bv ^^^ y.bv := by
